@@ -1,0 +1,1 @@
+- when using project, when adding wellbore data, should we use a predefined zoom when determining root?
