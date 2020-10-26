@@ -104,4 +104,16 @@ const outlines: OutlineModule = new OutlineModule({
 
 <br/>
 
+## Contribution
+We greatly appreciate contributions to this repository, see our [contribution page](CONTRIBUTION.md) on how to get started.
+
+### Quick start
+```
+$ git clone https://github.com/equinor/videx-map.git
+$ npm install
+$ npm start
+```
+
+
+
 ![Equinor Logo](images/equinor-logo.png)
