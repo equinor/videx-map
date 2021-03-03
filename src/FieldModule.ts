@@ -6,7 +6,7 @@ import Highlighter from './utils/fields/Highlighter';
 import preprocessFields from './utils/fields/preprocessFields';
 import LabelManager, { LabelData } from './utils/fields/LabelManager';
 import { clamp } from '@equinor/videx-math';
-import TriangleDictionary from './utils/fields/TriangleDictionary';
+import TriangleDictionary from './utils/TriangleDictionary';
 import Vector2 from '@equinor/videx-vector2';
 
 type vec3 = [number, number, number];

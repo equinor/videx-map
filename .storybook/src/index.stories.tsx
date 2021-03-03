@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as L from 'leaflet';
-import { FaultlineModule, OutlineModule, WellboreModule } from '../../src';
+import { FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
 import { RootData } from '../../src/utils/wellbores/data';
 import processExploration from './processExploration';
 import removeExpDuplicates from './removeExpDuplicates';
@@ -32,6 +32,9 @@ const faultlineDataTroll = require('./Samples/Troll-Faultlines.json');
 const outlineDataTroll = require('./Samples/Troll-Outlines.json');
 const wellboreDataTroll = require('./Samples/Troll-Wellbores.json');
 const wbData = Object.values(wellboreDataTroll) as any[];
+const licenseData = require('./.Samples/licenses.json');
+const pipelineData = require('./.Samples/pipelines.json');
+const facilityData = require('./.Samples/facilities.json');
 
 let explorationData = processExploration(
   require('./Samples/Exploration.json'),
@@ -106,16 +109,48 @@ export const layer = () => {
       },
     );
 
+    const licenses: GeoJSONModule = new GeoJSONModule();
+    const pipelines: GeoJSONModule = new GeoJSONModule();
+    const facilities: GeoJSONModule = new GeoJSONModule();
+
     pixiLayer.addModule(faultlines);
     // pixiLayer.addModule(fields);
     pixiLayer.addModule(outlines);
     pixiLayer.addModule(wellbores);
+    pixiLayer.addModule(licenses);
+    pixiLayer.addModule(pipelines);
+    pixiLayer.addModule(facilities);
     pixiLayer.addTo(map);
 
     // fields.set(fieldData.features);
     faultlines.set(faultlineDataTroll);
     outlines.set(outlineDataTroll);
+    licenses.set(licenseData, (feature) => ({ label: feature.properties.prlName,
+                                             id: feature.properties.prlNpdidLicence,
+                                             style: {
+                                               lineColor: 'blue',
+                                               lineWidth: 0.1,
+                                               fillColor: feature.properties.prlActive === 'Y' ? 'blue' : 'grey',
+                                               fillOpacity: 0.6 },
+                                            additionalData: {}}));
 
+    pipelines.set(pipelineData, (feature) => ({ label: feature.properties.pplName,
+                                            id: feature.properties.pplNpdidPipeline,
+                                            style: {
+                                              lineColor: 'red',
+                                              lineWidth: 1,
+                                              fillColor: 'red',
+                                              fillOpacity: 0.6 },
+                                           additionalData: {}}));
+
+    facilities.set(facilityData, (feature) => ({ label: feature.properties.fclName,
+                                            id: feature.properties.fclNpdidFacility,
+                                            style: {
+                                              lineColor: 'black',
+                                              lineWidth: 1,
+                                              fillColor: 'black',
+                                              fillOpacity: 0.9 },
+                                           additionalData: {}}));
     const split = Math.floor(wbData.length * 0.9);
 
     const drilled = wbData.slice(0, split);
