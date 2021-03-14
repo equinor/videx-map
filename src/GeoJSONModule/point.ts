@@ -37,7 +37,7 @@ export default class GeoJSONPoint {
 
   container: PIXI.Container;
   pixiOverlay: pixiOverlayBase;
-  dict: PointDictionary<number> = new PointDictionary<number>(0.25, 20, 4);
+  dict: PointDictionary<any> = new PointDictionary<number>(0.25, 20, 4);
 
   textStyle: PIXI.TextStyle;
 
@@ -59,7 +59,7 @@ export default class GeoJSONPoint {
     if(coordinates?.length > 0) {
       const projected = this.projectPoint(coordinates);
 
-      this.dict.add(projected, properties.id);
+      this.dict.add(projected, feature.properties);
       let point;
       if (this.pool.length > 0) {
         point = this.pool.pop();
@@ -92,5 +92,9 @@ export default class GeoJSONPoint {
 
   resize(zoom: number) {
 
+  }
+
+  testPosition(pos: Vector2) : any {
+    return this.dict.getClosestUnder(pos);
   }
 }

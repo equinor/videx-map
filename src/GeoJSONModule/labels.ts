@@ -41,7 +41,7 @@ export default class GeoJSONLabels {
   /** construct a new label container. */
   constructor(root: PIXI.Container, textStyle: PIXI.TextStyle, baseScale: number, fontName?: string) {
     this.container = new PIXI.Container();
-    this.container.sortableChildren = false;
+    this.container.sortableChildren = true;
     root.addChild(this.container);
 
     this.textStyle = textStyle;

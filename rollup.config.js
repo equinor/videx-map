@@ -42,6 +42,7 @@ export default [
         '@equinor/videx-vector2': 'Vector2',
         earcut: 'earcut',
         'pixi.js': 'PIXI',
+        uuid: 'uuid',
       },
     },
     external: [

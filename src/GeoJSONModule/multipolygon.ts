@@ -71,7 +71,7 @@ export default class GeoJSONMultiPolygon {
 
   container: PIXI.Container;
   pixiOverlay: pixiOverlayBase;
-  dict: TriangleDictionary<number> = new TriangleDictionary(1.2);
+  dict: TriangleDictionary<any> = new TriangleDictionary(1.2);
   textStyle: PIXI.TextStyle;
   labels: GeoJSONLabels;
 
@@ -113,12 +113,12 @@ export default class GeoJSONMultiPolygon {
         projected.pop(); // Remove overlapping
 
         const meshData = Mesh.Polygon(projected);
-        this.dict.add(coordinates[0], meshData.triangles, properties.id);
+        this.dict.add(coordinates[0], meshData.triangles, feature.properties);
         const outlineData = Mesh.PolygonOutline(projected, 0.15);
         const [position, mass] = centerOfMass(projected, meshData.triangles);
 
         meshes.push(
-          this.drawPolygons(this.container, meshData, outlineData, properties.style, 0),
+          this.drawPolygons(this.container, meshData, outlineData, properties.style, 1000),
         );
 
         this.labels.addLabel(properties.label, { position, mass });
@@ -192,6 +192,10 @@ export default class GeoJSONMultiPolygon {
 
   resize(zoom: number) {
 
+  }
+
+  testPosition(pos: Vector2) : any {
+    return this.dict.getPolygonAt([pos.x, pos.y]);
   }
 }
 
