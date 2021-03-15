@@ -406,6 +406,8 @@ export default class WellboreModule extends ModuleInterface {
       mousemove: this.handleMouseMove.bind(this),
       mouseout: this.handleMouseOut.bind(this),
       click: this.handleMouseClick.bind(this),
+      mousedown: () => true,
+      mouseup: () => true,
     };
 
     this._eventHandler.register(map, element, callbacks);

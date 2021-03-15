@@ -40,7 +40,7 @@ export default class GeoJSONLineString {
 
   container: PIXI.Container;
   pixiOverlay: pixiOverlayBase;
-  dict: LineDictionary<number> = new LineDictionary(1.2);
+  dict: LineDictionary<any> = new LineDictionary(1.2);
   textStyle: PIXI.TextStyle;
 
   constructor(root: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
@@ -64,11 +64,11 @@ export default class GeoJSONLineString {
       const projected = this.projectPolygons(coordinates);
       projected.pop(); // Remove overlapping
 
-      this.dict.add(projected, properties.id);
+      this.dict.add(projected, feature.properties);
       const outlineData = Mesh.SimpleLine(projected, 0.15);
 
       meshes.push(
-        this.drawPolygons(this.container, outlineData, properties.style, 0),
+        this.drawPolygons(this.container, outlineData, properties.style, 1000),
       );
       this.features.push(...meshes);
     }
@@ -113,6 +113,10 @@ export default class GeoJSONLineString {
 
   resize(zoom: number) {
 
+  }
+
+  testPosition(pos: Vector2) : any {
+    return this.dict.getClosest(pos);
   }
 }
 
