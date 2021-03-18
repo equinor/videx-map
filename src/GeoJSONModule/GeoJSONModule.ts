@@ -28,6 +28,7 @@ export default class GeoJSONModule extends ModuleInterface {
   multipolygons: GeoJSONMultiPolygon;
   _eventHandler: EventHandler;
   mapmoving: boolean;
+  labelRoot: PIXI.Container
 
   constructor(config?: Config) {
     super();
@@ -37,6 +38,7 @@ export default class GeoJSONModule extends ModuleInterface {
   }
 
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
+    this.labelRoot = new PIXI.Container();
     data.features.forEach(feature => {
       if(feature.geometry.type === 'Point') {
         if (this.points === undefined) this.points = new GeoJSONPoint(this.root, this.pixiOverlay);
@@ -45,14 +47,15 @@ export default class GeoJSONModule extends ModuleInterface {
         if (this.linestrings === undefined) this.linestrings = new GeoJSONLineString(this.root, this.pixiOverlay);
         this.linestrings.add(feature, props);
       } else if (feature.geometry.type === 'Polygon') {
-        if (this.polygons === undefined) this.polygons = new GeoJSONPolygon(this.root, this.pixiOverlay);
+        if (this.polygons === undefined) this.polygons = new GeoJSONPolygon(this.root, this.labelRoot, this.pixiOverlay);
         this.polygons.add(feature, props);
       } else if (feature.geometry.type === 'MultiPolygon') {
-        if (this.multipolygons === undefined) this.multipolygons = new GeoJSONMultiPolygon(this.root, this.pixiOverlay);
+        if (this.multipolygons === undefined) this.multipolygons = new GeoJSONMultiPolygon(this.root, this.labelRoot, this.pixiOverlay);
         this.multipolygons.add(feature, props);
       }
 
     });
+    this.root.addChild(this.labelRoot);
     if (this.polygons) this.polygons.drawLabels();
     if (this.multipolygons) this.multipolygons.drawLabels();
   }
