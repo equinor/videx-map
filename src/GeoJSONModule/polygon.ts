@@ -44,6 +44,16 @@ interface Config {
   minHash?: number,
   /** Maximum scale of feature hash (Default: Infinity). */
   maxHash?: number,
+  /**Label font family, default Arial */
+  labelFontFamily?: string,
+  /**Label font size, default 64 */
+  labelFontSize?: number,
+  /**Label font weight, default 600 */
+  labelFontWeight?: string,
+  /**Label fill color, default 0x454545 */
+  labelColor?: string | number,
+  /**Label alignment, default Center  */
+  labelAlign?: string,
 }
 
 /** Container for GeoJSON Polygon features. */
@@ -76,7 +86,7 @@ export default class GeoJSONPolygon {
   textStyle: PIXI.TextStyle;
   labels: GeoJSONLabels;
 
-  constructor(root: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
+  constructor(root: PIXI.Container, labelRoot: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
     if (config?.initialHash && typeof config.initialHash === 'number') this.config.initialHash = config.initialHash;
     if (config?.minHash && typeof config.minHash === 'number') this.config.minHash = config.minHash;
     if (config?.maxHash && typeof config.maxHash === 'number') this.config.maxHash = config.maxHash;
@@ -90,14 +100,14 @@ export default class GeoJSONPolygon {
     this.config.initialHash = clamp(this.config.initialHash);
 
     this.textStyle = new PIXI.TextStyle({
-      fontFamily : 'Arial',
-      fontSize: 64,
-      fontWeight: '600',
-      fill : 0x454545,
-      align : 'center'
+      fontFamily: config?.labelFontFamily || 'Arial',
+      fontSize: config?.labelFontSize || 64,
+      fontWeight: config?.labelFontWeight || '600',
+      fill: config?.labelColor || 0x454545,
+      align: config?.labelAlign || 'center'
     });
 
-    this.labels = new GeoJSONLabels(this.container, this.textStyle, 0.1);
+    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, 0.1);
 
   }
 
