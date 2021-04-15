@@ -49,7 +49,7 @@ export default class Mesh {
    * Create mesh for a line.
    * @param points Collection of points used to construct mesh
    * @param thickness Thickness of line
-   * @param callback Callback with segment point for every two vertices added, first vertex is upper
+   * @param type 0: Normal, 1: Interval, 2: Tick
    * @returns Vertex and triangulation for mesh
    */
   static WellboreSegment (points: SegmentPoint[], thickness: number = 1, type: number): WellboreSegmentData {
