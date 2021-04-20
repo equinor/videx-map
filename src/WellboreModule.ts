@@ -401,7 +401,6 @@ export default class WellboreModule extends ModuleInterface {
     const { min, max } = this.config.wellboreResize;
     const t = (zoom - min.zoom) / (max.zoom - min.zoom);
     const scale2 = lerp(min.scale, max.scale, clamp(t, 0, 1)) - max.scale;
-    console.log({ zoom, min, max, t, Scale: scale2, rootDisplacement: Label.state.rootDisplacement });
 
     const labelVisible = zoom > 10;
     this.containers.labels.visible = labelVisible; // set label visibility

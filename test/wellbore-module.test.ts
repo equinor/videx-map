@@ -4,7 +4,6 @@ import { wellbores } from './test-data';
 import { pixiOverlayMock } from './mocks';
 import { getDefaultColors, InputColors } from '../src/utils/wellbores/Colors';
 import { WellboreData, RootData, Group } from '../src/utils/wellbores/data';
-import Vector2 from '@equinor/videx-vector2';
 
 const defaultConfig = getDefaultConfig();
 
@@ -19,25 +18,23 @@ test('can instantiate WellboreModule class with no options', () => {
 
   expect(module).toBeInstanceOf(WellboreModule);
   expect(module.config.scale).toEqual(defaultConfig[0].scale);
-  expect(module.config.wellboreWidth).toEqual(defaultConfig[0].wellboreWidth);
-  expect(module.config.rootRadius).toEqual(defaultConfig[0].rootRadius);
+  expect(module.config.wellboreResize).toStrictEqual(defaultConfig[0].wellboreResize);
+  expect(module.config.rootResize).toEqual(defaultConfig[0].rootResize);
   expect(module.config.batchSize).toEqual(defaultConfig[0].batchSize);
 });
 
 test('can instantiate WellboreModule class with options', () => {
-  const scale = 2.7; // global scale
-  const wellboreWidth = 1.9;
+  const wellboreResize = {
+    min: { zoom: 10, scale: 0.2 },
+    max: { zoom: 18, scale: 0.1 },
+  };
 
   const module = createModule({
-    scale,
-    wellboreWidth,
+    wellboreResize,
   });
 
   expect(module).toBeInstanceOf(WellboreModule);
-  expect(module.config.scale).toEqual(scale);
-  expect(module.config.wellboreWidth).toEqual(wellboreWidth * scale);
-  expect(module.config.rootRadius).toEqual(defaultConfig[0].rootRadius * scale);
-  expect(module.config.batchSize).toEqual(defaultConfig[0].batchSize);
+  expect(module.config.wellboreResize).toStrictEqual(wellboreResize);
 });
 
 test('can register data groups and set options', () => {
@@ -159,11 +156,11 @@ test('can remove data in a group', async () => {
 
   expect(module.groups.group1.wellbores.length).toBe(6);
   expect(module.groups.group2.wellbores.length).toBe(4);
-  expect(module.lineDict.lineValues.size).toBe(3)
+  expect(module.lineDict.lineValues.size).toBe(2)
   expect(module.pointDict.pointValues.size).toBe(7);
   expect(module.roots.length).toBe(7);
   expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(10);
-  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(7);
+  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(8);
 
   module.clear('group1');
   expect(module.groups.group1.wellbores.length).toBe(0);

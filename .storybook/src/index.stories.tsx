@@ -129,6 +129,8 @@ export const layer = () => {
     faultlines.set(faultlineDataTroll);
     outlines.set(outlineDataTroll);
 
+    // ! License, pipeline and facilities should be toggled through the sidebar.
+    // ! For examples, see 'Button' section below.
     /*
     licenses.set(licenseData, (feature) => ({ label: feature.properties.prlName,
                                              id: feature.properties.prlNpdidLicence,
