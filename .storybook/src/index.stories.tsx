@@ -84,17 +84,20 @@ export const layer = () => {
     });
     const wellbores: WellboreModule = new WellboreModule(
       {
-        rootRadius: 0.3,
         scale: 1.5,
         // labelScale: 1,
         labelBgOpacity: 0.2,
         zoomOrigin: 0,
+        wellboreDash: 0.08,
         // @ts-ignore
         scaling: zoom => factors[zoom] || 0,
+        wellboreResize: {
+          min: { zoom: 10, scale: 0.15 },
+          max: { zoom: 18, scale: 0.08 },
+        },
         rootResize: {
-          base: 1.75,
-          multiplier: 0.5,
-          zoomReference: initialZoom,
+          min: { zoom: 10, scale: 1.0 },
+          max: { zoom: 18, scale: 0.1 },
         },
         onHighlightOn: event => {
           if (event.count === 1) mapRoot.node().style.cursor = 'pointer'; // Set cursor style
@@ -117,14 +120,16 @@ export const layer = () => {
     // pixiLayer.addModule(fields);
     pixiLayer.addModule(outlines);
     pixiLayer.addModule(wellbores);
-    pixiLayer.addModule(licenses);
-    pixiLayer.addModule(pipelines);
-    pixiLayer.addModule(facilities);
+    // pixiLayer.addModule(licenses);
+    // pixiLayer.addModule(pipelines);
+    // pixiLayer.addModule(facilities);
     pixiLayer.addTo(map);
 
     // fields.set(fieldData.features);
     faultlines.set(faultlineDataTroll);
     outlines.set(outlineDataTroll);
+
+    /*
     licenses.set(licenseData, (feature) => ({ label: feature.properties.prlName,
                                              id: feature.properties.prlNpdidLicence,
                                              style: {
@@ -151,6 +156,8 @@ export const layer = () => {
                                               fillColor: 'black',
                                               fillOpacity: 0.9 },
                                            additionalData: {}}));
+    */
+
     const split = Math.floor(wbData.length * 0.9);
 
     const drilled = wbData.slice(0, split);

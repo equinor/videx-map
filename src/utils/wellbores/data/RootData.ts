@@ -1,5 +1,5 @@
 import { WellboreData } from './WellboreData';
-import { RootUniforms, getCircleShader } from '../Shader';
+import { RootShader, RootUniforms } from '../Shader';
 import generateCircle from '../../generateCircle';
 import Vector2 from '@equinor/videx-vector2';
 import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
@@ -18,7 +18,7 @@ export class RootData {
   constructor(position: Vector2, radius: number) {
     this.position = position;
     this.radius = radius;
-    const shader: PIXI.Shader = getCircleShader();
+    const shader: PIXI.Shader = RootShader.get();
     this.mesh = generateCircle(position, radius, shader);
   }
 

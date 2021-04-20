@@ -125,7 +125,7 @@ export class WellboreData {
     geometry.addAttribute('typeData', extraData, 1);
     geometry.addIndex(triangles);
 
-    const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible, wellboreWidth);
+    const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible);
     return new PIXI.Mesh(geometry, shader);
   }
 

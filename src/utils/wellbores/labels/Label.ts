@@ -5,6 +5,9 @@ interface State {
   zoom: number;
   scale: number;
   visible: boolean;
+
+  /** Displacement from root. */
+  rootDisplacement: number;
 }
 
 /** Common configurations. */
@@ -18,6 +21,7 @@ export class Label {
     zoom: 1,
     scale: 1,
     visible: true,
+    rootDisplacement: 1,
   };
 
   private static style: PIXI.TextStyle;
