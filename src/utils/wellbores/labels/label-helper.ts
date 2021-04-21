@@ -6,17 +6,17 @@ export function positionAtRoot(wellbore: WellboreData, position: number) : void 
   wellbore.label.attachToRoot = true;
 
   const { text, background } = wellbore.label;
-  const { scale } = Label.state;
+  const { scale, rootDisplacement } = Label.state;
 
   text.anchor.set(0.5, 0);
   text.rotation = 0;
   background.rotation = 0;
   background.pivot.set(0, -Label.height * 0.5);
-  const yPos = (wellbore.root.radius + 5 * scale) + (position * (Label.height + 7) * scale) + wellbore.root.position[1];
+  const yPos = (rootDisplacement + 5 * scale) + (position * (Label.height + 5) * scale) + wellbore.root.position[1];
   text.position.set(wellbore.root.position[0], yPos);
-  text.scale.set(Label.state.scale); // Resize
+  text.scale.set(scale); // Resize
   background.position.set(wellbore.root.position[0], yPos);
-  background.scale.set(Label.state.scale); // Resize
+  background.scale.set(scale); // Resize
 }
 
 export function positionAlongWellbore(wellbore: WellboreData) : void {

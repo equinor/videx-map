@@ -1,3 +1,5 @@
+import { round } from '@equinor/videx-math';
+import Vector2 from '@equinor/videx-vector2';
 import { SegmentPoint, LineInterpolator } from './LineInterpolator';
 import Mesh from './Mesh';
 
@@ -112,11 +114,11 @@ export class WellboreMesh {
     //
     // 0    1
 
-    const crosslinesWidth = thickness * 0.075;
+    const crosslinesWidth = thickness * 0.2;
     const dirX = p.direction[0] * crosslinesWidth;
     const dirY = p.direction[1] * crosslinesWidth;
 
-    const crosslinesHeight = thickness;
+    const crosslinesHeight = thickness * 1.5;
     const normX = -p.direction[1] * crosslinesHeight;
     const normY = p.direction[0] * crosslinesHeight;
 
@@ -135,12 +137,17 @@ export class WellboreMesh {
 
     extraData.push(2, 2, 2, 2); // Push tick type
 
-    // Real distance [0, N], Upper/Lower [0, 1], Normal.x [-1, 1], Normal.y [-1, 1]
+    // Get normalized normal
+    const normalizedNormal = new Vector2(normX, normY).normalized();
+    const nnx = normalizedNormal.x;
+    const nny = normalizedNormal.y;
+
+    // Real distance [0, N], Upper/Lower [0, 1], Normal.x, Normal.y
     vertexData.push(
-      p.distance, 0.0, 0, 0,
-      p.distance, 0.0, 0, 0,
-      p.distance, 1.0, 0, 0,
-      p.distance, 1.0, 0, 0,
+      p.distance, 0.0, -nnx, -nny,
+      p.distance, 0.0, -nnx, -nny,
+      p.distance, 1.0, nnx, nny,
+      p.distance, 1.0, nnx, nny,
     ); // Add vertex data
 
     this.baseTris += 4;
