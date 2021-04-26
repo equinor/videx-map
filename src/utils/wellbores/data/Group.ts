@@ -10,6 +10,7 @@ export interface GroupOptions {
 
 interface WellboreState {
   completionVisible: boolean;
+  wellboreVisible: boolean;
 }
 
 type Filter = (data: SourceData) => boolean;
@@ -27,6 +28,7 @@ export class Group {
   /** State of wellbores attached to group */
   state: WellboreState = {
     completionVisible: true,
+    wellboreVisible: true,
   };
 
   constructor(key: string, options?: GroupOptions) {
@@ -107,6 +109,13 @@ export class Group {
     this.state.completionVisible = visible;
     this.wellbores.forEach(wellbore => {
       if (wellbore.mesh) wellbore.uniforms.completionVisible = visible;
+    });
+  }
+
+  setWellboreVisibility(visible: boolean) {
+    this.state.wellboreVisible = visible;
+    this.wellbores.forEach(wellbore => {
+      if (wellbore.mesh) wellbore.uniforms.wellboreVisible = visible;
     });
   }
 }

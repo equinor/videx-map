@@ -228,9 +228,23 @@ export default class WellboreModule extends ModuleInterface {
     this.pixiOverlay.redraw();
   }
 
+  /**
+   * Enable/disable completion
+   * @param visible
+   * @param keys
+   */
   setCompletionVisibility(visible: boolean, ...keys: string[]) {
     this.forEachGroup(keys, group => group.setCompletionVisibility(visible));
   }
+
+  /**
+   * Enable/disable wellbores
+   * @param visible
+   */
+  setWellboresVisibility(visible: boolean, ...keys: string[]) {
+    this.forEachGroup(keys, group => group.setWellboreVisibility(visible));
+  }
+
 
   /** "Soft" filtering function. Will turn wellbores that does not pass filter gray-ish. */
   softFilter(filterFunction : (v: SourceData) => boolean, ...keys: string[]): void {

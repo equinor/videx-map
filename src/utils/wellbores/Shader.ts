@@ -24,6 +24,8 @@ export interface WellboreUniforms {
   wellboreColor2: vec3,
   /** True if completion and ticks should be visible. */
   completionVisible: boolean,
+  /** True if wellbore should be visible. */
+  wellboreVisible: boolean,
   /* Status of wellbore. (0: Active, 1: Filtered, 2: Ghost, 3: Hidden) */
   status: number,
 }
@@ -34,7 +36,7 @@ export interface WellboreUniforms {
  * @param wellboreWidth Width of wellbore
  * @return PIXI shader
  */
-export function getWellboreShader(color: Color, completionVisible: boolean): PIXI.Shader {
+export function getWellboreShader(color: Color, completionVisible: boolean, wellboreVisible: boolean): PIXI.Shader {
   return PIXI.Shader.from(
     WellboreShader.vertexShader,
     WellboreShader.fragmentShader,
@@ -42,6 +44,7 @@ export function getWellboreShader(color: Color, completionVisible: boolean): PIX
       wellboreColor1: color.col1,
       wellboreColor2: color.col2,
       completionVisible,
+      wellboreVisible,
       status: 0,
     } as WellboreUniforms,
   );
@@ -96,6 +99,7 @@ export class WellboreShader {
       uniform vec3 wellboreColor1;
       uniform vec3 wellboreColor2;
       uniform bool completionVisible;
+      uniform bool wellboreVisible;
       uniform int status;
 
       const vec3 sunDir = vec3(0.6247, -0.6247, 0.4685);
@@ -105,10 +109,17 @@ export class WellboreShader {
         float alpha = 1.0;
 
         if (status == 0) {
-          if (completionVisible && type == 1.0) {
-            if(mod(vCol.x, ${doubleDash}) > ${dash}) discard;
+          if(type == 0.0) {
+            if (!wellboreVisible) {
+              alpha = 0.03;
+            }
+          } else if (type == 1.0) {
+            if(completionVisible){
+              if(mod(vCol.x, ${doubleDash}) > ${dash}) discard;
+            } else if(!wellboreVisible){
+              alpha = 0.03;
+            }
           }
-
           if (!completionVisible && type == 2.0) discard;
 
           float dist = clamp(vCol.z * vCol.z + vCol.w * vCol.w, 0.0, 1.0);
@@ -136,6 +147,7 @@ export class WellboreShader {
 
         else discard;
 
+        col *= alpha;
         gl_FragColor = vec4(col, alpha);
       }
     `;

@@ -125,12 +125,16 @@ export class WellboreData {
     geometry.addAttribute('typeData', extraData, 1);
     geometry.addIndex(triangles);
 
-    const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible);
+    const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
     return new PIXI.Mesh(geometry, shader);
   }
 
   setCompletionVisibility(visible: boolean) {
     if (this.mesh) this.uniforms.completionVisible = visible;
+  }
+
+  setWellboreVisibility(visible: boolean) {
+    if (this.mesh) this.uniforms.wellboreVisible = visible;
   }
 
   setHighlight(isHighlighted: boolean, multiple: boolean = false) : void {
