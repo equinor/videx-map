@@ -184,33 +184,25 @@ export class RootShader {
   }
 
   /** Build vertex shader from given resize configs */
-  static build(rootResize: ResizeConfig) {
-    const { min, max } = rootResize;
-
-    const zoomMin = toShader(min.zoom);
-    const zoomRange = toShader(max.zoom - min.zoom);
-    const scaleMin = toShader(min.scale);
-    const scaleMax = toShader(max.scale);
-
+  static build(maxScale: number) {
     RootShader.vertexShader = `
       attribute vec2 verts;
       attribute vec2 inputUVs;
 
       uniform mat3 translationMatrix;
       uniform mat3 projectionMatrix;
-      uniform float zoom;
+      uniform float rootRadius;
 
       varying vec2 UVs;
 
       void main() {
         UVs = inputUVs;
 
-        vec2 dir = 2.0 * (inputUVs - 0.5);
+        vec2 dir = 2.0 * inputUVs - 1.0;
 
-        float t = (zoom - ${zoomMin}) / ${zoomRange};
-        float scale = mix(${scaleMin}, ${scaleMax}, clamp(t, 0.0, 1.0)) - ${scaleMin};
+        float extraRadius = rootRadius - ${toShader(maxScale)};
 
-        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + dir * scale, 1.0)).xy, 0.0, 1.0);
+        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + dir * extraRadius, 1.0)).xy, 0.0, 1.0);
       }
     `;
   }

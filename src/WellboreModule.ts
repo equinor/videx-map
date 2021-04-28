@@ -13,7 +13,7 @@ import { Highlight } from './utils/wellbores/Highlight';
 import AsyncLoop from './utils/wellbores/AsyncLoop';
 import { EventHandler, DefaultEventHandler } from './EventHandler';
 import RealtimeWellbore from './utils/wellbores/RealtimeWellbore';
-import { clamp, inverseLerp, lerp } from '@equinor/videx-math';
+import { clamp, lerp } from '@equinor/videx-math';
 
 export default class WellboreModule extends ModuleInterface {
   config: Config;
@@ -77,7 +77,7 @@ export default class WellboreModule extends ModuleInterface {
     this._eventHandler = inputConfig && inputConfig.customEventHandler || new DefaultEventHandler();
 
     // Build root shader
-    RootShader.build(config.rootResize);
+    RootShader.build(config.rootResize.max.scale);
 
     // Build wellbore shader
     WellboreShader.build(config.wellboreResize, extra.wellboreDash);
@@ -93,7 +93,7 @@ export default class WellboreModule extends ModuleInterface {
 
     if (overlapping) return overlapping.val;
 
-    const wellboreRoot = new RootData(position, this.config.rootResize.min.scale);
+    const wellboreRoot = new RootData(position, this.config.rootResize.max.scale);
     this.containers.roots.addChild(wellboreRoot.mesh);
     this.pointDict.add(position, wellboreRoot);
     this.roots.push(wellboreRoot); // Add root
@@ -118,7 +118,7 @@ export default class WellboreModule extends ModuleInterface {
       group,
       root,
       coords: projectedPath,
-      pointThreshold: this.config.rootResize.min.scale * 1.5,
+      pointThreshold: this.config.rootResize.max.scale * 1.5,
       wellboreWidth: this.config.wellboreResize.max.scale,
     });
     if (wellbore.mesh) this.containers.wellbores.addChild(wellbore.mesh);
@@ -404,12 +404,17 @@ export default class WellboreModule extends ModuleInterface {
     this.pixiOverlay._renderer.globalUniforms.uniforms.zoom = zoom;
     this.currentZoom = zoom;
 
+    const rootRadius = this.getRootRadius(zoom);
+
+    // @ts-ignore
+    this.pixiOverlay._renderer.globalUniforms.uniforms.rootRadius = rootRadius;
+
     if (!this.scaling) return; // Return if no scaling function
     let scale = this.scaling(zoom - this.config.zoomOrigin);
     if (!Number.isFinite(scale)) scale = 1;
     Label.state.zoom = zoom; // Update label zoom
     Label.state.scale = scale; // Update label scale
-    Label.state.rootDisplacement = this.getRootRadius(zoom);
+    Label.state.rootDisplacement = rootRadius;
 
     // Temp
     const { min, max } = this.config.wellboreResize;
@@ -451,7 +456,8 @@ export default class WellboreModule extends ModuleInterface {
    */
   getRootRadius(zoom: number = this.currentZoom) {
     const { min, max } = this.config.rootResize;
-    const t = inverseLerp(min.zoom, max.zoom, zoom);
-    return lerp(min.scale, max.scale, t);
+    const zoomClamped = clamp(zoom, min.zoom, max.zoom) - min.zoom;
+    const t = Math.pow(2, -zoomClamped);
+    return lerp(max.scale, min.scale, t);
   }
 }
