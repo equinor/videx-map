@@ -156,20 +156,20 @@ test('can remove data in a group', async () => {
 
   expect(module.groups.group1.wellbores.length).toBe(6);
   expect(module.groups.group2.wellbores.length).toBe(4);
-  expect(module.lineDict.lineValues.size).toBe(2)
+  expect(module.lineDict.lineValues.size).toBe(6)
   expect(module.pointDict.pointValues.size).toBe(7);
   expect(module.roots.length).toBe(7);
   expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(10);
-  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(8);
+  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(4);
 
   module.clear('group1');
   expect(module.groups.group1.wellbores.length).toBe(0);
   expect(module.groups.group2.wellbores.length).toBe(4);
-  expect(module.lineDict.lineValues.size).toBe(1)
+  expect(module.lineDict.lineValues.size).toBe(3)
   expect(module.pointDict.pointValues.size).toBe(3);
   expect(module.roots.length).toBe(3);
   expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(4);
-  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(3);
+  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(1);
 });
 
 test('can toggle groups on and off', async () => {
