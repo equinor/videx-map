@@ -96,8 +96,8 @@ export const layer = () => {
           max: { zoom: 18, scale: 0.08 },
         },
         rootResize: {
-          min: { zoom: 10, scale: 1.0 },
-          max: { zoom: 18, scale: 0.1 },
+          min: { zoom: 0, scale: 1000.0 },
+          max: { zoom: 18, scale: 0.2 },
         },
         onHighlightOn: event => {
           if (event.count === 1) mapRoot.node().style.cursor = 'pointer'; // Set cursor style
