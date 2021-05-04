@@ -2,6 +2,7 @@ import { round } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 import { SegmentPoint, LineInterpolator } from './LineInterpolator';
 import Mesh from './Mesh';
+import { TickConfig } from './wellbores/Config';
 
 interface meshData {
   vertices: number[];
@@ -21,14 +22,18 @@ export class WellboreMesh {
   /** Index of latest vertex, i.e. base for triangulation of new geometry. */
   baseTris: number;
 
+  /** Width and height of tick. */
+  tick: TickConfig;
+
   /**
    * Constructor for creating a new line interpolator.
    * @param interp Interpolator used to generate line
    */
-  constructor(interp: LineInterpolator, thickness: number) {
+  constructor(interp: LineInterpolator, thickness: number, tick: TickConfig) {
     this.interp = interp;
     this.thickness = thickness;
     this.baseTris = 0;
+    this.tick = tick;
   }
 
   /**
@@ -66,10 +71,10 @@ export class WellboreMesh {
     // Iterate over intervals to create cross-lines
     intervals.forEach(i => {
       const p1: SegmentPoint = this.interp.GetPoint(i[0]);
-      this.generateCrossline(this.thickness, p1, vertices, triangles, vertexData, extraData);
+      this.generateCrossline(p1, vertices, triangles, vertexData, extraData);
       if(Math.abs(i[0] - i[1]) < 0.001) return; // Don't draw second if close
       const p2: SegmentPoint = this.interp.GetPoint(i[1]);
-      this.generateCrossline(this.thickness, p2, vertices, triangles, vertexData, extraData);
+      this.generateCrossline(p2, vertices, triangles, vertexData, extraData);
     });
 
     return { vertices, triangles, vertexData, extraData };
@@ -106,7 +111,7 @@ export class WellboreMesh {
    * @param extraData 1-dimensional array with type-data
    * @private
    */
-  generateCrossline(thickness: number, p: SegmentPoint, vertices: number[], triangles: number[], vertexData: number[], extraData: number[]): void {
+  private generateCrossline(p: SegmentPoint, vertices: number[], triangles: number[], vertexData: number[], extraData: number[]): void {
     const px = p.position[0];
     const py = p.position[1];
 
@@ -114,11 +119,11 @@ export class WellboreMesh {
     //
     // 0    1
 
-    const crosslinesWidth = thickness * 0.2;
+    const crosslinesWidth = this.tick.width;
     const dirX = p.direction[0] * crosslinesWidth;
     const dirY = p.direction[1] * crosslinesWidth;
 
-    const crosslinesHeight = thickness * 1.5;
+    const crosslinesHeight = this.tick.height;
     const normX = -p.direction[1] * crosslinesHeight;
     const normY = p.direction[0] * crosslinesHeight;
 

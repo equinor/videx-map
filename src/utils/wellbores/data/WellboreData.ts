@@ -9,6 +9,7 @@ import { WellboreMesh } from '../../WellboreMesh';
 import { getWellboreShader, WellboreUniforms } from '../Shader';
 import { Label } from '../labels/Label';
 import { Colors, Color } from '../Colors';
+import { TickConfig } from '../Config';
 
 export interface WellboreDataInput {
   data: SourceData,
@@ -19,6 +20,7 @@ export interface WellboreDataInput {
   /** Threshold for radius considered to be single point. */
   pointThreshold: number;
   wellboreWidth: number;
+  tick: TickConfig;
 }
 
 export enum WellboreStatus {
@@ -56,7 +58,7 @@ export class WellboreData {
       this.label.attachToRoot = true;
     } else {
       const intervals = processIntervals(input.data.intervals);
-      this.mesh = this.createWellboreMesh(intervals, this.wellboreWidth);
+      this.mesh = this.createWellboreMesh(intervals, input.tick);
     }
 
     // Update WellboreData with current state
@@ -114,8 +116,8 @@ export class WellboreData {
     return this.mesh.shader.uniforms;
   }
 
-  private createWellboreMesh(intervals: [number, number][], wellboreWidth: number): PIXI.Mesh {
-    const line = new WellboreMesh(this.interpolator, wellboreWidth);
+  private createWellboreMesh(intervals: [number, number][], tick: TickConfig): PIXI.Mesh {
+    const line = new WellboreMesh(this.interpolator, this.wellboreWidth, tick);
     const { vertices, triangles, vertexData, extraData } = line.generate(intervals);
 
     // Create geometry

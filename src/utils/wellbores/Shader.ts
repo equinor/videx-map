@@ -52,14 +52,7 @@ export function getWellboreShader(color: Color, completionVisible: boolean, well
 
 export class WellboreShader {
   /** Build wellbore shader with assigned variables. */
-  static build(wellboreResize: ResizeConfig, wellboreDash: number) {
-    const { min, max } = wellboreResize;
-
-    const zoomMin = toShader(min.zoom);
-    const zoomRange = toShader(max.zoom - min.zoom);
-    const scaleMin = toShader(min.scale);
-    const scaleMax = toShader(max.scale);
-
+  static build(maxScale: number, wellboreDash: number) {
     WellboreShader.vertexShader = `
       attribute vec2 verts;
       attribute vec4 vertCol;
@@ -67,7 +60,7 @@ export class WellboreShader {
 
       uniform mat3 translationMatrix;
       uniform mat3 projectionMatrix;
-      uniform float zoom;
+      uniform float wellboreRadius;
 
       varying vec4 vCol;
       varying float type;
@@ -77,12 +70,10 @@ export class WellboreShader {
         type = typeData;
 
         vec2 normal = vertCol.zw;
-        float t = (zoom - ${zoomMin}) / ${zoomRange};
-        float scale = mix(${scaleMin}, ${scaleMax}, clamp(t, 0.0, 1.0)) - ${scaleMax};
 
-        vec2 extra = mix(normal * scale, vec2(0.0), step(2.0, typeData));
+        float extraRadius = wellboreRadius - ${toShader(maxScale)};
 
-        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + extra, 1.0)).xy, 0.0, 1.0);
+        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + normal * extraRadius, 1.0)).xy, 0.0, 1.0);
       }
     `;
 

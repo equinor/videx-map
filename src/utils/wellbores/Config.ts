@@ -7,6 +7,11 @@ export interface ResizeConfig {
   max: { zoom: number, scale: number }
 }
 
+export interface TickConfig {
+  width: number,
+  height: number,
+}
+
 /** Interface for wellbore config. */
 export interface Config {
   /** Relative scale of all components (Default: 1.0). */
@@ -21,6 +26,8 @@ export interface Config {
   wellboreResize: ResizeConfig;
   /** Resize configurations of roots. */
   rootResize: ResizeConfig;
+  /** Settings for ticks along wellbore lines, these do not scale. */
+  tick: TickConfig;
   /** Function to be called when a wellbore is selected. */
   onWellboreClick?: (wellbore: WellboreEventData) => void;
   /** Function to be called when wellbores are highlighted. */
@@ -68,6 +75,8 @@ export interface InputConfig {
   wellboreResize: ResizeConfig;
   /** Resize configurations of roots. */
   rootResize?: ResizeConfig;
+  /** Settings for ticks along wellbore lines, these do not scale. */
+  tick?: TickConfig;
   /** Function to be called when a wellbore is selected. */
   onWellboreClick?: (selected: WellboreEventData) => void;
   /** Function to be called when wellbores are highlighted. */
@@ -89,8 +98,12 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
       max: { zoom: 18, scale: 0.001 },
     },
     rootResize: {
-      min: { zoom: 0, scale: 1.0 },
-      max: { zoom: 18, scale: 0.1 },
+      min: { zoom: 0, scale: 1000.0 },
+      max: { zoom: 18, scale: 0.2 },
+    },
+    tick: {
+      width: 0.02,
+      height: 0.2,
     },
   }
 
@@ -139,6 +152,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
 
   transferObj('wellboreResize', outputConfig);
   transferObj('rootResize', outputConfig);
+  transferObj('tick', outputConfig);
 
   return [ outputConfig, outputExtra ];
 }
