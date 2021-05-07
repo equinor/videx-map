@@ -18,6 +18,7 @@ const getInput1 = (root: RootData) => {
     coords: [Vector2.zero],
     pointThreshold: 0.1,
     wellboreWidth: 1,
+    tick: { height: 0.01, width: 0.1 },
   }
 };
 
@@ -29,6 +30,7 @@ const getInput2 = (root: RootData) => {
     coords: [Vector2.zero],
     pointThreshold: 0.1,
     wellboreWidth: 1,
+    tick: { height: 0.01, width: 0.1 },
   }
 };
 

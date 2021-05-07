@@ -109,7 +109,7 @@ export const Spiral = () => {
 
   const interp = new LineInterpolator(circleWellbore, 0.001);
 
-  const mesh = new WellboreMesh(interp, 5);
+  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
   const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
   let geometry = new PIXI.Geometry();
@@ -136,7 +136,7 @@ export const SpiralTicks = () => {
 
   const intervals: [number, number][] = [[0.1, 0.2], [0.3, 0.5], [0.7, 0.75], [0.8, 0.8], [0.85, 0.95]];
 
-  const mesh = new WellboreMesh(interp, 5);
+  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
   const { vertices, triangles, vertexData, extraData } = mesh.generate(intervals);
 
   let geometry = new PIXI.Geometry();
@@ -163,7 +163,7 @@ export const Stairs = () => {
 
   const interp = new LineInterpolator(stairWellbore, 0.001);
 
-  const mesh = new WellboreMesh(interp, 5);
+  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
   const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
   let geometry = new PIXI.Geometry();

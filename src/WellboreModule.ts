@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { ModuleInterface } from './ModuleInterface';
-import { Config, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
+import { Config, ResizeConfig, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
 import { RootShader, WellboreShader } from './utils/wellbores/Shader';
 import { SourceData, Group, GroupOptions, WellboreData, RootData } from './utils/wellbores/data';
 import LineDictionary from './utils/LineDictionary';
@@ -80,7 +80,7 @@ export default class WellboreModule extends ModuleInterface {
     RootShader.build(config.rootResize.max.scale);
 
     // Build wellbore shader
-    WellboreShader.build(config.wellboreResize, extra.wellboreDash);
+    WellboreShader.build(config.wellboreResize.max.scale, extra.wellboreDash);
   }
 
   registerGroup(key: string, options?: GroupOptions) : void {
@@ -113,13 +113,16 @@ export default class WellboreModule extends ModuleInterface {
     const projectedPath = this.projector.batchVector2(data.path);
     const root = this.addRoot(projectedPath[0]);
 
+    const { rootResize, wellboreResize, tick } = this.config;
+
     const wellbore = new WellboreData({
       data: data,
       group,
       root,
       coords: projectedPath,
-      pointThreshold: this.config.rootResize.max.scale * 1.5,
-      wellboreWidth: this.config.wellboreResize.max.scale,
+      pointThreshold: rootResize.max.scale * 1.5,
+      wellboreWidth: wellboreResize.max.scale,
+      tick,
     });
     if (wellbore.mesh) this.containers.wellbores.addChild(wellbore.mesh);
     this.containers.labels.addChild(wellbore.label.text);
@@ -400,11 +403,13 @@ export default class WellboreModule extends ModuleInterface {
   }
 
   resize (zoom: number) {
-    // @ts-ignore
-    this.pixiOverlay._renderer.globalUniforms.uniforms.zoom = zoom;
     this.currentZoom = zoom;
 
+    const wellboreRadius = this.getWellboreRadius(zoom);
     const rootRadius = this.getRootRadius(zoom);
+
+    // @ts-ignore
+    this.pixiOverlay._renderer.globalUniforms.uniforms.wellboreRadius = wellboreRadius;
 
     // @ts-ignore
     this.pixiOverlay._renderer.globalUniforms.uniforms.rootRadius = rootRadius;
@@ -419,7 +424,6 @@ export default class WellboreModule extends ModuleInterface {
     // Temp
     const { min, max } = this.config.wellboreResize;
     const t = (zoom - min.zoom) / (max.zoom - min.zoom);
-    const scale2 = lerp(min.scale, max.scale, clamp(t, 0, 1)) - max.scale;
 
     const labelVisible = zoom > 10;
     this.containers.labels.visible = labelVisible; // set label visibility
@@ -455,7 +459,18 @@ export default class WellboreModule extends ModuleInterface {
    * @param zoom Reference zoom level
    */
   getRootRadius(zoom: number = this.currentZoom) {
-    const { min, max } = this.config.rootResize;
+    return this.getRadius(zoom, this.config.rootResize);
+  }
+
+  /**
+   * Calculate wellbore radius based on formula used in Shader.ts!
+   * @param zoom Reference zoom level
+   */
+   getWellboreRadius(zoom: number = this.currentZoom) {
+    return this.getRadius(zoom, this.config.wellboreResize);
+  }
+
+  private getRadius(zoom: number, { min, max }: ResizeConfig) {
     const zoomClamped = clamp(zoom, min.zoom, max.zoom) - min.zoom;
     const t = Math.pow(2, -zoomClamped);
     return lerp(max.scale, min.scale, t);

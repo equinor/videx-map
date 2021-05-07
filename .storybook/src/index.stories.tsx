@@ -92,12 +92,16 @@ export const layer = () => {
         // @ts-ignore
         scaling: zoom => factors[zoom] || 0,
         wellboreResize: {
-          min: { zoom: 10, scale: 0.15 },
-          max: { zoom: 18, scale: 0.08 },
+          min: { zoom: 10, scale: 0.5 },
+          max: { zoom: 18, scale: 0.05 },
         },
         rootResize: {
           min: { zoom: 0, scale: 1000.0 },
           max: { zoom: 18, scale: 0.2 },
+        },
+        tick: {
+          width: 0.01,
+          height: 0.1,
         },
         onHighlightOn: event => {
           if (event.count === 1) mapRoot.node().style.cursor = 'pointer'; // Set cursor style
@@ -112,9 +116,11 @@ export const layer = () => {
       },
     );
 
+    /*
     const licenses: GeoJSONModule = new GeoJSONModule();
     const pipelines: GeoJSONModule = new GeoJSONModule();
     const facilities: GeoJSONModule = new GeoJSONModule();
+    */
 
     pixiLayer.addModule(faultlines);
     // pixiLayer.addModule(fields);
