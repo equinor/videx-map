@@ -5,7 +5,8 @@ import { RootData } from '../../src/utils/wellbores/data';
 import processExploration from './processExploration';
 import removeExpDuplicates from './removeExpDuplicates';
 
-import PixiLayer from './PixiLayer';
+import PixiLayer from './helper/PixiLayer';
+import { ProspectColors } from './helper/ProspectColors';
 import Sidebar from './Sidebar';
 
 export default { title: 'Leaflet layer' };
@@ -35,6 +36,7 @@ const wbData = Object.values(wellboreDataTroll) as any[];
 const licenseData = require('./.Samples/licenses.json');
 const pipelineData = require('./.Samples/pipelines.json');
 const facilityData = require('./.Samples/facilities.json');
+const prospectData = require('./Samples/Prospects100.json');
 
 let explorationData = processExploration(
   require('./Samples/Exploration.json'),
@@ -116,55 +118,25 @@ export const layer = () => {
       },
     );
 
-    /*
+
     const licenses: GeoJSONModule = new GeoJSONModule();
     const pipelines: GeoJSONModule = new GeoJSONModule();
     const facilities: GeoJSONModule = new GeoJSONModule();
-    */
+    const prospects: GeoJSONModule = new GeoJSONModule();
 
     pixiLayer.addModule(faultlines);
     // pixiLayer.addModule(fields);
     pixiLayer.addModule(outlines);
     pixiLayer.addModule(wellbores);
-    // pixiLayer.addModule(licenses);
-    // pixiLayer.addModule(pipelines);
-    // pixiLayer.addModule(facilities);
+    pixiLayer.addModule(licenses);
+    pixiLayer.addModule(pipelines);
+    pixiLayer.addModule(facilities);
+    pixiLayer.addModule(prospects);
     pixiLayer.addTo(map);
 
     // fields.set(fieldData.features);
     faultlines.set(faultlineDataTroll);
     outlines.set(outlineDataTroll);
-
-    // ! License, pipeline and facilities should be toggled through the sidebar.
-    // ! For examples, see 'Button' section below.
-    /*
-    licenses.set(licenseData, (feature) => ({ label: feature.properties.prlName,
-                                             id: feature.properties.prlNpdidLicence,
-                                             style: {
-                                               lineColor: 'blue',
-                                               lineWidth: 0.1,
-                                               fillColor: feature.properties.prlActive === 'Y' ? 'blue' : 'grey',
-                                               fillOpacity: 0.6 },
-                                            additionalData: {}}));
-
-    pipelines.set(pipelineData, (feature) => ({ label: feature.properties.pplName,
-                                            id: feature.properties.pplNpdidPipeline,
-                                            style: {
-                                              lineColor: 'red',
-                                              lineWidth: 1,
-                                              fillColor: 'red',
-                                              fillOpacity: 0.6 },
-                                           additionalData: {}}));
-
-    facilities.set(facilityData, (feature) => ({ label: feature.properties.fclName,
-                                            id: feature.properties.fclNpdidFacility,
-                                            style: {
-                                              lineColor: 'black',
-                                              lineWidth: 1,
-                                              fillColor: 'black',
-                                              fillOpacity: 0.9 },
-                                           additionalData: {}}));
-    */
 
     const split = Math.floor(wbData.length * 0.9);
 
@@ -328,6 +300,84 @@ export const layer = () => {
 
         handle = setInterval(func, 200);
     });
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    const groupGeoJSON = sidebar.addGroup('GeoJSON');
+
+    type SingleGeoJSON = { module: GeoJSONModule, data: any, props: (feature: any) => any, loaded?: boolean, visible: boolean }
+
+    const licenseProps = (feature: any) => ({
+      label: feature.properties.prlName,
+      id: feature.properties.prlNpdidLicence,
+      style: {
+        lineColor: 'blue',
+        lineWidth: 0.1,
+        fillColor: feature.properties.prlActive === 'Y' ? 'blue' : 'grey',
+        fillOpacity: 0.6,
+      },
+      additionalData: {},
+    });
+
+    const pipelineProps = (feature: any) => ({
+      label: feature.properties.pplName,
+      id: feature.properties.pplNpdidPipeline,
+      style: {
+        lineColor: 'red',
+        lineWidth: 1,
+        fillColor: 'red',
+        fillOpacity: 0.6,
+      },
+     additionalData: {},
+    });
+
+    const facilityProps = (feature: any) => ({
+      label: feature.properties.fclName,
+      id: feature.properties.fclNpdidFacility,
+      style: {
+        lineColor: 'black',
+        lineWidth: 1,
+        fillColor: 'black',
+        fillOpacity: 0.9,
+      },
+     additionalData: {},
+    });
+
+    const prospectProps = (feature: any) => {
+      const period = feature.properties?.chronoPeriod?.toLowerCase();
+      const { fillColor, lineColor } = ProspectColors.valid(period) ? ProspectColors.get(period) : { fillColor: '#666666', lineColor: '#444444' };
+
+      return {
+        style: {
+          lineColor,
+          lineWidth: 0.1,
+          fillColor,
+          fillOpacity: 0.6,
+        },
+      }
+    };
+
+    const licenseGeoJSON: SingleGeoJSON = { module: licenses, data: licenseData, props: licenseProps, visible: false };
+    const pipelineGeoJSON: SingleGeoJSON = { module: pipelines, data: pipelineData, props: pipelineProps, visible: false };
+    const facilityGeoJSON: SingleGeoJSON = { module: facilities, data: facilityData, props: facilityProps, visible: false };
+    const prospectGeoJSON: SingleGeoJSON = { module: prospects, data: prospectData, props: prospectProps, visible: false };
+
+    const toggleGeoJSON = (collection: any) => {
+      collection.visible = !collection.visible;
+
+      if (collection.visible && !collection.loaded) {
+        collection.loaded = true;
+        collection.module.set(collection.data, collection.props);
+      }
+
+      collection.module.setVisibility(collection.visible);
+    }
+
+
+    groupGeoJSON.add('Toggle licenses', () => toggleGeoJSON(licenseGeoJSON));
+    groupGeoJSON.add('Toggle pipelines', () => toggleGeoJSON(pipelineGeoJSON));
+    groupGeoJSON.add('Toggle facilities', () => toggleGeoJSON(facilityGeoJSON));
+    groupGeoJSON.add('Toggle prospects', () => toggleGeoJSON(prospectGeoJSON));
   });
 
   return root.node();

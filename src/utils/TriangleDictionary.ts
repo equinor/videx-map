@@ -1,5 +1,3 @@
-import Vector2 from "@equinor/videx-vector2";
-
 type vec2 = [number, number];
 
 /**

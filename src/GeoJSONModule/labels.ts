@@ -73,7 +73,7 @@ export default class GeoJSONLabels {
       const instance: PIXI.BitmapText = new PIXI.BitmapText(name, {fontName: this.fontName});
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
-      // instance.anchor.set(0.5);
+      instance.anchor = new PIXI.Point(0.5, 0.5);
       instance.zIndex = 1000; // High z-index
       this.container.addChild(instance);
       return instance;
