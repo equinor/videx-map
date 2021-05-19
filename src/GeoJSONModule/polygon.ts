@@ -130,7 +130,7 @@ export default class GeoJSONPolygon {
       meshes.push(
         this.drawPolygons(this.container, meshData, outlineData, properties.style, 1000),
       );
-      this.labels.addLabel(properties.label, { position, mass });
+      if (properties.label) this.labels.addLabel(properties.label, { position, mass });
       this.features.push(...meshes);
 
       // this.labelManager.draw(container);

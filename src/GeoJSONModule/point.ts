@@ -1,10 +1,9 @@
 import * as PIXI from 'pixi.js';
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
-import Mesh, { MeshNormalData } from '../utils/Mesh';
 import PointDictionary from '../utils/PointDictionary';
 import Vector2 from '@equinor/videx-vector2';
 import { color } from 'd3';
-import { FeatureProps, FeatureStyle } from '.';
+import { FeatureProps } from '.';
 
 
 /** Interface for faultline config. */

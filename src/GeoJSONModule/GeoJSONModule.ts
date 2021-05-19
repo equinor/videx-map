@@ -10,8 +10,6 @@ import {
   FeatureProps,
 } from '.';
 
-type vec3 = [number, number, number];
-
 /** Interface for config. */
 interface Config {
   customEventHandler?: EventHandler;

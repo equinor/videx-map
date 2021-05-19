@@ -421,10 +421,6 @@ export default class WellboreModule extends ModuleInterface {
     Label.state.scale = scale; // Update label scale
     Label.state.rootDisplacement = rootRadius;
 
-    // Temp
-    const { min, max } = this.config.wellboreResize;
-    const t = (zoom - min.zoom) / (max.zoom - min.zoom);
-
     const labelVisible = zoom > 10;
     this.containers.labels.visible = labelVisible; // set label visibility
 

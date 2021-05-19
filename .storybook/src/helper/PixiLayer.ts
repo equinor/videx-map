@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import * as L from 'leaflet';
 import 'leaflet-pixi-overlay';
-import { ModuleInterface } from '../../src';
+import { ModuleInterface } from '../../../src';
 
 // @ts-ignore
 export default class PixiLayer extends L.PixiOverlay {
