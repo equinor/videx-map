@@ -1,13 +1,24 @@
 import * as PIXI from 'pixi.js';
+import { color } from 'd3';
+import { clamp } from '@equinor/videx-math';
+import Vector2 from '@equinor/videx-vector2';
+
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import Mesh, { MeshData, MeshNormalData } from '../utils/Mesh';
 import centerOfMass from '../utils/centerOfMass';
 import GeoJSONLabels from './labels';
-import { clamp } from '@equinor/videx-math';
 import TriangleDictionary from '../utils/TriangleDictionary';
-import Vector2 from '@equinor/videx-vector2';
-import { color } from 'd3';
 import { FeatureProps, FeatureStyle } from '.';
+import {
+  GeoJSONFragmentShaderFill,
+  GeoJSONFragmentShaderOutline,
+  GeoJSONVertexShaderFill,
+  GeoJSONVertexShaderOutline,
+} from './shader';
+import { ResizeConfig } from '../ResizeConfigInterface';
+import { getRadius } from '../utils/Radius';
+import { Defaults } from './constants';
+
 type vec3 = [number, number, number];
 
 interface FillUniform {
@@ -21,7 +32,7 @@ interface FillUniform {
 
 interface OutlineUniform {
   color: vec3;
-  width: number;
+  outlineWidth: number;
 }
 
 export interface FeatureMesh {
@@ -53,6 +64,8 @@ interface Config {
   labelColor?: string | number,
   /**Label alignment, default Center  */
   labelAlign?: string,
+  /** Resize configuration for outline. */
+  outlineResize?: ResizeConfig;
 }
 
 /** Container for GeoJSON Polygon features. */
@@ -74,8 +87,8 @@ export default class GeoJSONMultiPolygon {
 
   /** Settings for how to render data. */
   config: Config = {
-    initialHash: 1.0,
-    minHash: 0.0,
+    initialHash: Defaults.INITIAL_HASH,
+    minHash: Defaults.DEFAULT_MIN_HASH,
     maxHash: Infinity,
   };
 
@@ -84,6 +97,7 @@ export default class GeoJSONMultiPolygon {
   dict: TriangleDictionary<any> = new TriangleDictionary(1.2);
   textStyle: PIXI.TextStyle;
   labels: GeoJSONLabels;
+  currentZoom: number = Defaults.INITIAL_ZOOM;
 
   constructor(root: PIXI.Container, labelRoot: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
     if (config?.initialHash && typeof config.initialHash === 'number') this.config.initialHash = config.initialHash;
@@ -97,16 +111,17 @@ export default class GeoJSONMultiPolygon {
     this.pixiOverlay = pixiOverlay;
     this.features = [];
     this.config.initialHash = clamp(this.config.initialHash);
+    this.config = config;
 
     this.textStyle = new PIXI.TextStyle({
-      fontFamily: config?.labelFontFamily || 'Arial',
-      fontSize: config?.labelFontSize || 64,
-      fontWeight: config?.labelFontWeight || '600',
-      fill: config?.labelColor || 0x454545,
-      align: config?.labelAlign || 'center'
+      fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
+      fontSize: config?.labelFontSize || Defaults.DEFAULT_FONT_SIZE,
+      fontWeight: config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT,
+      fill: config?.labelColor || Defaults.DEFAULT_LABEL_COLOR,
+      align: config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN,
     });
 
-    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, 0.1);
+    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, Defaults.DEFAULT_BASE_SCALE);
 
   }
 
@@ -124,11 +139,11 @@ export default class GeoJSONMultiPolygon {
 
         const meshData = Mesh.Polygon(projected);
         this.dict.add(coordinates[0], meshData.triangles, feature.properties);
-        const outlineData = Mesh.PolygonOutline(projected, 0.15);
+        const outlineData = Mesh.PolygonOutline(projected, Defaults.DEFAULT_LINE_WIDTH);
         const [position, mass] = centerOfMass(projected, meshData.triangles);
 
         meshes.push(
-          this.drawPolygons(this.container, meshData, outlineData, properties.style, 1000),
+          this.drawPolygons(this.container, meshData, outlineData, properties.style, Defaults.DEFAULT_Z_INDEX),
         );
 
         if (properties.label) this.labels.addLabel(properties.label, { position, mass });
@@ -158,15 +173,15 @@ export default class GeoJSONMultiPolygon {
     const lineColor = color(featureStyle.lineColor).rgb();
     const outlineUniform: OutlineUniform = {
       color: [lineColor.r, lineColor.g, lineColor.b],
-      width: featureStyle.lineWidth,
+      outlineWidth: featureStyle.lineWidth,
     }
 
-    const polygonMesh = Mesh.from(meshData.vertices, meshData.triangles, GeoJSONMultiPolygon.vertexShaderFill, GeoJSONMultiPolygon.fragmentShaderFill, fillUniform);
+    const polygonMesh = Mesh.from(meshData.vertices, meshData.triangles, GeoJSONVertexShaderFill, GeoJSONFragmentShaderFill, fillUniform);
     polygonMesh.zIndex = zIndex;
 
     container.addChild(polygonMesh);
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, GeoJSONMultiPolygon.vertexShaderOutline, GeoJSONMultiPolygon.fragmentShaderOutline, outlineUniform, outlineData.normals);
+    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, GeoJSONVertexShaderOutline, GeoJSONFragmentShaderOutline, outlineUniform, outlineData.normals);
     polygonOutlineMesh.zIndex = zIndex + 1;
     container.addChild(polygonOutlineMesh);
 
@@ -201,77 +216,29 @@ export default class GeoJSONMultiPolygon {
   }
 
   resize(zoom: number) {
+    if (!this.config.outlineResize) return;
+    const outlineRadius = this.getOutlineRadius(zoom);
 
+    /**
+    * This is not the best way to update, ideally we would use global uniforms
+    * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
+    * instead of iterating over every mesh and manually updating each of the selected
+    */
+    this.container.children.map((child) => {
+      // @ts-ignore
+      if (child.shader.uniformGroup.uniforms.outlineWidth) {
+        // @ts-ignore
+        child.shader.uniformGroup.uniforms.outlineWidth = outlineRadius;
+      }
+    });
+    this.currentZoom = zoom;
   }
 
   testPosition(pos: Vector2) : any {
     return this.dict.getPolygonAt([pos.x, pos.y]);
   }
+
+  getOutlineRadius(zoom: number = this.currentZoom) {
+    return getRadius(zoom, this.config.outlineResize);
+  }
 }
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// FILL
-GeoJSONMultiPolygon.vertexShaderFill = `
-  attribute vec2 inputVerts;
-
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
-
-  varying vec2 verts;
-
-  void main() {
-    verts = inputVerts;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(inputVerts, 1.0)).xy, 0.0, 1.0);
-  }
-`;
-
-GeoJSONMultiPolygon.fragmentShaderFill = `
-  precision mediump float;
-
-  varying vec2 verts;
-
-  uniform vec3 col1;
-  uniform vec3 col2;
-  uniform float opacity;
-
-  uniform bool hashed;
-  uniform float hashDisp;
-  uniform float hashWidth;
-
-  void main() {
-    if(hashed && mod(verts.y + hashDisp, hashWidth * 2.0) > hashWidth) {
-      gl_FragColor = vec4(col2 / 255., 1.0) * opacity;
-    }
-    else {
-      gl_FragColor = vec4(col1 / 255., 1.0) * opacity;
-    }
-  }
-`;
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// OUTLINE
-GeoJSONMultiPolygon.vertexShaderOutline = `
-  attribute vec2 inputVerts;
-  attribute vec2 inputNormals;
-
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
-
-  uniform float width;
-
-  void main() {
-    vec2 pos = inputVerts + inputNormals * width;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(pos, 1.0)).xy, 0.0, 1.0);
-  }
-`;
-
-GeoJSONMultiPolygon.fragmentShaderOutline = `
-  precision mediump float;
-
-  uniform vec3 color;
-
-  void main() {
-    gl_FragColor = vec4(color / 255., 1.0);
-  }
-`;
-

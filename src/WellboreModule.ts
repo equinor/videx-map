@@ -1,11 +1,13 @@
 import * as PIXI from 'pixi.js';
+import { clamp, lerp } from '@equinor/videx-math';
+import Vector2 from '@equinor/videx-vector2';
+
 import { ModuleInterface } from './ModuleInterface';
-import { Config, ResizeConfig, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
+import { Config, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
 import { RootShader, WellboreShader } from './utils/wellbores/Shader';
 import { SourceData, Group, GroupOptions, WellboreData, RootData } from './utils/wellbores/data';
 import LineDictionary from './utils/LineDictionary';
 import PointDictionary from './utils/PointDictionary';
-import Vector2 from '@equinor/videx-vector2';
 import Projector from './utils/wellbores/Projector';
 import { Label } from './utils/wellbores/labels';
 import { updateHighlighted, clearHighlight, forceHighlight } from './utils/wellbores/highlight-helper';
@@ -13,7 +15,7 @@ import { Highlight } from './utils/wellbores/Highlight';
 import AsyncLoop from './utils/wellbores/AsyncLoop';
 import { EventHandler, DefaultEventHandler } from './EventHandler';
 import RealtimeWellbore from './utils/wellbores/RealtimeWellbore';
-import { clamp, lerp } from '@equinor/videx-math';
+import { ResizeConfig } from './ResizeConfigInterface';
 
 export default class WellboreModule extends ModuleInterface {
   config: Config;

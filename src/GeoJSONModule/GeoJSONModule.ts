@@ -9,11 +9,13 @@ import {
   GeoJSONPoint,
   FeatureProps,
 } from '.';
+import { ResizeConfig } from '../ResizeConfigInterface';
 
 /** Interface for config. */
 interface Config {
   customEventHandler?: EventHandler;
   onFeatureHover?: (event: MouseEvent, data: any) => void;
+  outlineResize?: ResizeConfig;
 }
 
 /** Module for displaying fields. */
@@ -27,12 +29,14 @@ export default class GeoJSONModule extends ModuleInterface {
   _eventHandler: EventHandler;
   mapmoving: boolean;
   labelRoot: PIXI.Container
+  config?: Config;
 
   constructor(config?: Config) {
     super();
     this.mapmoving = false;
     this._eventHandler = config?.customEventHandler || new DefaultEventHandler();
     this.onFeatureHover = config?.onFeatureHover;
+    this.config = config;
   }
 
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
@@ -42,13 +46,13 @@ export default class GeoJSONModule extends ModuleInterface {
         if (this.points === undefined) this.points = new GeoJSONPoint(this.root, this.pixiOverlay);
         this.points.add(feature, props);
       } else if (feature.geometry.type === 'LineString') {
-        if (this.linestrings === undefined) this.linestrings = new GeoJSONLineString(this.root, this.pixiOverlay);
+        if (this.linestrings === undefined) this.linestrings = new GeoJSONLineString(this.root, this.pixiOverlay, this.config);
         this.linestrings.add(feature, props);
       } else if (feature.geometry.type === 'Polygon') {
-        if (this.polygons === undefined) this.polygons = new GeoJSONPolygon(this.root, this.labelRoot, this.pixiOverlay);
+        if (this.polygons === undefined) this.polygons = new GeoJSONPolygon(this.root, this.labelRoot, this.pixiOverlay, this.config);
         this.polygons.add(feature, props);
       } else if (feature.geometry.type === 'MultiPolygon') {
-        if (this.multipolygons === undefined) this.multipolygons = new GeoJSONMultiPolygon(this.root, this.labelRoot, this.pixiOverlay);
+        if (this.multipolygons === undefined) this.multipolygons = new GeoJSONMultiPolygon(this.root, this.labelRoot, this.pixiOverlay, this.config);
         this.multipolygons.add(feature, props);
       }
 
@@ -88,6 +92,13 @@ export default class GeoJSONModule extends ModuleInterface {
 
   onRemove(map: import("leaflet").Map): void {
     this._eventHandler.unregister();
+  }
+
+  resize(zoom: number) {
+    if (this.points) this.points.resize(zoom);
+    if (this.linestrings) this.linestrings.resize(zoom);
+    if (this.polygons) this.polygons.resize(zoom);
+    if (this.multipolygons) this.multipolygons.resize(zoom);
   }
 
   private handleMouseMove(event: MouseEvent): boolean {
