@@ -1,11 +1,7 @@
 import { WellboreEventData } from "./data";
 import { HighlightEvent } from "./data/WellboreEventData";
 import { EventHandler } from "../../EventHandler";
-
-export interface ResizeConfig {
-  min: { zoom: number, scale: number },
-  max: { zoom: number, scale: number }
-}
+import { ResizeConfig } from '../../ResizeConfigInterface';
 
 export interface TickConfig {
   width: number,

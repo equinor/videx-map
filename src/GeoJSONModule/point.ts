@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
+import { color } from 'd3';
+import Vector2 from '@equinor/videx-vector2';
+
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import PointDictionary from '../utils/PointDictionary';
-import Vector2 from '@equinor/videx-vector2';
-import { color } from 'd3';
 import { FeatureProps } from '.';
 
 

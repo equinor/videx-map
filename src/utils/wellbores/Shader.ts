@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { Color } from './Colors';
-import { ResizeConfig } from './Config';
 
 type vec3 = [number, number, number];
 

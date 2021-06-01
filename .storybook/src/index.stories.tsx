@@ -11,7 +11,7 @@ import Sidebar from './Sidebar';
 
 export default { title: 'Leaflet layer' };
 
-const factors = {
+const factors: any = {
   10: 0.3,
   11: 0.1,
   12: 0.06,
@@ -118,8 +118,12 @@ export const layer = () => {
       },
     );
 
-
-    const licenses: GeoJSONModule = new GeoJSONModule();
+    const licenses: GeoJSONModule = new GeoJSONModule({
+      outlineResize: {
+        min: { zoom: 6, scale: 3.0 },
+        max: { zoom: 18, scale: 0.05 },
+      },
+    });
     const pipelines: GeoJSONModule = new GeoJSONModule();
     const facilities: GeoJSONModule = new GeoJSONModule();
     const prospects: GeoJSONModule = new GeoJSONModule();

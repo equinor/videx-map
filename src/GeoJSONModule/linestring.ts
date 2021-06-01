@@ -1,10 +1,16 @@
 import * as PIXI from 'pixi.js';
+import { color } from 'd3';
+import Vector2 from '@equinor/videx-vector2';
+
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import Mesh, { MeshNormalData } from '../utils/Mesh';
 import LineDictionary from '../utils/LineDictionary';
-import Vector2 from '@equinor/videx-vector2';
-import { color } from 'd3';
 import { FeatureProps, FeatureStyle } from '.';
+import { GeoJSONFragmentShaderOutline, GeoJSONVertexShaderOutline } from './shader';
+import { getRadius } from '../utils/Radius';
+import { ResizeConfig } from '../ResizeConfigInterface';
+import { Defaults } from './constants';
+
 type vec3 = [number, number, number];
 
 interface OutlineUniform {
@@ -21,6 +27,7 @@ export interface FeatureMesh {
 
 /** Interface for field config. */
 interface Config {
+  outlineResize?: ResizeConfig;
 }
 
 /** Module for displaying fields. */
@@ -42,6 +49,7 @@ export default class GeoJSONLineString {
   pixiOverlay: pixiOverlayBase;
   dict: LineDictionary<any> = new LineDictionary(1.2);
   textStyle: PIXI.TextStyle;
+  currentZoom: number = Defaults.INITIAL_ZOOM;
 
   constructor(root: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
 
@@ -51,6 +59,7 @@ export default class GeoJSONLineString {
 
     this.pixiOverlay = pixiOverlay;
     this.features = [];
+    this.config = config;
   }
 
   add(feature: GeoJSON.Feature, props: (feature: object) => FeatureProps) {
@@ -65,10 +74,10 @@ export default class GeoJSONLineString {
       projected.pop(); // Remove overlapping
 
       this.dict.add(projected, feature.properties);
-      const outlineData = Mesh.SimpleLine(projected, 0.15);
+      const outlineData = Mesh.SimpleLine(projected, Defaults.DEFAULT_LINE_WIDTH);
 
       meshes.push(
-        this.drawPolygons(this.container, outlineData, properties.style, 1000),
+        this.drawPolygons(this.container, outlineData, properties.style, Defaults.DEFAULT_Z_INDEX),
       );
       this.features.push(...meshes);
     }
@@ -86,7 +95,7 @@ export default class GeoJSONLineString {
       width: featureStyle.lineWidth,
     }
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, GeoJSONLineString.vertexShaderOutline, GeoJSONLineString.fragmentShaderOutline, outlineUniform, outlineData.normals);
+    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, GeoJSONVertexShaderOutline, GeoJSONFragmentShaderOutline, outlineUniform, outlineData.normals);
     polygonOutlineMesh.zIndex = zIndex;
     container.addChild(polygonOutlineMesh);
 
@@ -112,35 +121,29 @@ export default class GeoJSONLineString {
   }
 
   resize(zoom: number) {
+    if (!this.config.outlineResize) return;
+    const outlineRadius = this.getOutlineRadius(zoom);
 
+    /**
+     * This is not the best way to update, ideally we would use global uniforms
+     * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
+     * instead of iterating over every mesh and manually updating each of the selected
+     */
+    this.container.children.map((child) => {
+      // @ts-ignore
+      if (child.shader.uniformGroup.uniforms.outlineWidth) {
+        // @ts-ignore
+        child.shader.uniformGroup.uniforms.outlineWidth = outlineRadius;
+      }
+    });
+    this.currentZoom = zoom;
   }
 
   testPosition(pos: Vector2) : any {
     return this.dict.getClosest(pos);
   }
+
+  getOutlineRadius(zoom: number = this.currentZoom) {
+    return getRadius(zoom, this.config.outlineResize);
+  }
 }
-
-GeoJSONLineString.vertexShaderOutline = `
-  attribute vec2 inputVerts;
-  attribute vec2 inputNormals;
-
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
-
-  uniform float width;
-
-  void main() {
-    vec2 pos = inputVerts + inputNormals * width;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(pos, 1.0)).xy, 0.0, 1.0);
-  }
-`;
-
-GeoJSONLineString.fragmentShaderOutline = `
-  precision mediump float;
-
-  uniform vec3 color;
-
-  void main() {
-    gl_FragColor = vec4(color / 255., 1.0);
-  }
-`;
