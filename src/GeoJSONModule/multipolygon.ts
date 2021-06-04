@@ -15,7 +15,7 @@ import {
   GeoJSONVertexShaderFill,
   GeoJSONVertexShaderOutline,
 } from './shader';
-import { ResizeConfig } from '../ResizeConfigInterface';
+import { ResizeConfig, LabelResizeConfig } from '../ResizeConfigInterface';
 import { getRadius } from '../utils/Radius';
 import { Defaults } from './constants';
 
@@ -66,6 +66,8 @@ interface Config {
   labelAlign?: string,
   /** Resize configuration for outline. */
   outlineResize?: ResizeConfig;
+  /** Resize configuration for labels. */
+  labelResize?: LabelResizeConfig;
 }
 
 /** Container for GeoJSON Polygon features. */
@@ -110,8 +112,8 @@ export default class GeoJSONMultiPolygon {
 
     this.pixiOverlay = pixiOverlay;
     this.features = [];
-    this.config.initialHash = clamp(this.config.initialHash);
     this.config = config;
+    this.config.initialHash = clamp(this.config.initialHash);
 
     this.textStyle = new PIXI.TextStyle({
       fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
@@ -121,7 +123,7 @@ export default class GeoJSONMultiPolygon {
       align: config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN,
     });
 
-    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, Defaults.DEFAULT_BASE_SCALE);
+    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE);
 
   }
 
@@ -219,6 +221,18 @@ export default class GeoJSONMultiPolygon {
     if (!this.config.outlineResize) return;
     const outlineRadius = this.getOutlineRadius(zoom);
 
+    if (this.config.labelResize) {
+      const labelSize = this.getLabelSize(zoom);
+
+      // Labels will just get in the way after a certain threshold, so it is better to just hide them
+      if (zoom <= this.config.labelResize.threshold) {
+        this.labels.hideLabels();
+      } else {
+        this.labels.showLabels();
+        this.labels.resize(labelSize);
+      }
+    }
+
     /**
     * This is not the best way to update, ideally we would use global uniforms
     * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
@@ -240,5 +254,9 @@ export default class GeoJSONMultiPolygon {
 
   getOutlineRadius(zoom: number = this.currentZoom) {
     return getRadius(zoom, this.config.outlineResize);
+  }
+
+  getLabelSize(zoom: number = this.currentZoom) {
+    return getRadius(zoom, this.config.labelResize);
   }
 }
