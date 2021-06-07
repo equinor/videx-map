@@ -9,13 +9,14 @@ import {
   GeoJSONPoint,
   FeatureProps,
 } from '.';
-import { ResizeConfig } from '../ResizeConfigInterface';
+import { ResizeConfig, LabelResizeConfig } from '../ResizeConfigInterface';
 
 /** Interface for config. */
 interface Config {
   customEventHandler?: EventHandler;
   onFeatureHover?: (event: MouseEvent, data: any) => void;
   outlineResize?: ResizeConfig;
+  labelResize?: LabelResizeConfig;
 }
 
 /** Module for displaying fields. */

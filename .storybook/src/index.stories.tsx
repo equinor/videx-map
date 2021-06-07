@@ -123,6 +123,12 @@ export const layer = () => {
         min: { zoom: 6, scale: 3.0 },
         max: { zoom: 18, scale: 0.05 },
       },
+      labelResize: {
+        min: { zoom: 11, scale: 0.1 },
+        max: { zoom: 17, scale: 0.025 },
+        threshold: 8,
+        baseScale: 0.15,
+      },
     });
     const pipelines: GeoJSONModule = new GeoJSONModule();
     const facilities: GeoJSONModule = new GeoJSONModule();

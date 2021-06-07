@@ -95,4 +95,8 @@ export default class GeoJSONLabels {
     this.container.visible = true
     this.visible = true;
   }
+
+  resize(scale: number) {
+    this.labels.forEach((lbl) => lbl.instance.scale.set(scale));
+  }
 }
