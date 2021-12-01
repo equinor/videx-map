@@ -15,14 +15,15 @@ interface Config {
 export default class AsyncLoop {
 
   /** Dictionary with intervals */
-  intervals: { [key: string]: NodeJS.Timeout } = {}
+  timers: { [key: string]: NodeJS.Timeout } = {}
 
   /**
    * Start a new asynchronous loop.
    * @param key Key of loop
    * @param config Configurations for asynchronous loop.
+   * @param interval Configurations interval between batches
    */
-  Start(key: string, config: Config) {
+  Start(key: string, config: Config, interval = 3) {
     this.Stop(key); // Clear previous intervals
 
     // Get config
@@ -37,8 +38,7 @@ export default class AsyncLoop {
     let front = 0;
     const batch = () => {
       if(front >= iterations) {
-        clearInterval(this.intervals[key]);
-        delete this.intervals[key];
+        delete this.timers[key];
         if (endFunc) endFunc();
         return;
       }
@@ -50,10 +50,11 @@ export default class AsyncLoop {
       if (postFunc) postFunc();
 
       front += batchSize;
+      this.timers[key] = setTimeout(batch, interval);
     }
 
-    // Start interval
-    this.intervals[key] = setInterval(batch, 3);
+    // Start batch
+    this.timers[key] = setTimeout(batch, interval);
   }
 
   /**
@@ -61,20 +62,20 @@ export default class AsyncLoop {
    * @param key Key of loop
    */
   Stop(key: string) {
-    if (key in this.intervals) {
+    if (key in this.timers) {
       // Stop interval
-      clearInterval(this.intervals[key]);
-      delete this.intervals[key];
+      clearTimeout(this.timers[key]);
+      delete this.timers[key];
     }
   }
 
   /** Stop all ongoing loops */
   StopAll() {
-    const keys = Object.keys(this.intervals);
+    const keys = Object.keys(this.timers);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      clearInterval(this.intervals[key]);
-      delete this.intervals[key];
+      clearTimeout(this.timers[key]);
+      delete this.timers[key];
     }
   }
 }
