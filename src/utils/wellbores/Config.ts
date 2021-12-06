@@ -12,7 +12,7 @@ export interface TickConfig {
 export interface Config {
   /** Relative scale of all components (Default: 1.0). */
   scale: number;
-  /** Amount of wellbores per batch. (Default: 25) */
+  /** Amount of wellbores per batch. (Default: 20) */
   batchSize: number;
   /** Origin zoom level, i.e. where input for scaling function is 0. (Default: 0) */
   zoomOrigin: number;
@@ -86,7 +86,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
 
   const outputConfig: Config = {
     scale: 1.0,
-    batchSize: 15,
+    batchSize: 20,
     zoomOrigin: 0,
     gridSize: 2,
     wellboreResize: {
