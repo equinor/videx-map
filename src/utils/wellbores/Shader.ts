@@ -8,7 +8,7 @@ type vec3 = [number, number, number];
 
 /** Stringify number for shader. If whole number, ensure one decimal slot. */
 function toShader(n: number): string {
-  if(n - Math.floor(n) === 0) return n.toString() + '.0';
+  if(n - ~~(n) === 0) return n.toString() + '.0';
   else return n.toString();
 }
 

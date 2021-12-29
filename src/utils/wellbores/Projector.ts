@@ -26,10 +26,6 @@ export default class Projector {
   }
 
   batchVector2(coords: [number, number][], zoom?: number): Vector2[] {
-    const output: Vector2[] = new Array(coords.length);
-    for (let i = 0; i < coords.length; i++) {
-      output[i] = new Vector2(this.project(coords[i], zoom));
-    }
-    return output;
+    return coords.map(coord => this.getVector2(coord, zoom));
   }
 }

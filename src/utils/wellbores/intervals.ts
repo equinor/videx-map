@@ -36,10 +36,7 @@ export function compressIntervals(intervals: [number, number][]): [number, numbe
  */
 export function processIntervals(intervals: Interval[]): [number, number][] {
   let output: [number, number][] = intervals.map(i => [i.l1, i.l2] as [number, number])
-    .sort((a, b) => { // Sort intervals
-      if (a[0] < b[0]) return -1;
-      return (a[0] > b[0]) ? 1 : 0;
-    });
+    .sort((a, b) => a[0] - b[0]);
   if (output.length > 0) output = compressIntervals(output);
   return output;
 }

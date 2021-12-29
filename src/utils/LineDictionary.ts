@@ -27,79 +27,6 @@ interface Line<T> {
   segments: LineSegment[],
 }
 
-/**
- * Find the tile indices on a grid intersected by a line segment
- * @param x1 point 1 x-coordinate
- * @param x2 point 2 x-coordinate
- * @param y1 point 1 y-coordinate
- * @param y2 point 2 y-coordinate
- * @param gridsize size of grid cells
- */
-function findGridIntersections(x1: number, x2: number, y1: number, y2: number, gridsize: number) : Set<string> {
-  const intersections = new Set<string>();
-
-  // Is line going down
-  let downwards: boolean;
-
-  // Coordinates for possible cross sections
-  let xMin: number, xMax: number, yMin: number, yMax: number;
-
-  // Line variables
-  let m: number, y0: number;
-
-  // Ensure data line is calculated left to right
-  if(x1 < x2) {
-    xMin = Math.floor(x1 / gridsize);
-    xMax = Math.floor(x2 / gridsize);
-    const deltaX: number = x2 - x1;
-    const deltaY: number = y2 - y1;
-    m = deltaY / deltaX;
-    y0 = (y1 - x1 * m) / gridsize;
-
-    downwards = y2 < y1;
-
-    // Add first
-    const key: string = `${Math.floor(x1 / gridsize)}.${Math.floor(y1 / gridsize)}`;
-    intersections.add(key);
-  } else {
-    xMin = Math.floor(x2 / gridsize);
-    xMax = Math.floor(x1 / gridsize);
-    const deltaX: number = x1 - x2;
-    const deltaY: number = y1 - y2;
-    m = deltaY / deltaX;
-    y0 = (y2 - x2 * m) / gridsize;
-
-    downwards = y1 < y2;
-
-    // Add first
-    const key: string = `${Math.floor(x2 / gridsize)}.${Math.floor(y2 / gridsize)}`;
-    intersections.add(key);
-  }
-
-  // Calculate y range
-  if (y1 < y2) {
-    yMin = Math.floor(y1 / gridsize);
-    yMax = Math.floor(y2 / gridsize);
-  } else {
-    yMin = Math.floor(y2 / gridsize);
-    yMax = Math.floor(y1 / gridsize);
-  }
-
-  // Iterate over x-crossing
-  for (let x: number = xMin + 1; x <= xMax; x++) {
-    const y: number = y0 + x * m;
-    intersections.add(`${x}.${Math.floor(y)}`);
-  }
-
-  // Iterate over y-crossing
-  for (let y: number = yMin + 1; y <= yMax; y++) {
-    const x: number = (y - y0) / m;
-    intersections.add(`${Math.floor(x)}.${Math.floor(downwards ? y - 1 : y)}`);
-  }
-
-  return intersections;
-}
-
 /** Dictionary for segmenting lines and finding closest entries. */
 export default class LineDictionary<T> {
   /*/ gridsize of data segmentation. */
@@ -119,10 +46,7 @@ export default class LineDictionary<T> {
 
   /**
    * Constructs a new line dictionary with segmentation based on given decimal.
-   * @param decimals Defines size of tiles. For example, decimals = 2, would assign
-   * both [12, 23] and [19, 21] to a single tile [10, 20]. Decimals also defines
-   * maximum search distance. For decimals equals 2, only lines within 10 units will
-   * be returned. (Default: 0)
+   * @param gridsize Defines size of tiles. (Default: 10)
    */
   constructor(gridsize: number = 10, testActive?: (value: T) => boolean) {
     this.gridsize = gridsize;
@@ -134,24 +58,24 @@ export default class LineDictionary<T> {
    * Maps a line up to a given value
    * @param points Collection of points on line
    * @param value Value to return for line
-   * @param id Optionally associate an id with this entry
    */
-  add(points: Vector2[], value: T, id?: number): Line<T> {
-    const lineID = Number.isFinite(id) ? id : ++this.lineSeq;
+  add(points: Vector2[], value: T): Line<T> {
     const line: Line<T> = {
-      id: lineID,
+      id: ++this.lineSeq,
       value,
       segments: [],
     };
-    this.lineValues.set(lineID, line);
+    this.lineValues.set(line.id, line);
 
     // Iterate over line segments
+    let p1: Vector2 = points[0];
     for (let i: number = 1; i < points.length; i++) {
-      const p1: Vector2 = points[i - 1];
       const p2: Vector2 = points[i];
 
       // Append new line segments
       this.addSegment(p1[0], p1[1], p2[0], p2[1], line);
+
+      p1 = p2;
     }
 
     return line;
@@ -172,13 +96,14 @@ export default class LineDictionary<T> {
       geometry: {x1, y1, x2, y2},
     };
     line.segments.push(segment);
-    const intersections = findGridIntersections(x1, x2, y1, y2, this.gridsize);
+    const intersections = this.findGridIntersections(x1, x2, y1, y2);
 
     intersections.forEach(key => {
-      if (this.tiles.has(key)) {
-        this.tiles.get(key).push(segment);
+      const { tiles } = this;
+      if (tiles.has(key)) {
+        tiles.get(key).push(segment);
       } else {
-        this.tiles.set(key, [segment]);
+        tiles.set(key, [segment]);
       }
     });
   }
@@ -315,8 +240,8 @@ export default class LineDictionary<T> {
    */
   getSegmentsOn3Grid(target: Vector2): Set<LineSegment> {
     const gridSegments = new Set<LineSegment>();
-    const keyX: number = Math.floor(target[0] / this.gridsize);
-    const keyY: number = Math.floor(target[1] / this.gridsize);
+    const keyX: number = ~~(target[0] / this.gridsize);
+    const keyY: number = ~~(target[1] / this.gridsize);
 
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
@@ -360,5 +285,76 @@ export default class LineDictionary<T> {
       this.tiles = new Map<string, LineSegment[]>();
       this.lineValues = new Map<number, Line<T>>();
     }
+  }
+
+  /**
+   * Find the tile indices on a grid intersected by a line segment
+   * @param x1 point 1 x-coordinate
+   * @param x2 point 2 x-coordinate
+   * @param y1 point 1 y-coordinate
+   * @param y2 point 2 y-coordinate
+   */
+  findGridIntersections(x1: number, x2: number, y1: number, y2: number) : Array<string> {
+    const intersections:Array<string> = [];
+
+    // Is line going down
+    let downwards: boolean;
+
+    // Coordinates for possible cross sections
+    let xMin: number, xMax: number, yMin: number, yMax: number;
+
+    // Line variables
+    let m: number, y0: number;
+
+    const { gridsize } = this;
+
+    // Ensure data line is calculated left to right
+    if(x1 < x2) {
+      const l = x1 < x2;
+      xMin = ~~(x1 / gridsize);
+      xMax = ~~(x2 / gridsize);
+      const deltaX: number = x2 - x1;
+      const deltaY: number = y2 - y1;
+      m = deltaY / deltaX;
+      y0 = (y1 - x1 * m) / gridsize;
+
+      downwards = y2 < y1;
+    } else {
+      xMin = ~~(x2 / gridsize);
+      xMax = ~~(x1 / gridsize);
+      const deltaX: number = x1 - x2;
+      const deltaY: number = y1 - y2;
+      m = deltaY / deltaX;
+      y0 = (y2 - x2 * m) / gridsize;
+
+      downwards = y1 < y2;
+    }
+
+    // Add first
+    const key: string = `${xMin}.${xMax}`;
+    intersections.push(key);
+
+    // Calculate y range
+    if (y1 < y2) {
+      yMin = ~~(y1 / gridsize);
+      yMax = ~~(y2 / gridsize);
+    } else {
+      yMin = ~~(y2 / gridsize);
+      yMax = ~~(y1 / gridsize);
+    }
+
+    // Iterate over x-crossing
+    for (let x: number = xMin + 1; x <= xMax; x++) {
+      const y: number = y0 + x * m;
+      intersections.push(`${x}.${~~(y)}`);
+    }
+
+    // Iterate over y-crossing
+    for (let y: number = yMin + 1; y <= yMax; y++) {
+      const x: number = (y - y0) / m;
+      intersections.push(`${~~(x)}.${(downwards ? y - 1 : y)}`);
+    }
+
+    return intersections;
   }
 }

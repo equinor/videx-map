@@ -84,8 +84,8 @@ export default class PointDictionary<T> {
     const { radius, gridSize } = this;
 
     // Tile-key (base)
-    const keyX: number = Math.floor(pos[0] / gridSize);
-    const keyY: number = Math.floor(pos[1] / gridSize);
+    const keyX: number = ~~(pos[0] / gridSize);
+    const keyY: number = ~~(pos[1] / gridSize);
 
     // Collection of keys + initial key
     const keys: string[] = [ `${keyX}.${keyY}` ];
@@ -130,8 +130,8 @@ export default class PointDictionary<T> {
   }
 
   getKey(position: Vector2): string {
-    const keyX: number = Math.floor(position[0] / this.gridSize);
-    const keyY: number = Math.floor(position[1] / this.gridSize);
+    const keyX: number = ~~(position[0] / this.gridSize);
+    const keyY: number = ~~(position[1] / this.gridSize);
     return `${keyX}.${keyY}`;
   }
 
@@ -144,12 +144,10 @@ export default class PointDictionary<T> {
     const key: string = this.getKey(pos);
     if (!this.tiles.has(key)) return null;
     // Iterate over points on tilemap
-    const points = Array.from(this.tiles.get(key).values());
-    for (let i = 0; i < points.length; i++) {
-      const point = points[i];
+    this.tiles.get(key).forEach((point, _key) => {
       const distance: number = Vector2.distance(pos, point.pos);
       if (distance < this.distThreshold) return point;
-    }
+    });
     return null;
   }
 
