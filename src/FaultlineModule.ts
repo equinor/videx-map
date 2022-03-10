@@ -62,6 +62,13 @@ export default class FaultlineModule extends ModuleInterface {
     if (!isNaN(config.outlineWidth)) this.config.outlineWidth = config.outlineWidth;
   }
 
+  destroy(){
+    super.destroy();
+    this.pool.forEach(g => g.destroy({ children: true, texture: true, baseTexture: true }));
+    this.pool = null;
+    this.spawned = null;
+  }
+
   /**
    * Set collection of faultlines to display. Clears previous content on execution.
    * @param data Faultlines to draw
