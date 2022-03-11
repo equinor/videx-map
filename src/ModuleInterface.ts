@@ -19,6 +19,11 @@ export abstract class ModuleInterface {
     this.root.sortableChildren = true; // Make container sortable
   }
 
+  destroy(){
+    this.root.destroy({ children: true, texture: true, baseTexture: true });
+    this.root = null;
+  }
+
   /** Toggle the visibility of the root PIXI container. */
   toggle() {
     this.root.visible = !this.root.visible;
