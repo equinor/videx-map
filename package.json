@@ -1,6 +1,6 @@
 {
   "name": "@equinor/videx-map",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "description": "Component for Pixi-overlay in Leaflet.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
