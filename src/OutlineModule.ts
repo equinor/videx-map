@@ -179,6 +179,7 @@ export default class OutlineModule extends ModuleInterface {
   clear(): void {
     while (this.spawned.length > 0) {
       const temp: PIXI.Mesh = this.spawned.pop();
+      this.root.removeChild(temp);
       temp.destroy();
     }
     this.outlineDict = {};
