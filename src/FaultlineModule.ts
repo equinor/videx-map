@@ -87,8 +87,8 @@ export default class FaultlineModule extends ModuleInterface {
         faultline = this.pool.pop();
       } else {
         faultline = new PIXI.Graphics();
-        this.root.addChild(faultline);
       }
+      this.root.addChild(faultline);
       this.spawned.push(faultline);
 
       // Set alpha
@@ -125,6 +125,7 @@ export default class FaultlineModule extends ModuleInterface {
   clear() {
     while (this.spawned.length > 0) {
       const temp: PIXI.Graphics = this.spawned.pop();
+      this.root.removeChild(temp);
       temp.clear(); // Clear
       this.pool.push(temp); // Add to pool
     }
