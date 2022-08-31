@@ -56,7 +56,6 @@ export default class Rect {
   inverseTransformPoint(x: number, y: number): Vector2 {
     return new Vector2(x, y).mutable
       .sub(this.lowerLeft)
-      .rotateDeg(-this.rotation) // Counter rotate
-      .immutable;
+      .rotateDeg(-this.rotation); // Counter rotate
   }
 }

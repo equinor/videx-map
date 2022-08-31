@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Color } from '../Colors';
 
-interface State {
+export interface State {
   zoom: number;
   scale: number;
   visible: boolean;
@@ -11,7 +11,7 @@ interface State {
 }
 
 /** Common configurations. */
-interface Common {
+export interface Common {
   backgroundOpacity: number;
 }
 
@@ -24,25 +24,15 @@ export class Label {
     rootDisplacement: 1,
   };
 
-  private static style: PIXI.TextStyle;
+  static config: Common = { backgroundOpacity: 0.5 };
 
-  static config: Common;
-  static height: number; // Height of labels
-
-  text: PIXI.Text;
+  text: PIXI.Text | PIXI.BitmapText;
   background: PIXI.Graphics;
-  metrics: PIXI.TextMetrics;
 
   private _attachToRoot: boolean = false;
 
   static setStyle(fontSize: number) {
-    Label.style = new PIXI.TextStyle({
-      fontFamily : 'Arial',
-      fontSize: fontSize,
-      fill: 0xFFFFFF, // Initially white to use tint
-      align : 'center'
-    });
-    Label.height = PIXI.TextMetrics.measureText(' ', Label.style).height;
+
   }
 
   static setCommon(config: Common) {
@@ -56,28 +46,28 @@ export class Label {
    * @param bgColor Color of background
    */
   constructor (label: string, fontColor: number, bgColor: number) {
-    // Label
-    const text: PIXI.Text = new PIXI.Text(label, Label.style);
-    text.resolution = window.devicePixelRatio; // Increases text resolution
-    text.visible = Label.state.visible;
-    text.tint = fontColor;
-    text.zIndex = 1;
-    this.text = text;
 
-    // Metrics
-    const metrics = PIXI.TextMetrics.measureText(label, Label.style);
-    this.metrics = metrics;
+  }
 
+  createBackground(bgColor: number){
     // Background
     const background = new PIXI.Graphics();
     background.beginFill(0xFFFFFF);
-    background.drawRect(-metrics.width * 0.55, -Label.height * 0.525, metrics.width * 1.1, Label.height * 1.05);
+    background.drawRect(-this.width * 0.55, -this.height * 0.525, this.width * 1.1, this.height * 1.05);
     background.endFill();
-    background.visible = Label.state.visible;
+    background.visible = this.visible;
     background.alpha = Label.config.backgroundOpacity;
     background.tint = bgColor;
     background.zIndex = 0;
     this.background = background;
+  }
+
+  get width() {
+    return 0;
+  }
+
+  get height() {
+    return 0;
   }
 
   get visible() {

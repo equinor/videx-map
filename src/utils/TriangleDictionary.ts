@@ -66,10 +66,10 @@ export default class TriangleDictionary<T> {
       const minY: number = Math.min(v1[1], v2[1], v3[1]);
       const maxY: number = Math.max(v1[1], v2[1], v3[1]);
 
-      const tileMinX: number = Math.floor(minX * this.resolution);
-      const tileMaxX: number = Math.floor(maxX * this.resolution);
-      const tileMinY: number = Math.floor(minY * this.resolution);
-      const tileMaxY: number = Math.floor(maxY * this.resolution);
+      const tileMinX: number = ~~(minX * this.resolution);
+      const tileMaxX: number = ~~(maxX * this.resolution);
+      const tileMinY: number = ~~(minY * this.resolution);
+      const tileMaxY: number = ~~(maxY * this.resolution);
 
       // Most triangles does not end up "avoiding" a tile.
       for (let x: number = tileMinX; x <= tileMaxX; x++) {
@@ -86,8 +86,8 @@ export default class TriangleDictionary<T> {
   }
 
   getPolygonAt(target: vec2): T {
-    const x: number = Math.floor(target[0] * this.resolution);
-    const y: number = Math.floor(target[1] * this.resolution);
+    const x: number = ~~(target[0] * this.resolution);
+    const y: number = ~~(target[1] * this.resolution);
     const key: string = `${x}.${y}`;
     if (!this.tiles.has(key)) return null;
     const triangles = this.tiles.get(key);

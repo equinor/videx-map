@@ -107,7 +107,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
   const outputExtra: ExtraConfig = {
     labelBgOpacity: 0.5,
     labelScale: 0.011,
-    fontSize: 18,
+    fontSize: 128,
     scaling: undefined,
     wellboreDash: 0.01,
   }

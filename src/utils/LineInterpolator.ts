@@ -73,50 +73,32 @@ export class LineInterpolator {
    * @param points Collection of points as Vector2
    */
   constructor(points: Vector2[], radius: number) {
-    const amount: number = points.length;
-    const path: PathPoint[] = new Array(amount); // Path
+    // Length along of line
+    let distance: number = 0;
+    let lastPoint = points[0];
 
-    const root = points[0];
-    let initDir: Vector2;
-    if (points.length >= 2) {
-      initDir = Vector2.sub(points[1], points[0]).normalize();
-    } else {
-      initDir = Vector2.right;
-    }
-
-    // Set first point
-    path[0] = {
-      point: root,
-      direction: initDir,
-      distance: 0,
-      relative: 0,
-    }
-
-    // Total length of line
-    let length: number = 0;
-
-    for(let i = 1; i < amount; i++) {
-      const point = points[i];
-      length += Vector2.distance(point, path[i - 1].point);
-      path[i] = {
+    const path = points.map((point, i) => {
+      distance += Vector2.distance(point, lastPoint);
+      lastPoint = point;
+      return {
         point,
         direction: this.GetDirection(points, i),
-        distance: length, // Distance to point along line (in world units)
+        distance,
         relative: 0,
-      };
+      }
+    });
 
-      // Not a single point if outside radius
-      if(Vector2.distance(point, root) > radius) this.singlePoint = false;
-    }
+    // Not a single point if some outside radius
+    const root = points[0];
+    this.singlePoint = !path.some(p => Vector2.distance(p.point, root) > radius);
 
     // Re-iterate over path to calculate relative distances
-    for(let i = 1; i < amount; i++) {
-      const p = path[i];
-      p.relative = (length === 0) ? 0 : p.distance / length;
-    }
+    path.forEach(p => {
+      p.relative = (distance === 0) ? 0 : p.distance / distance;
+    });
 
-    this.amount = amount;
-    this.length = length;
+    this.amount = path.length;
+    this.length = distance;
     this.path = path;
   }
 
@@ -207,7 +189,6 @@ export class LineInterpolator {
       const cur: PathPoint = this.path[i];
 
       if (cur.relative >= relativeEnd) { // End
-        const cur: PathPoint = this.path[i];
         const prev: PathPoint = this.path[i - 1];
         const dist: number = cur.relative - prev.relative;
         const frac: number = (relativeEnd - prev.relative) / dist;
@@ -221,7 +202,7 @@ export class LineInterpolator {
 
       points.push({ // Add points between
         position: cur.point,
-        direction: this.path[i].direction,
+        direction: cur.direction,
         distance: cur.distance,
       });
     }
@@ -237,15 +218,15 @@ export class LineInterpolator {
   GetClosestPointBelow(relative: number): number {
     let base: number = 0;
     let range: number = this.amount;
-    let idx: number = Math.floor(range * 0.5);
+    let idx: number = ~~(range * 0.5);
     while(range > 1) {
       if(relative < this.path[idx].relative) {
-        range = Math.floor(range * 0.5);
-        idx = base + Math.floor(range * 0.5);
+        range = ~~(range * 0.5);
+        idx = base + ~~(range * 0.5);
       } else {
-        base += Math.floor(range * 0.5);
+        base += ~~(range * 0.5);
         range = Math.ceil(range * 0.5);
-        idx = base + Math.floor(range * 0.5);
+        idx = base + ~~(range * 0.5);
       }
     }
     return base;
@@ -299,7 +280,7 @@ export class LineInterpolator {
   GetDirection(points: Vector2[], idx: number): Vector2 {
     const end: number = points.length - 1;
     if (idx === 0) { // If first
-      return Vector2.sub(points[1], points[0]).normalize();
+      return points.length >= 2 ? Vector2.sub(points[1], points[0]).normalize() : Vector2.right;
     } // If last
     else if (idx === end) {
       return Vector2.sub(points[end], points[end - 1]).normalize();

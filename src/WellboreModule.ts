@@ -9,7 +9,7 @@ import { SourceData, Group, GroupOptions, WellboreData, RootData } from './utils
 import LineDictionary from './utils/LineDictionary';
 import PointDictionary from './utils/PointDictionary';
 import Projector from './utils/wellbores/Projector';
-import { Label } from './utils/wellbores/labels';
+import { BitmapLabel, Label, TextLabel } from './utils/wellbores/labels';
 import { updateHighlighted, clearHighlight, forceHighlight } from './utils/wellbores/highlight-helper';
 import { Highlight } from './utils/wellbores/Highlight';
 import AsyncLoop from './utils/wellbores/AsyncLoop';
@@ -71,10 +71,10 @@ export default class WellboreModule extends ModuleInterface {
     };
 
     /** Prepare drawing of labels. */
-    Label.setStyle(extra.fontSize); // Set label style
-    Label.setCommon({ // Set common config
-      backgroundOpacity: extra.labelBgOpacity
-    });
+    TextLabel.setCommon({  backgroundOpacity: extra.labelBgOpacity });
+    TextLabel.setStyle(extra.fontSize);
+    BitmapLabel.setCommon({ backgroundOpacity: extra.labelBgOpacity });
+    BitmapLabel.setStyle(extra.fontSize);
 
     this._eventHandler = inputConfig && inputConfig.customEventHandler || new DefaultEventHandler();
 
@@ -95,13 +95,15 @@ export default class WellboreModule extends ModuleInterface {
     this.groups[key] = new Group(key, options);
   }
 
-  private addRoot(position: Vector2) : RootData {
+  private addRoot(position: Vector2, addToContainers: boolean = true) : RootData {
     const overlapping = this.pointDict.getOverlapping(position);
 
     if (overlapping) return overlapping.val;
 
     const wellboreRoot = new RootData(position, this.config.rootResize.max.scale);
-    this.containers.roots.addChild(wellboreRoot.mesh);
+    if(addToContainers){
+      this.containers.roots.addChild(wellboreRoot.mesh);
+    }
     this.pointDict.add(position, wellboreRoot);
     this.roots.push(wellboreRoot); // Add root
 
@@ -113,17 +115,17 @@ export default class WellboreModule extends ModuleInterface {
    * @param key data group to add wellbore into
    * @param data wellbore data
    */
-  addWellbore(data: SourceData, group: Group = this.groups.default) : void {
+  addWellbore(data: SourceData, group: Group = this.groups.default, addToContainers: boolean = true ) : WellboreData {
     if (data.path.length === 0) throw Error('Empty wellbore path!');
 
     // Place root for wellbore
     const projectedPath = this.projector.batchVector2(data.path);
-    const root = this.addRoot(projectedPath[0]);
+    const root = this.addRoot(projectedPath[0], addToContainers);
 
     const { rootResize, wellboreResize, tick } = this.config;
 
     const wellbore = new WellboreData({
-      data: data,
+      data,
       group,
       root,
       coords: projectedPath,
@@ -131,11 +133,14 @@ export default class WellboreModule extends ModuleInterface {
       wellboreWidth: wellboreResize.max.scale,
       tick,
     });
-    if (wellbore.mesh) {
-      this.containers.wellbores.addChild(wellbore.mesh);
+
+    if(addToContainers){
+      if (wellbore.mesh) {
+        this.containers.wellbores.addChild(wellbore.mesh);
+      }
+      this.containers.labels.addChild(wellbore.label.text);
+      this.containers.labels.addChild(wellbore.label.background);
     }
-    this.containers.labels.addChild(wellbore.label.text);
-    this.containers.labels.addChild(wellbore.label.background);
     group.append(wellbore);
     root?.recalculate(true);
 
@@ -149,10 +154,19 @@ export default class WellboreModule extends ModuleInterface {
       this._deferredSelector = undefined;
       wellbore.setSelected(true);
     }
+
+    return wellbore;
   }
 
-  set(wells: SourceData[], key: string = 'default', batchSize: number = null) : Promise<void> {
+  set(wellbores: SourceData[], key: string = 'default', options: any = { batchSize: 50, addToContainersAtCreation: false, singleBatch: false, redrawEveryBatch: true }) : Promise<void> {
     return new Promise((resolve, reject) => {
+      const before = performance.now();
+      const {
+        batchSize = null,
+        addToContainersAtCreation = false,
+        singleBatch = false,
+        redrawEveryBatch = false,
+      } = options;
       const group = this.groups[key];
       if (!group) {
         reject(Error(`Group [${key}] not registered!`));
@@ -161,20 +175,58 @@ export default class WellboreModule extends ModuleInterface {
       try {
         if (this.groups[key].wellbores.length > 0) this.clear(key);
 
-        this.asyncLoop.Start(key, {
-          iterations: wells.length,
-          batchSize: batchSize || this.config.batchSize || 20,
-          func: i => this.addWellbore(wells[i], group),
-          postFunc: () => this.pixiOverlay.redraw(),
-          endFunc: () => {
-            this.pixiOverlay.redraw();
-            resolve();
+        if(singleBatch){
+          const wellboresList: WellboreData[] = wellbores.map(wellbore => this.addWellbore(wellbore, group, addToContainersAtCreation));
+          if(!addToContainersAtCreation){
+            this.addWellboreDisplayObjectsToContainers(wellboresList);
           }
-        }, 0);
+          this.pixiOverlay.redraw();
+          console.log(`Single batch took ${performance.now()-before}ms`);
+          resolve();
+      } else {
+          let wellboresList: WellboreData[] = [];
+
+          this.asyncLoop.Start(key, {
+            iterations: wellbores.length,
+            batchSize: batchSize || this.config.batchSize || 20,
+            func: i => {
+              wellboresList.push(this.addWellbore(wellbores[i], group, addToContainersAtCreation));
+            },
+            postFunc: () => {
+              if(redrawEveryBatch){
+                if(!addToContainersAtCreation){
+                  this.addWellboreDisplayObjectsToContainers(wellboresList);
+                  wellboresList = [];
+                }
+                this.pixiOverlay.redraw();
+              }
+            },
+            endFunc: () => {
+              if(!addToContainersAtCreation){
+                this.addWellboreDisplayObjectsToContainers(wellboresList);
+              }
+              this.pixiOverlay.redraw();
+              resolve();
+            }
+          }, 0);
+        }
+
       } catch (err) {
         reject(err);
       }
     });
+  }
+
+  addWellboreDisplayObjectsToContainers(wellboreList: WellboreData[]){
+    if(wellboreList?.length > 0){
+      const rootMeshes = Array.from(new Set(wellboreList.filter(wb => wb.root?.mesh).map(wb => wb.root.mesh)));
+      const wbMeshes = wellboreList.filter(wellbore => wellbore.mesh).map(wellbore => wellbore.mesh);
+      const labels = [...wellboreList.filter(wellbore => wellbore.label?.text).map(wellbore => wellbore.label.text),
+        ...wellboreList.filter(wellbore => wellbore.label?.background).map(wellbore => wellbore.label.background)];
+      if(rootMeshes?.length > 0)this.containers.roots.addChild(...rootMeshes);
+      if(wbMeshes?.length > 0)this.containers.wellbores.addChild(...wbMeshes);
+      if(labels?.length > 0)this.containers.labels.addChild(...labels);
+    }
   }
 
   private forEachGroup(keys: string[], func: (group: Group, key: string) => void): void {

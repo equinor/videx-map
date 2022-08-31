@@ -59,33 +59,33 @@ export default class Mesh {
     const extraData: number[] = [];
 
     // Half of thickness
-    const _thickness: number = thickness * 0.5;
+    const halfOfThickness: number = thickness * 0.5;
 
     // Add First
-    const point0: SegmentPoint = points[0];
-    const first: Vector2 = point0.position;
-    const from0: Vector2  = Vector2.sub(points[1].position, first).rescale(_thickness);
+    const firstPoint: SegmentPoint = points[0];
+    const firstPos: Vector2 = firstPoint.position;
+    const fromFirst: Vector2  = Vector2.sub(points[1].position, firstPos).rescale(halfOfThickness);
     vertices.push(
-      -from0[1] + first[0], // Upper: X
-      from0[0] + first[1],  // Upper: Y
-      from0[1] + first[0],  // Lower: X
-      -from0[0] + first[1], // Lower: Y
+      -fromFirst[1] + firstPos[0], // Upper: X
+      fromFirst[0] + firstPos[1],  // Upper: Y
+      fromFirst[1] + firstPos[0],  // Lower: X
+      -fromFirst[0] + firstPos[1], // Lower: Y
     );
     vertexData.push(
-      point0.distance,  1.0,  -point0.direction[1],  point0.direction[0],   // Upper
-      point0.distance,  0.0,  point0.direction[1],   -point0.direction[0],  // Lower
+      firstPoint.distance,  1.0,  -firstPoint.direction[1],  firstPoint.direction[0],   // Upper
+      firstPoint.distance,  0.0,  firstPoint.direction[1],   -firstPoint.direction[0],  // Lower
     );
     extraData.push(type, type);
 
     // Iterate over all points
+    let prevPos = firstPos;
     for (let i: number = 1; i < points.length - 1; i++) {
-      const point: SegmentPoint = points[i];
-      const prev: Vector2 = points[i - 1].position;
-      const cur: Vector2 = point.position;
-      const next: Vector2 = points[i + 1].position;
+      const currentPoint: SegmentPoint = points[i];
+      const currentPos: Vector2 = currentPoint.position;
+      const nextPos: Vector2 = points[i + 1].position;
 
-      const to: Vector2 = Vector2.sub(cur, prev);
-      const from: Vector2 = Vector2.sub(next, cur);
+      const to: Vector2 = Vector2.sub(currentPos, prevPos);
+      const from: Vector2 = Vector2.sub(nextPos, currentPos);
 
       let upper: [number, number] = null;
       let inner:  [number, number] = null;
@@ -93,46 +93,43 @@ export default class Mesh {
         // Normal upper
         const toU: Vector2 = to.rotate90()
           .mutable
-          .rescale(_thickness)
-          .add(prev)
-          .immutable;
+          .rescale(halfOfThickness)
+          .add(prevPos);
         const fromU: Vector2 = from.rotate90()
           .mutable
-          .rescale(_thickness)
-          .add(next)
-          .immutable;
+          .rescale(halfOfThickness)
+          .add(nextPos);
 
         // Normal inner
         const toI: Vector2 = to.rotate270()
           .mutable
-          .rescale(_thickness)
-          .add(prev)
-          .immutable;
+          .rescale(halfOfThickness)
+          .add(prevPos);
+
         const fromI: Vector2 = from.rotate270()
           .mutable
-          .rescale(_thickness)
-          .add(next)
-          .immutable;
+          .rescale(halfOfThickness)
+          .add(nextPos);
 
         // Find intersections for exact line width
         upper = Intersection(toU, to, fromU, from);
         inner = Intersection(toI, to, fromI, from);
       } else { // If wide angle
         upper = [
-          -point.direction[1] * _thickness + cur[0],
-          point.direction[0] * _thickness + cur[1],
+          -currentPoint.direction[1] * halfOfThickness + currentPos[0],
+          currentPoint.direction[0] * halfOfThickness + currentPos[1],
         ];
         inner = [
-          point.direction[1] * _thickness + cur[0],
-          -point.direction[0] * _thickness + cur[1],
+          currentPoint.direction[1] * halfOfThickness + currentPos[0],
+          -currentPoint.direction[0] * halfOfThickness + currentPos[1],
         ];
       }
 
       vertices.push(upper[0], upper[1], inner[0], inner[1]);
 
       vertexData.push(
-        point.distance,  1.0,  -point.direction[1],  point.direction[0],   // Upper
-        point.distance,  0.0,  point.direction[1],   -point.direction[0],  // Lower
+        currentPoint.distance,  1.0,  -currentPoint.direction[1],  currentPoint.direction[0],   // Upper
+        currentPoint.distance,  0.0,  currentPoint.direction[1],   -currentPoint.direction[0],  // Lower
       );
       extraData.push(type, type);
 
@@ -143,21 +140,23 @@ export default class Mesh {
         const n: number = i * 2;
         triangles.push(n - 1, n - 2, n, n - 1, n, n + 1);
       }
+
+      prevPos = currentPos;
     }
 
     // Add last vertices
-    const pointN = points[points.length - 1];
-    const last: Vector2 = pointN.position;
-    const toN: Vector2 = Vector2.sub(last, points[points.length - 2].position).rescale(_thickness);
+    const lastPoint = points[points.length - 1];
+    const lastPos: Vector2 = lastPoint.position;
+    const toN: Vector2 = Vector2.sub(lastPos, points[points.length - 2].position).rescale(halfOfThickness);
     vertices.push(
-      last[0] - toN[1], // Upper: X
-      last[1] + toN[0], // Upper: Y
-      last[0] + toN[1], // Lower: X
-      last[1] - toN[0], // Lower: Y
+      lastPos[0] - toN[1], // Upper: X
+      lastPos[1] + toN[0], // Upper: Y
+      lastPos[0] + toN[1], // Lower: X
+      lastPos[1] - toN[0], // Lower: Y
     );
     vertexData.push(
-      pointN.distance,  1.0,  -pointN.direction[1],  pointN.direction[0],   // Upper
-      pointN.distance,  0.0,  pointN.direction[1],   -pointN.direction[0],  // Lower
+      lastPoint.distance,  1.0,  -lastPoint.direction[1],  lastPoint.direction[0],   // Upper
+      lastPoint.distance,  0.0,  lastPoint.direction[1],   -lastPoint.direction[0],  // Lower
     );
     extraData.push(type, type);
 
@@ -195,7 +194,7 @@ export default class Mesh {
       const next = points[i + 1];
       const dir = Vector2.sub(next, cur);
 
-      const dirN = dir.rotate90().mutable.rescale(linethickness).immutable;
+      const dirN = dir.rotate90().mutable.rescale(linethickness);
 
       const leftNormal = GetNormal(i);
       const rightNormal = GetNormal(i + 1);

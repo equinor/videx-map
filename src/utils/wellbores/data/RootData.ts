@@ -1,8 +1,10 @@
+import * as PIXI from "pixi.js";
+
 import { WellboreData } from './WellboreData';
 import { RootShader, RootUniforms } from '../Shader';
 import generateCircle from '../../generateCircle';
 import Vector2 from '@equinor/videx-vector2';
-import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
+import { Label, positionAtRoot, positionAlongWellbore, BitmapLabel } from '../labels';
 
 export class RootData {
   mesh: PIXI.Mesh;
@@ -27,7 +29,7 @@ export class RootData {
     return this.target && this.target.active;
   }
 
-  private updateLabelsBBox(label : Label) : void {
+  private updateLabelsBBox(label : BitmapLabel) : void {
     const bbox = label.getBoundingBox();
 
     if (!this.rootLabelsBBox) {

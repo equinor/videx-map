@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
-import { ModuleInterface } from './ModuleInterface';
 import Vector2 from '@equinor/videx-vector2';
+
+import { ModuleInterface } from './ModuleInterface';
 import log from './utils/Log';
 
 /** Data format on incoming faultlines */

@@ -94,10 +94,10 @@ export class WellboreMesh {
      // Make line mesh and use callback to add extra attributes
      const mesh = Mesh.WellboreSegment(section, this.thickness, type);
 
-    vertices.push(...mesh.vertices);
+    mesh.vertices.forEach(v => vertices.push(v));
     mesh.triangles.forEach(d => triangles.push(d + this.baseTris));
-    vertexData.push(...mesh.vertexData);
-    extraData.push(...mesh.extraData);
+    mesh.vertexData.forEach(d => vertexData.push(d));
+    mesh.extraData.forEach(e => extraData.push(e));
     this.baseTris += mesh.vertices.length / 2;
   }
 
@@ -143,7 +143,7 @@ export class WellboreMesh {
     extraData.push(2, 2, 2, 2); // Push tick type
 
     // Get normalized normal
-    const normalizedNormal = new Vector2(normX, normY).normalized();
+    const normalizedNormal = new Vector2(normX, normY).mutable.normalized();
     const nnx = normalizedNormal.x;
     const nny = normalizedNormal.y;
 

@@ -165,14 +165,7 @@ export default class OutlineModule extends ModuleInterface {
    */
   setVisibleLayers(names: string[]): void {
     // Disable all layers
-    Object.keys(this.outlineDict).forEach(key => this.outlineDict[key].visible = false);
-
-    // Enable selected
-    names.forEach(name => {
-      const uniforms: Uniforms = this.outlineDict[name];
-      if (!uniforms) return;
-      uniforms.visible = true;
-    });
+    Object.keys(this.outlineDict).forEach(name => this.outlineDict[name].visible = names.includes(name));
   }
 
   /** Clear all spawned graphic elements and return to pool. */

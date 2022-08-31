@@ -1,4 +1,6 @@
+import * as PIXI from "pixi.js";
 import Vector2 from "@equinor/videx-vector2";
+
 import { Label } from "./Label";
 import { WellboreData } from "../data";
 
@@ -8,7 +10,7 @@ export function positionAtRoot(wellbore: WellboreData, position: number) : void 
   const { text, background } = wellbore.label;
   const { scale, rootDisplacement } = Label.state;
 
-  text.anchor.set(0.5, 0);
+  text.anchor = new PIXI.Point(0.5, 0);
   text.rotation = 0;
   background.rotation = 0;
   background.pivot.set(0, -Label.height * 0.5);
@@ -22,10 +24,10 @@ export function positionAtRoot(wellbore: WellboreData, position: number) : void 
 export function positionAlongWellbore(wellbore: WellboreData) : void {
   wellbore.label.attachToRoot = false;
 
-  const { text, background, metrics } = wellbore.label;
+  const { text, background, width, height } = wellbore.label;
   const end = wellbore.interpolator.GetPoint(1).position;
-  const width = metrics.width * Label.state.scale; // Multiply by scale
-  const start = wellbore.interpolator.GetPointFromEnd(width);
+  const scaledWidth = width * Label.state.scale; // Multiply by scale
+  const start = wellbore.interpolator.GetPointFromEnd(scaledWidth);
   const dir = Vector2.sub(end, start.position).mutable;
 
   let anchorX, anchorY;
@@ -38,8 +40,8 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
   if (dir.x < 0) { // Left
     anchorX = 0;
     anchorY = 0;
-    pivotX = -metrics.width * 0.5;
-    pivotY = -metrics.height * 0.5;
+    pivotX = -width * 0.5;
+    pivotY = -height * 0.5;
     angle = Vector2.signedAngle(Vector2.left, dir);
     pos = dir.rotate270()
       .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
@@ -47,8 +49,8 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
   } else { // Right
     anchorX = 1;
     anchorY = 0;
-    pivotX = metrics.width * 0.5;
-    pivotY = -metrics.height * 0.5;
+    pivotX = width * 0.5;
+    pivotY = -height * 0.5;
     angle = Vector2.signedAngle(Vector2.right, dir);
     pos = dir.rotate90()
       .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
@@ -57,7 +59,7 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
 
   text.position.set(pos[0], pos[1]);
   text.rotation = angle;
-  text.anchor.set(anchorX, anchorY);
+  text.anchor = new PIXI.Point(anchorX, anchorY);
   text.scale.set(Label.state.scale); // Resize
 
   // Place background

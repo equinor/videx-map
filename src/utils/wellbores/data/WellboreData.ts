@@ -7,9 +7,9 @@ import { processIntervals } from '../intervals';
 import { LineInterpolator } from '../../LineInterpolator';
 import { WellboreMesh } from '../../WellboreMesh';
 import { getWellboreShader, WellboreUniforms } from '../Shader';
-import { Label } from '../labels/Label';
 import { Colors, Color } from '../Colors';
 import { TickConfig } from '../Config';
+import { BitmapLabel, Label, TextLabel } from '../labels';
 
 export interface WellboreDataInput {
   data: SourceData,
@@ -52,7 +52,8 @@ export class WellboreData {
     this.wellboreWidth = input.wellboreWidth;
     this.interpolator = new LineInterpolator(input.coords, input.pointThreshold);
 
-    this.label = new Label(input.data.labelShort, this.colors.fontColor, this.colors.default.labelBg);
+    //this.label = new TextLabel(input.data.labelShort, this.colors.fontColor, this.colors.default.labelBg);
+    this.label = new BitmapLabel(input.data.labelShort, this.colors.fontColor, this.colors.default.labelBg);
 
     if (this.interpolator.singlePoint) {
       this.label.attachToRoot = true;
@@ -128,7 +129,8 @@ export class WellboreData {
     geometry.addIndex(triangles);
 
     const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
-    return new PIXI.Mesh(geometry, shader);
+    const mesh = new PIXI.Mesh(geometry, shader);
+    return mesh;
   }
 
   setCompletionVisibility(visible: boolean) {
