@@ -83,7 +83,7 @@
     "@equinor/videx-math": "^1.1.0",
     "@equinor/videx-vector2": "^1.0.44",
     "earcut": "^2.2.2",
-    "pixi.js": "5.3.3",
+    "pixi.js": "5.3.12",
     "uuid": "^8.3.2"
   }
 }
