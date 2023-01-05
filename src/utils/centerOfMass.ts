@@ -1,4 +1,5 @@
-import Vector2 from "@equinor/videx-vector2";
+/* eslint-disable no-magic-numbers */
+import Vector2 from '@equinor/videx-vector2';
 
 /**
  * Get the center of mass of a polygon.

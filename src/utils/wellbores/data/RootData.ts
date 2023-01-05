@@ -1,7 +1,10 @@
+/* eslint-disable no-magic-numbers, curly */
+import * as PIXI from 'pixi.js';
+import Vector2 from '@equinor/videx-vector2';
+
 import { WellboreData } from './WellboreData';
 import { RootShader, RootUniforms } from '../Shader';
 import generateCircle from '../../generateCircle';
-import Vector2 from '@equinor/videx-vector2';
 import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
 
 export class RootData {
@@ -94,7 +97,7 @@ export class RootData {
   }
 
   private updateUniforms() {
-    const uniform: RootUniforms = this.mesh.shader.uniforms;
+    const uniform: RootUniforms = this.mesh.shader.uniforms as RootUniforms;
     uniform.active = this.active;
     if (this.target) {
       const color = this.target.color;
@@ -104,6 +107,7 @@ export class RootData {
       // 0: normal,  1: highlighted, 2: multiHighlighted, 3: selected
       this.mesh.zIndex = this.target.status;
     }
+    uniform.rootRadius = this.radius;
   }
 
   updateLabels(): void {

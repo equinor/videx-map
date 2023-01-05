@@ -33,13 +33,14 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      name: 'Vector2',
+      name: 'videx-map',
       file: pkg.browser,
       format: 'umd',
       globals: {
         '@equinor/videx-linear-algebra': 'videxLinearAlgebra',
         '@equinor/videx-math': 'videxMath',
         '@equinor/videx-vector2': 'Vector2',
+        'd3-color': 'd3Color',
         earcut: 'earcut',
         'pixi.js': 'PIXI',
         uuid: 'uuid',

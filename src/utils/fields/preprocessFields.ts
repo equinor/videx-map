@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { Field } from '../../FieldModule';
 
 /** Interface for data within a processed field. */
@@ -77,8 +78,8 @@ export default function preprocessFields(data: Field[]): PreprocessedField[] {
               hctype: field.properties.hctype,
               polygonId: field.properties.polygonId,
               status: field.properties.status,
-            }
-          }
+            },
+          },
         ],
         properties: {
           group: field.properties.group,
@@ -86,7 +87,7 @@ export default function preprocessFields(data: Field[]): PreprocessedField[] {
           label: field.properties.label,
           lat: field.properties.lat,
           long: field.properties.long,
-        }
+        },
       }
 
       if (coordinates.length > 1) {

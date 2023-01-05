@@ -1,6 +1,7 @@
-import { WellboreEventData } from "./data";
-import { HighlightEvent } from "./data/WellboreEventData";
-import { EventHandler } from "../../EventHandler";
+/* eslint-disable curly, @typescript-eslint/ban-ts-comment */
+import { WellboreEventData } from './data';
+import { HighlightEvent } from './data/WellboreEventData';
+import { EventHandler } from '../../EventHandler';
 import { ResizeConfig } from '../../ResizeConfigInterface';
 
 export interface TickConfig {
@@ -116,7 +117,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
   if (!input) return [ outputConfig, outputExtra ];
 
   // Try to transfer from input
-  function transfer(key: string, target: {}) {
+  function transfer(key: string, target: object) {
     // @ts-ignore
     if (!isNaN(input[key])) target[key] = input[key];
   }
@@ -131,7 +132,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
   transfer('fontSize', outputExtra);
   transfer('wellboreDash', outputExtra);
 
-  function transferFunction(key: string, target: {}) {
+  function transferFunction(key: string, target: object) {
     // @ts-ignore
     if (typeof input[key] === 'function') target[key] = input[key];
   }
@@ -141,7 +142,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
   transferFunction('onHighlightOn', outputConfig);
   transferFunction('onHighlightOff', outputConfig);
 
-  function transferObj(key: string, target: {}) {
+  function transferObj(key: string, target: object) {
     // @ts-ignore
     if (input[key]) target[key] = input[key];
   }

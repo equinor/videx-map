@@ -1,5 +1,7 @@
-import { MultiField, Label } from './LabelManager';
+/* eslint-disable curly */
 import Vector2 from '@equinor/videx-vector2';
+
+import { MultiField, Label } from './LabelManager';
 
 interface Group {
   /** Index within multifield */

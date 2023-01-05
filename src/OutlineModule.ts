@@ -1,8 +1,10 @@
+/* eslint-disable no-magic-numbers, curly */
 import * as PIXI from 'pixi.js';
-import { ModuleInterface } from './ModuleInterface';
-import Mesh from './utils/Mesh';
 import Vector2 from '@equinor/videx-vector2';
 import { inverseLerp, lerp } from '@equinor/videx-math'
+
+import { ModuleInterface } from './ModuleInterface';
+import Mesh from './utils/Mesh';
 import log from './utils/Log';
 
 export interface OutlineData {
@@ -148,7 +150,12 @@ export default class OutlineModule extends ModuleInterface {
           outlineData = Mesh.SimpleLine(projected, this.config.baseWidth);
         }
 
-        const outline = Mesh.from(outlineData.vertices, outlineData.triangles, OutlineModule.vertexShader, OutlineModule.fragmentShader, uniforms, outlineData.normals);
+        const outline = Mesh.from(outlineData.vertices,
+          outlineData.triangles,
+          OutlineModule.vertexShader,
+          OutlineModule.fragmentShader,
+          uniforms,
+          outlineData.normals);
         this.root.addChild(outline);
 
         this.spawned.push(outline);

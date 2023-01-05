@@ -8,7 +8,7 @@ function GetDate() {
 }
 
 export default function log(text: string) {
-  let out = `%cVIDEX-MAP%c ${text}`;
+  const out = `%cVIDEX-MAP%c ${text}`;
 
   const style = `
     background: #555;

@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers, curly */
 type vec2 = [number, number];
 
 /**

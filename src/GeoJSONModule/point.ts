@@ -1,30 +1,11 @@
+/* eslint-disable no-magic-numbers, curly */
 import * as PIXI from 'pixi.js';
-import { color } from 'd3';
+import { color } from 'd3-color';
 import Vector2 from '@equinor/videx-vector2';
 
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import PointDictionary from '../utils/PointDictionary';
 import { FeatureProps } from '.';
-
-
-/** Interface for faultline config. */
-interface InputConfig {
-  /** Color of faultline on format 0xRRGGBB. (Default: 0x727D88) */
-  color?: number;
-  /** Alpha of faultlines. (Default: 1.0) */
-  alpha?: number;
-  /** Width of outline. (Default: 0.125) */
-  outlineWidth?: number;
-}
-
-interface Config {
-  /** Color of faultline on format 0xRRGGBB. (Default: 0x727D88) */
-  color: number;
-  /** Alpha of faultlines. (Default: 1.0) */
-  alpha: number;
-  /** Width of outline. (Default: 0.125) */
-  outlineWidth: number;
-}
 
 /** Module for displaying fields. */
 export default class GeoJSONPoint {
@@ -37,6 +18,7 @@ export default class GeoJSONPoint {
 
   container: PIXI.Container;
   pixiOverlay: pixiOverlayBase;
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: PointDictionary<any> = new PointDictionary<number>(0.25, 20, 4);
 
   textStyle: PIXI.TextStyle;
@@ -90,10 +72,12 @@ export default class GeoJSONPoint {
     return new Vector2(coord.x, coord.y);
   }
 
-  resize(zoom: number) {
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  resize(_zoom: number) {
 
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   testPosition(pos: Vector2) : any {
     return this.dict.getClosestUnder(pos);
   }

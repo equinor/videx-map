@@ -1,8 +1,10 @@
-import Vector2 from "@equinor/videx-vector2";
+/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
+import Vector2 from '@equinor/videx-vector2';
 import * as PIXI from 'pixi.js';
 import { flatten, VectorLike } from '@equinor/videx-linear-algebra';
-import { SegmentPoint } from './LineInterpolator';
 import earcut from 'earcut';
+
+import { SegmentPoint } from './LineInterpolator';
 
 export interface WellboreSegmentData {
   vertices: number[];
@@ -18,14 +20,6 @@ export interface MeshData {
 
 export interface MeshNormalData extends MeshData {
   normals: number[];
-}
-
-/**
- * Segment data used when creating polygon outline.
- */
-interface SegmentData {
-  upper: VectorLike;
-  lower: VectorLike;
 }
 
 /**
@@ -139,7 +133,7 @@ export default class Mesh {
       //  0     2
       //
       //  1     3
-      if (i != 0) {
+      if (i !== 0) {
         const n: number = i * 2;
         triangles.push(n - 1, n - 2, n, n - 1, n, n + 1);
       }
@@ -353,7 +347,12 @@ export default class Mesh {
    * @param normals UV data
    * @returns Created pixi mesh
    */
-  static from(vertices: number[], triangles: number[], vertexShader: string, fragmentShader: string, uniforms?: {}, normals?: number[]): PIXI.Mesh {
+  static from(vertices: number[],
+      triangles: number[],
+      vertexShader: string,
+      fragmentShader: string,
+      uniforms?: object,
+      normals?: number[]): PIXI.Mesh {
     // Create geometry
     const geometry = new PIXI.Geometry();
     geometry.addAttribute('inputVerts', vertices, 2);

@@ -1,9 +1,11 @@
+/* eslint-disable no-magic-numbers, curly */
+import Vector2 from '@equinor/videx-vector2';
+import * as PIXI from 'pixi.js';
+
 import { ModuleInterface } from './ModuleInterface';
 import generateCircle from './utils/generateCircle';
 import { RootUniforms } from './utils/wellbores/Shader';
-import Vector2 from '@equinor/videx-vector2';
 import PointDictionary from './utils/PointDictionary';
-import { selection } from 'd3';
 
 const sample: ExplorationWell[] = null;
 
@@ -95,14 +97,11 @@ export default class ExplorationLayer extends ModuleInterface {
     // Get projection function
     const project = this.pixiOverlay.utils.latLngToLayerPoint;
 
-    let unselected = false;
-
     if (this.selection) {
       const point = this.selection.point;
       point.uniforms.circleColor1 = [0.3, 0.3, 0.3],
       point.mesh.zIndex = this.selection.zIndex;
       this.selection = null;
-      unselected = true;
     }
 
     // Get worldspace from coordinates
@@ -119,12 +118,8 @@ export default class ExplorationLayer extends ModuleInterface {
       }
       point.uniforms.circleColor1 = [0.2, 0.6, 0.7];
       point.mesh.zIndex = Infinity;
-      // ! this.redraw(); // Redraw if new selection
       return true;
     }
-
-    // Redraw if no point was found, but point was unselected
-    // ! if (unselected) this.redraw();
 
     return false;
   }

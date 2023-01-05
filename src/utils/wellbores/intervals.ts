@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { Interval } from './data';
 
 /**

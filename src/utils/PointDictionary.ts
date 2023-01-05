@@ -1,4 +1,5 @@
-import Vector2 from "@equinor/videx-vector2";
+/* eslint-disable curly */
+import Vector2 from '@equinor/videx-vector2';
 
 /** Interface of a single point. */
 interface Point<T> {
@@ -186,7 +187,7 @@ export default class PointDictionary<T> {
           const key = keys[i];
           const tile = this.tiles.get(key);
           tile.delete(point.id); // Delete point id from tilemap
-          if (tile.size == 0) this.tiles.delete(key); // Remove tile if empty
+          if (tile.size === 0) this.tiles.delete(key); // Remove tile if empty
         }
         this.pointValues.delete(point.id); // Remove from point values
       });

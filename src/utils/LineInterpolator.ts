@@ -1,5 +1,5 @@
+/* eslint-disable no-magic-numbers, curly */
 import Vector2 from '@equinor/videx-vector2';
-import { clamp } from '@equinor/videx-math';
 import { mix } from '@equinor/videx-linear-algebra';
 
 /**
@@ -131,7 +131,7 @@ export class LineInterpolator {
       return {
         position: this.path[0].point,
         direction: Vector2.up,
-        distance: 0
+        distance: 0,
       };
     }
 
@@ -257,8 +257,7 @@ export class LineInterpolator {
    * @returns Point at given distance from start
    */
   GetPointFromStart(distance: number): SegmentPoint{
-    let relative: number = distance / this.length;
-    clamp(relative);
+    const relative: number = distance / this.length;
     return this.GetPoint(relative);
   }
 
@@ -268,8 +267,7 @@ export class LineInterpolator {
    * @returns Point at given distance from end
    */
   GetPointFromEnd(distance: number): SegmentPoint {
-    let relative: number = 1 - (distance / this.length);
-    clamp(relative);
+    const relative: number = 1 - (distance / this.length);
     return this.GetPoint(relative);
   }
 

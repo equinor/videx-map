@@ -1,5 +1,6 @@
-import { SourceData } from "./SourceData";
-import { WellboreData } from "./WellboreData";
+/* eslint-disable curly, @typescript-eslint/no-explicit-any */
+import { SourceData } from './SourceData';
+import { WellboreData } from './WellboreData';
 
 export class WellboreEventData {
   public group: string;

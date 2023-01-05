@@ -1,5 +1,7 @@
-import Vector2 from "@equinor/videx-vector2";
-import { distanceToLine } from "./linePoint";
+/* eslint-disable curly */
+import Vector2 from '@equinor/videx-vector2';
+
+import { distanceToLine } from './linePoint';
 
 /** Collection of coordinates defining geometry of a line segment. */
 interface Geometry {
@@ -186,7 +188,7 @@ export default class LineDictionary<T> {
   /**
    * Find the closest line to the given coordinates and return its value.
    * @param target Reference position to evaluate
-   * @param maxDist Maximum distance relative to decimals. Given a decimal value of 2, a maxDist of 1 will return lines within a distance of 0.01 units.
+   * @param maxDist Max distance relative to decimals. Given a decimal value of 2, a maxDist of 1 will return lines within a distance of 0.01 units.
    * @returns Value assigned the line
    */
   getClosest(target: Vector2, maxDist: number = 1): T {

@@ -1,6 +1,8 @@
-import Vector2 from "@equinor/videx-vector2";
-import { Label } from "./Label";
-import { WellboreData } from "../data";
+/* eslint-disable no-magic-numbers */
+import Vector2 from '@equinor/videx-vector2';
+
+import { Label } from './Label';
+import { WellboreData } from '../data';
 
 export function positionAtRoot(wellbore: WellboreData, position: number) : void {
   wellbore.label.attachToRoot = true;
@@ -24,7 +26,6 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
   const start = wellbore.interpolator.GetPointFromEnd(width);
   const dir = Vector2.sub(end, start.position).mutable;
 
-  let anchorX, anchorY;
   let pivotX, pivotY;
   let angle;
   let pos;
@@ -36,8 +37,6 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
   // Y+: Down
   if (dir.x < 0) { // Left
     if (mirror) {
-      anchorX = 0;
-      anchorY = 1;
       pivotX = -metrics.width * 0.5;
       pivotY = metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.left, dir);
@@ -45,8 +44,6 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     } else {
-      anchorX = 0;
-      anchorY = 0;
       pivotX = -metrics.width * 0.5;
       pivotY = -metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.left, dir);
@@ -56,8 +53,6 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
     }
   } else { // Right
     if (mirror) {
-      anchorX = 1;
-      anchorY = 1;
       pivotX = metrics.width * 0.5;
       pivotY = metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.right, dir);
@@ -65,8 +60,6 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     } else {
-      anchorX = 1;
-      anchorY = 0;
       pivotX = metrics.width * 0.5;
       pivotY = -metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.right, dir);
