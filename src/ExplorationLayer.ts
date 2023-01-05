@@ -4,6 +4,7 @@ import { RootUniforms } from './utils/wellbores/Shader';
 import Vector2 from '@equinor/videx-vector2';
 import PointDictionary from './utils/PointDictionary';
 import { selection } from 'd3';
+import * as PIXI from 'pixi.js';
 
 const sample: ExplorationWell[] = null;
 

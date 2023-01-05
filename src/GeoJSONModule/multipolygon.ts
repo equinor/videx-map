@@ -18,6 +18,7 @@ import {
 import { ResizeConfig, LabelResizeConfig } from '../ResizeConfigInterface';
 import { getRadius } from '../utils/Radius';
 import { Defaults } from './constants';
+import { TextStyleFontWeight } from 'pixi.js';
 
 type vec3 = [number, number, number];
 
@@ -118,9 +119,9 @@ export default class GeoJSONMultiPolygon {
     this.textStyle = new PIXI.TextStyle({
       fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
       fontSize: config?.labelFontSize || Defaults.DEFAULT_FONT_SIZE,
-      fontWeight: config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT,
+      fontWeight: (config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT) as PIXI.TextStyleFontWeight,
       fill: config?.labelColor || Defaults.DEFAULT_LABEL_COLOR,
-      align: config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN,
+      align: (config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN) as PIXI.TextStyleAlign,
     });
 
     this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE);

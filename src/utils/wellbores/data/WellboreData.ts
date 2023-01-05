@@ -113,7 +113,7 @@ export class WellboreData {
   }
 
   get uniforms(): WellboreUniforms {
-    return this.mesh.shader.uniforms;
+    return this.mesh.shader.uniforms as WellboreUniforms;
   }
 
   private createWellboreMesh(intervals: [number, number][], tick: TickConfig): PIXI.Mesh {

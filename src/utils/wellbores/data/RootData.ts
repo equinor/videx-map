@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js';
+
 import { WellboreData } from './WellboreData';
 import { RootShader, RootUniforms } from '../Shader';
 import generateCircle from '../../generateCircle';
@@ -94,7 +96,7 @@ export class RootData {
   }
 
   private updateUniforms() {
-    const uniform: RootUniforms = this.mesh.shader.uniforms;
+    const uniform: RootUniforms = this.mesh.shader.uniforms as RootUniforms;
     uniform.active = this.active;
     if (this.target) {
       const color = this.target.color;

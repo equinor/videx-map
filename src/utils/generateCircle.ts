@@ -9,7 +9,6 @@ import * as PIXI from 'pixi.js';
  * @return New circle mesh with shader uniforms attached
  */
 export default function generateCircle(center: Vector2, radius: number, shader: any): PIXI.Mesh {
-
   // Winding order:
   // 2    3
   //

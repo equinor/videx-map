@@ -1,6 +1,6 @@
 {
   "name": "@equinor/videx-map",
-  "version": "1.12.3",
+  "version": "1.13.0",
   "description": "Component for Pixi-overlay in Leaflet.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -47,7 +47,6 @@
     "@types/jest": "^26.0.13",
     "@types/leaflet": "^1.5.17",
     "@types/uuid": "^8.3.0",
-    "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.1.0",
     "copyfiles": "^2.3.0",
     "d3": "^6.1.1",
@@ -57,7 +56,7 @@
     "jest": "^26.4.2",
     "jest-canvas-mock": "^2.2.0",
     "leaflet": "^1.7.1",
-    "leaflet-pixi-overlay": "^1.8.1",
+    "leaflet-pixi-overlay": "^1.8.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.45.2",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -65,9 +64,10 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "simplex-noise": "^2.4.0",
     "ts-jest": "^26.3.0",
-    "tslib": "^2.2.0",
-    "typedoc": "^0.20.28",
-    "typescript": "^4.2.4"
+    "ts-loader": "^9.4.2",
+    "tslib": "^2.4.1",
+    "typedoc": "^0.23.23",
+    "typescript": "^4.9.4"
   },
   "jest": {
     "transform": {
@@ -83,7 +83,7 @@
     "@equinor/videx-math": "^1.1.0",
     "@equinor/videx-vector2": "^1.0.44",
     "earcut": "^2.2.2",
-    "pixi.js": "5.3.3",
+    "pixi.js": "^6.2.2",
     "uuid": "^8.3.2"
   }
 }
