@@ -33,26 +33,51 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
   let angle;
   let pos;
 
+  // True, if labels should be displayed on top of wellbores
+  const mirror = wellbore.group?.mirrorLabels ? true : false;
+
   // X+: Right
   // Y+: Down
   if (dir.x < 0) { // Left
-    anchorX = 0;
-    anchorY = 0;
-    pivotX = -metrics.width * 0.5;
-    pivotY = -metrics.height * 0.5;
-    angle = Vector2.signedAngle(Vector2.left, dir);
-    pos = dir.rotate270()
-      .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
-      .add(end);
+    if (mirror) {
+      anchorX = 0;
+      anchorY = 1;
+      pivotX = -metrics.width * 0.5;
+      pivotY = metrics.height * 0.5;
+      angle = Vector2.signedAngle(Vector2.left, dir);
+      pos = dir.rotate90()
+        .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
+        .add(end);
+    } else {
+      anchorX = 0;
+      anchorY = 0;
+      pivotX = -metrics.width * 0.5;
+      pivotY = -metrics.height * 0.5;
+      angle = Vector2.signedAngle(Vector2.left, dir);
+      pos = dir.rotate270()
+        .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
+        .add(end);
+    }
   } else { // Right
-    anchorX = 1;
-    anchorY = 0;
-    pivotX = metrics.width * 0.5;
-    pivotY = -metrics.height * 0.5;
-    angle = Vector2.signedAngle(Vector2.right, dir);
-    pos = dir.rotate90()
-      .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
-      .add(end);
+    if (mirror) {
+      anchorX = 1;
+      anchorY = 1;
+      pivotX = metrics.width * 0.5;
+      pivotY = metrics.height * 0.5;
+      angle = Vector2.signedAngle(Vector2.right, dir);
+      pos = dir.rotate270()
+        .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
+        .add(end);
+    } else {
+      anchorX = 1;
+      anchorY = 0;
+      pivotX = metrics.width * 0.5;
+      pivotY = -metrics.height * 0.5;
+      angle = Vector2.signedAngle(Vector2.right, dir);
+      pos = dir.rotate90()
+        .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
+        .add(end);
+    }
   }
 
   text.position.set(pos[0], pos[1]);

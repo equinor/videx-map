@@ -4,8 +4,9 @@ import { RootData } from './RootData';
 import { SourceData } from './SourceData';
 
 export interface GroupOptions {
-  colors?: InputColors;
   order?: number;
+  mirrorLabels?: boolean;
+  colors?: InputColors;
 }
 
 interface WellboreState {
@@ -18,9 +19,10 @@ type Filter = (data: SourceData) => boolean;
 export class Group {
   key: string;
   colors: Colors;
+  order: number = 0;
+  mirrorLabels: boolean = false;
   wellbores: WellboreData[] = [];
   active: boolean = true;
-  order: number = 0;
   activeFilter: Filter = null;
   /** Is active filter soft or hard (Ghost) */
   isHardFilter: boolean;
@@ -34,8 +36,13 @@ export class Group {
   constructor(key: string, options?: GroupOptions) {
     this.key = key;
     if (options) {
+      if(!isNaN(options.order)) {
+        this.order = options.order;
+      }
+      if (options.mirrorLabels) {
+        this.mirrorLabels = options.mirrorLabels;
+      }
       this.colors = getDefaultColors(options.colors);
-      if(!isNaN(options.order)) this.order = options.order;
     } else {
       this.colors = getDefaultColors();
     }
