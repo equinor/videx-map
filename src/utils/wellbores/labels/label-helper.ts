@@ -5,24 +5,20 @@ import { WellboreData } from "../data";
 export function positionAtRoot(wellbore: WellboreData, position: number) : void {
   wellbore.label.attachToRoot = true;
 
-  const { text, background } = wellbore.label;
+  const { container } = wellbore.label;
   const { scale, rootDisplacement } = Label.state;
 
-  text.anchor.set(0.5, 0);
-  text.rotation = 0;
-  background.rotation = 0;
-  background.pivot.set(0, -Label.height * 0.5);
+  container.rotation = 0;
+  container.pivot.set(0, -Label.height * 0.5);
   const yPos = (rootDisplacement + 5 * scale) + (position * (Label.height + 5) * scale) + wellbore.root.position[1];
-  text.position.set(wellbore.root.position[0], yPos);
-  text.scale.set(scale); // Resize
-  background.position.set(wellbore.root.position[0], yPos);
-  background.scale.set(scale); // Resize
+  container.position.set(wellbore.root.position[0], yPos);
+  container.scale.set(scale); // Resize
 }
 
 export function positionAlongWellbore(wellbore: WellboreData) : void {
   wellbore.label.attachToRoot = false;
 
-  const { text, background, metrics } = wellbore.label;
+  const { container, metrics } = wellbore.label;
   const end = wellbore.interpolator.GetPoint(1).position;
   const width = metrics.width * Label.state.scale; // Multiply by scale
   const start = wellbore.interpolator.GetPointFromEnd(width);
@@ -80,14 +76,9 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
     }
   }
 
-  text.position.set(pos[0], pos[1]);
-  text.rotation = angle;
-  text.anchor.set(anchorX, anchorY);
-  text.scale.set(Label.state.scale); // Resize
-
-  // Place background
-  background.position.set(pos[0], pos[1]);
-  background.pivot.set(pivotX, pivotY);
-  background.rotation = angle;
-  background.scale.set(Label.state.scale); // Resize
+  // Place container
+  container.position.set(pos[0], pos[1]);
+  container.pivot.set(pivotX, pivotY);
+  container.rotation = angle;
+  container.scale.set(Label.state.scale); // Resize
 }

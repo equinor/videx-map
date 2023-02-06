@@ -8,8 +8,7 @@ type vec3 = [number, number, number];
 
 /** Stringify number for shader. If whole number, ensure one decimal slot. */
 function toShader(n: number): string {
-  if(n - Math.floor(n) === 0) return n.toString() + '.0';
-  else return n.toString();
+  return (n === Math.floor(n)) ? `${n.toString()}.0` : n.toString();
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -29,30 +28,31 @@ export interface WellboreUniforms {
   status: number,
 }
 
-/**
+export class WellboreShader {
+  private static program : PIXI.Program = null;
+
+  /**
  * Get shader for wellbore.
  * @param color Color used for wellbore
  * @param wellboreWidth Width of wellbore
  * @return PIXI shader
  */
-export function getWellboreShader(color: Color, completionVisible: boolean, wellboreVisible: boolean): PIXI.Shader {
-  return PIXI.Shader.from(
-    WellboreShader.vertexShader,
-    WellboreShader.fragmentShader,
-    {
-      wellboreColor1: color.col1,
-      wellboreColor2: color.col2,
-      completionVisible,
-      wellboreVisible,
-      status: 0,
-    } as WellboreUniforms,
-  );
-}
+  static get(color: Color, completionVisible: boolean, wellboreVisible: boolean) {
+    return new PIXI.Shader(
+      WellboreShader.program,
+      {
+        wellboreColor1: color.col1,
+        wellboreColor2: color.col2,
+        completionVisible,
+        wellboreVisible,
+        status: 0,
+      } as WellboreUniforms,
+    );
+  }
 
-export class WellboreShader {
   /** Build wellbore shader with assigned variables. */
   static build(maxScale: number, wellboreDash: number) {
-    WellboreShader.vertexShader = `
+    const vertex = `
       attribute vec2 verts;
       attribute vec4 vertCol;
       attribute float typeData;
@@ -80,7 +80,7 @@ export class WellboreShader {
     const doubleDash = toShader(wellboreDash * 2);
     const quadrupleDash = toShader(wellboreDash * 4);
 
-    WellboreShader.fragmentShader = `
+    const fragment = `
       precision mediump float;
 
       varying vec4 vCol;
@@ -141,13 +141,9 @@ export class WellboreShader {
         gl_FragColor = vec4(col, alpha);
       }
     `;
+
+    WellboreShader.program = new PIXI.Program(vertex, fragment);
   }
-
-  /** Vertex shader */
-  public static vertexShader: string = "";
-
-  /** Fragment shader */
-  static fragmentShader: string = "";
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -160,11 +156,12 @@ export interface RootUniforms {
 }
 
 export class RootShader {
+  private static program : PIXI.Program = null;
+
   /** Get root shader */
   static get() {
-    return PIXI.Shader.from(
-      RootShader.vertexShader,
-      RootShader.fragmentShader,
+    return new PIXI.Shader(
+      RootShader.program,
       {
         active: true,
         circleColor1: [0, 0, 0],
@@ -175,7 +172,7 @@ export class RootShader {
 
   /** Build vertex shader from given resize configs */
   static build(maxScale: number) {
-    RootShader.vertexShader = `
+    const vertex = `
       attribute vec2 verts;
       attribute vec2 inputUVs;
 
@@ -195,40 +192,40 @@ export class RootShader {
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + dir * extraRadius, 1.0)).xy, 0.0, 1.0);
       }
     `;
-  }
 
-  public static vertexShader: string = "";
+    const fragment = `
+      precision mediump float;
 
-  public static fragmentShader: string = `
-    precision mediump float;
+      varying vec2 UVs;
 
-    varying vec2 UVs;
+      uniform vec3 circleColor1;
+      uniform vec3 circleColor2;
+      uniform bool active;
 
-    uniform vec3 circleColor1;
-    uniform vec3 circleColor2;
-    uniform bool active;
+      const vec3 sunDir = vec3(0.6247, -0.6247, 0.4685);
 
-    const vec3 sunDir = vec3(0.6247, -0.6247, 0.4685);
+      void main() {
+        if (!active) {
+          discard;
+          return;
+        }
+        vec2 dir = 2.0 * UVs - 1.0;
+        float dist = dir.x * dir.x + dir.y * dir.y;
+        if (dist > 1.0) discard;
 
-    void main() {
-      if (!active) {
-        discard;
-        return;
+        vec3 dir3D = vec3(dir, sqrt(1.0 - dist * dist));
+
+        float light = dot(dir3D, sunDir);
+        light = 0.4 + light * 0.6;
+
+        vec3 col = mix(circleColor2, circleColor1, clamp(light, 0.0, 1.0));
+
+        gl_FragColor = vec4(col, 1.0);
       }
-      vec2 dir = 2.0 * UVs - 1.0;
-      float dist = dir.x * dir.x + dir.y * dir.y;
-      if (dist > 1.0) discard;
+    `;
 
-      vec3 dir3D = vec3(dir, sqrt(1.0 - dist * dist));
-
-      float light = dot(dir3D, sunDir);
-      light = 0.4 + light * 0.6;
-
-      vec3 col = mix(circleColor2, circleColor1, clamp(light, 0.0, 1.0));
-
-      gl_FragColor = vec4(col, 1.0);
-    }
-  `;
+    RootShader.program = new PIXI.Program(vertex, fragment);
+  }
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
