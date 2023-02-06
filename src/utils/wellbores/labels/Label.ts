@@ -29,7 +29,8 @@ export class Label {
   static config: Common;
   static height: number; // Height of labels
 
-  text: PIXI.Text;
+  container: PIXI.Container;
+  private text: PIXI.Text;
   background: PIXI.Graphics;
   metrics: PIXI.TextMetrics;
 
@@ -56,37 +57,45 @@ export class Label {
    * @param bgColor Color of background
    */
   constructor (label: string, fontColor: number, bgColor: number) {
-    // Label
-    const text: PIXI.Text = new PIXI.Text(label, Label.style);
-    text.resolution = window.devicePixelRatio; // Increases text resolution
-    text.visible = Label.state.visible;
-    text.tint = fontColor;
-    text.zIndex = 1;
-    this.text = text;
-
     // Metrics
     const metrics = PIXI.TextMetrics.measureText(label, Label.style);
     this.metrics = metrics;
+
+    const container = new PIXI.Container();
+    container.visible = Label.state.visible;
+    container.zIndex = 0;
+    this.container = container;
 
     // Background
     const background = new PIXI.Graphics();
     background.beginFill(0xFFFFFF);
     background.drawRect(-metrics.width * 0.55, -Label.height * 0.525, metrics.width * 1.1, Label.height * 1.05);
     background.endFill();
-    background.visible = Label.state.visible;
     background.alpha = Label.config.backgroundOpacity;
     background.tint = bgColor;
-    background.zIndex = 0;
     this.background = background;
+
+    // Label
+    const text: PIXI.Text = new PIXI.Text(label, Label.style);
+    text.resolution = window.devicePixelRatio; // Increases text resolution
+    text.tint = fontColor;
+    text.anchor.set(0.5);
+    this.text = text;
+
+    // Add to container
+    container.addChild(background, text);
   }
 
   get visible() {
-    return this.text.visible;
+    return this.container.visible;
   }
 
   set visible(flag) {
-    this.text.visible = flag && Label.state.visible;
-    this.background.visible = flag && Label.state.visible;
+    this.container.visible = (flag && Label.state.visible);
+  }
+
+  set fontColor(color: number) {
+    this.text.tint = color;
   }
 
   get attachToRoot() {
@@ -100,8 +109,8 @@ export class Label {
   }
 
   getBoundingBox() {
-    const { y, width, height } = this.background;
-    const x = this.background.x - width / 2;
+    const { y, width, height } = this.container;
+    const x = this.container.x - width / 2;
     return new PIXI.Rectangle(x, y, width, height);
   }
 }

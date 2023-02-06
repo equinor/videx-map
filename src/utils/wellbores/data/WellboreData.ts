@@ -6,7 +6,7 @@ import { Group } from './Group';
 import { processIntervals } from '../intervals';
 import { LineInterpolator } from '../../LineInterpolator';
 import { WellboreMesh } from '../../WellboreMesh';
-import { getWellboreShader, WellboreUniforms } from '../Shader';
+import { WellboreShader, WellboreUniforms } from '../Shader';
 import { Label } from '../labels/Label';
 import { Colors, Color } from '../Colors';
 import { TickConfig } from '../Config';
@@ -127,7 +127,7 @@ export class WellboreData {
     geometry.addAttribute('typeData', extraData, 1);
     geometry.addIndex(triangles);
 
-    const shader: any = getWellboreShader(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
+    const shader: any = WellboreShader.get(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
     return new PIXI.Mesh(geometry, shader);
   }
 
@@ -154,22 +154,20 @@ export class WellboreData {
         this.mesh.shader.uniforms.wellboreColor2 = color.col2;
         this.mesh.zIndex = this._zIndex + 100000;
       }
+      this.label.container.zIndex = 1;
       this.label.background.tint = color.labelBg;
       this.label.background.alpha = 0.75;
-      this.label.background.zIndex = 2;
-      this.label.text.zIndex = 3;
-      this.label.text.tint = this.colors.interactFontColor;
+      this.label.fontColor = this.colors.interactFontColor;
     } else {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
         this.mesh.zIndex = this._zIndex;
       }
+      this.label.container.zIndex = 0;
       this.label.background.tint = this.colors.default.labelBg;
       this.label.background.alpha = Label.config.backgroundOpacity;
-      this.label.background.zIndex = 0;
-      this.label.text.zIndex = 1;
-      this.label.text.tint = this.colors.fontColor;
+      this.label.fontColor = this.colors.fontColor;
     }
   }
 
@@ -182,22 +180,20 @@ export class WellboreData {
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.selected.col2;
         this.mesh.zIndex = this._zIndex + 1000000;
       }
+      this.label.container.zIndex = 1;
       this.label.background.tint = this.colors.selected.labelBg;
       this.label.background.alpha = 0.75;
-      this.label.background.zIndex = 2
-      this.label.text.zIndex = 3;
     } else {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
         this.mesh.zIndex = this._zIndex;
       }
+      this.label.container.zIndex = 0;
       this.label.background.tint = this.colors.default.labelBg;
       this.label.background.alpha = Label.config.backgroundOpacity;
-      this.label.background.zIndex = 0;
-      this.label.text.zIndex = 1;
     }
-    this.label.text.tint = this.colors.fontColor;
+    this.label.fontColor = this.colors.fontColor;
     this.root.recalculate();
   }
 
@@ -207,7 +203,6 @@ export class WellboreData {
       let status = this.filter;
       if (!this.group.active) status = 4;
       this.mesh.shader.uniforms.status = status;
-      // this.mesh.shader.uniforms.ghost = this.group.active && !this.isActive;
     }
     this.label.visible = active;
   }

@@ -5,6 +5,8 @@ const distanceTreshold = 0.25;
 const gridSize = 10;
 const rootRadius = 2;
 
+const expectSize = (dict : PointDictionary<any>, key : string) => expect(dict.tiles.get(key)?.size);
+
 test('Can instantitate dictionary', () => {
   const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
   expect(dict.distThreshold).toBe(distanceTreshold);
@@ -29,14 +31,14 @@ test('Can add to tile (center)', () => {
   dict.add(pos, 42);
 
   expect(dict.tiles.size).toBe(1);
-  expect(dict.tiles.get('0.0').size).toBe(1);
+  expectSize(dict, '0.0').toBe(1);
   expect(dict.pointValues.size).toBe(1);
 
   // Check point on tile
-  const point = dict.tiles.get('0.0').get(1);
-  expect(point.val).toBe(42);
-  expect(point.pos).toBe(pos);
-  expect(point.id).toBe(1);
+  const point = dict.tiles.get('0.0')?.get(1);
+  expect(point?.val).toBe(42);
+  expect(point?.pos).toBe(pos);
+  expect(point?.id).toBe(1);
 
   // Compare with point in pointValues
   expect(dict.pointValues.get(1)).toBe(point);
@@ -49,12 +51,12 @@ test('Can add to tile (edge)', () => {
   dict.add(pos, 42);
 
   expect(dict.tiles.size).toBe(2);
-  expect(dict.tiles.get('0.0').size).toBe(1);
-  expect(dict.tiles.get('1.0').size).toBe(1);
+  expectSize(dict, '0.0').toBe(1);
+  expectSize(dict, '1.0').toBe(1);
   expect(dict.pointValues.size).toBe(1);
 
   // Same point on tiles
-  expect(dict.tiles.get('0.0').get(1)).toBe(dict.tiles.get('1.0').get(1));
+  expect(dict.tiles.get('0.0')?.get(1)).toBe(dict.tiles.get('1.0')?.get(1));
 });
 
 test('Can add to tile (diagonal)', () => {
@@ -64,10 +66,10 @@ test('Can add to tile (diagonal)', () => {
   dict.add(pos, 42);
 
   expect(dict.tiles.size).toBe(4);
-  expect(dict.tiles.get('0.0').size).toBe(1);
-  expect(dict.tiles.get('1.0').size).toBe(1);
-  expect(dict.tiles.get('0.1').size).toBe(1);
-  expect(dict.tiles.get('1.1').size).toBe(1);
+  expectSize(dict, '0.0').toBe(1);
+  expectSize(dict, '1.0').toBe(1);
+  expectSize(dict, '0.1').toBe(1);
+  expectSize(dict, '1.1').toBe(1);
   expect(dict.pointValues.size).toBe(1);
 });
 
@@ -80,10 +82,10 @@ test('Can add to tile (multiple)', () => {
   dict.add(new Vector2(205, 405), 4);  // Should be: [20, 40]
 
   expect(dict.tiles.size).toBe(4); // [0, 0], [0, -1], [1, 0], [20, 40]
-  expect(dict.tiles.get('0.0').size).toBe(3);
-  expect(dict.tiles.get('0.-1').size).toBe(1);
-  expect(dict.tiles.get('1.0').size).toBe(1);
-  expect(dict.tiles.get('20.40').size).toBe(1);
+  expectSize(dict, '0.0').toBe(3);
+  expectSize(dict, '0.-1').toBe(1);
+  expectSize(dict, '1.0').toBe(1);
+  expectSize(dict, '20.40').toBe(1);
   expect(dict.pointValues.size).toBe(4);
 });
 
@@ -98,9 +100,9 @@ test('Can clear with filter', () => {
 
   // Check initial
   expect(dict.tiles.size).toBe(3);
-  expect(dict.tiles.get('0.0').size).toBe(3);
-  expect(dict.tiles.get('1.0').size).toBe(3);
-  expect(dict.tiles.get('2.0').size).toBe(1);
+  expectSize(dict, '0.0').toBe(3);
+  expectSize(dict, '1.0').toBe(3);
+  expectSize(dict, '2.0').toBe(1);
   expect(dict.pointValues.size).toBe(5);
 
   // Remove 'Planned' points
@@ -108,8 +110,8 @@ test('Can clear with filter', () => {
 
   // Check after
   expect(dict.tiles.size).toBe(2);
-  expect(dict.tiles.get('0.0').size).toBe(2);
-  expect(dict.tiles.get('1.0').size).toBe(1);
+  expectSize(dict, '0.0').toBe(2);
+  expectSize(dict, '1.0').toBe(1);
   expect(dict.tiles.has('2.0')).toBeFalsy();
   expect(dict.pointValues.size).toBe(2);
 });
