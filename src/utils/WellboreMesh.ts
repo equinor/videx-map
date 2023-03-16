@@ -1,5 +1,6 @@
-import { round } from '@equinor/videx-math';
+/* eslint-disable no-magic-numbers, curly */
 import Vector2 from '@equinor/videx-vector2';
+
 import { SegmentPoint, LineInterpolator } from './LineInterpolator';
 import Mesh from './Mesh';
 import { TickConfig } from './wellbores/Config';
@@ -47,7 +48,6 @@ export class WellboreMesh {
     const vertexData: number[] = [];
     const extraData: number[] = []; // 0: Normal, 1: Interval, 2: Tick
 
-    let j: number = 0;
     if(intervals.length <= 0) {
       const path: SegmentPoint[] = this.interp.GetSection(0, 1);
       this.appendSegment(path, 0, vertices, triangles, vertexData, extraData);

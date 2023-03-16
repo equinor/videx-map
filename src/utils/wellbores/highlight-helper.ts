@@ -1,8 +1,10 @@
-import { WellboreData, RootData, HighlightEvent } from "./data";
-import Vector2 from "@equinor/videx-vector2";
-import LineDictionary from "../LineDictionary";
-import PointDictionary from "../PointDictionary";
-import WellboreModule from "../../WellboreModule";
+/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
+import Vector2 from '@equinor/videx-vector2';
+
+import LineDictionary from '../LineDictionary';
+import { WellboreData, RootData, HighlightEvent } from './data';
+import PointDictionary from '../PointDictionary';
+import WellboreModule from '../../WellboreModule';
 
 function testRoot(pos: Vector2, radius: number, pointDict: PointDictionary<RootData>) : WellboreData[] {
   const root = pointDict.getClosestUnder(pos, radius);
@@ -34,7 +36,11 @@ function testWellborePath(pos: Vector2, lineDict: LineDictionary<WellboreData>, 
 }
 
 
-export function updateHighlighted(module: WellboreModule, pos: Vector2, onHighlightOn?: (event: HighlightEvent) => void, onHighlightOff?: () => void, originalEvent?: any) : void {
+export function updateHighlighted(module: WellboreModule,
+  pos: Vector2,
+  onHighlightOn?: (event: HighlightEvent) => void,
+  onHighlightOff?: () => void,
+  originalEvent?: any) : void {
   let wellbores : WellboreData[];
 
   // 1. test if position overlaps a root
@@ -50,7 +56,7 @@ export function updateHighlighted(module: WellboreModule, pos: Vector2, onHighli
     wellbores = testWellborePath(pos, module.lineDict, 0.5); // make configurable?
   }
 
-  const { highlight, pixiOverlay } = module;
+  const { highlight } = module;
 
   // If no hits
   if (!wellbores) {
@@ -76,7 +82,7 @@ export function updateHighlighted(module: WellboreModule, pos: Vector2, onHighli
 }
 
 export function forceHighlight(module: WellboreModule, wellbore: WellboreData) {
-  const { highlight, pixiOverlay } = module;
+  const { highlight } = module;
 
   const root = wellbore.root;
   const wellbores = [ wellbore ];

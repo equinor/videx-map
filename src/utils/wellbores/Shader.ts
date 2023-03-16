@@ -1,4 +1,6 @@
+/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import * as PIXI from 'pixi.js';
+
 import { Color } from './Colors';
 
 type vec3 = [number, number, number];
@@ -153,6 +155,7 @@ export interface RootUniforms {
   active: boolean;
   circleColor1: [number, number, number]; // [R, G, B]
   circleColor2: [number, number, number]; // [R, G, B]
+  rootRadius: number,
 }
 
 export class RootShader {

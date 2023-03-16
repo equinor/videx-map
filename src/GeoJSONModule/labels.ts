@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import * as PIXI from 'pixi.js';
 import {v4 as uuidv4} from 'uuid';
 import Vector2 from '@equinor/videx-vector2';
@@ -73,7 +74,7 @@ export default class GeoJSONLabels {
       const instance: PIXI.BitmapText = new PIXI.BitmapText(name, {fontName: this.fontName});
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
-      instance.anchor = new PIXI.Point(0.5, 0.5);
+      instance.anchor.set(0.5, 0.5);
       instance.zIndex = 1000; // High z-index
       this.container.addChild(instance);
       return instance;

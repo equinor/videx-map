@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers, curly, no-empty-function  */
 import * as PIXI from 'pixi.js';
 import { ModuleInterface } from './ModuleInterface';
 import Vector2 from '@equinor/videx-vector2';
@@ -17,7 +18,7 @@ interface FaultlineData {
 }
 
 /** Interface for faultline config. */
-interface InputConfig {
+export interface InputConfig {
   /** Color of faultline on format 0xRRGGBB. (Default: 0x727D88) */
   color?: number;
   /** Alpha of faultlines. (Default: 1.0) */
@@ -131,7 +132,8 @@ export default class FaultlineModule extends ModuleInterface {
     }
   }
 
-  resize (zoom: number) {
+  /* eslint-disable-next-line  @typescript-eslint/no-empty-function */
+  resize (_zoom: number) {
 
   }
 }

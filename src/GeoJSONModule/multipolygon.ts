@@ -1,5 +1,6 @@
+/* eslint-disable no-magic-numbers, curly */
 import * as PIXI from 'pixi.js';
-import { color } from 'd3';
+import { color } from 'd3-color';
 import { clamp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -96,6 +97,7 @@ export default class GeoJSONMultiPolygon {
 
   container: PIXI.Container;
   pixiOverlay: pixiOverlayBase;
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: TriangleDictionary<any> = new TriangleDictionary(1.2);
   textStyle: PIXI.TextStyle;
   labels: GeoJSONLabels;
@@ -118,9 +120,9 @@ export default class GeoJSONMultiPolygon {
     this.textStyle = new PIXI.TextStyle({
       fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
       fontSize: config?.labelFontSize || Defaults.DEFAULT_FONT_SIZE,
-      fontWeight: config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT,
+      fontWeight: (config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT) as PIXI.TextStyleFontWeight,
       fill: config?.labelColor || Defaults.DEFAULT_LABEL_COLOR,
-      align: config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN,
+      align: (config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN) as PIXI.TextStyleAlign,
     });
 
     this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE);
@@ -183,7 +185,12 @@ export default class GeoJSONMultiPolygon {
 
     container.addChild(polygonMesh);
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, GeoJSONVertexShaderOutline, GeoJSONFragmentShaderOutline, outlineUniform, outlineData.normals);
+    const polygonOutlineMesh = Mesh.from(outlineData.vertices,
+      outlineData.triangles,
+      GeoJSONVertexShaderOutline,
+      GeoJSONFragmentShaderOutline,
+      outlineUniform,
+      outlineData.normals);
     polygonOutlineMesh.zIndex = zIndex + 1;
     container.addChild(polygonOutlineMesh);
 
@@ -238,9 +245,11 @@ export default class GeoJSONMultiPolygon {
     * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
     * instead of iterating over every mesh and manually updating each of the selected
     */
-    this.container.children.map((child) => {
+    this.container.children.map((child: PIXI.DisplayObject) => {
+      /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
       if (child.shader.uniformGroup.uniforms.outlineWidth) {
+        /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
         child.shader.uniformGroup.uniforms.outlineWidth = outlineRadius;
       }
@@ -248,7 +257,7 @@ export default class GeoJSONMultiPolygon {
     this.currentZoom = zoom;
   }
 
-  testPosition(pos: Vector2) : any {
+  testPosition(pos: Vector2) : number {
     return this.dict.getPolygonAt([pos.x, pos.y]);
   }
 

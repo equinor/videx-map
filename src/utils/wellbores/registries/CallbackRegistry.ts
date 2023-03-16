@@ -1,3 +1,4 @@
+/* eslint-disable curly, @typescript-eslint/no-empty-function */
 type Callback = (wellboreId: number) => void;
 
 export class CallbackRegistry {
@@ -13,7 +14,7 @@ export class CallbackRegistry {
     this.map['Default'] = () => {};
   }
 
-  /** Register callbacl */
+  /** Register callback */
   register (key: string, callback: Callback): void {
     if (this.registry[key]) throw `Key [ ${key} ] have already been registered.`;
     this.registry[key] = callback;
@@ -29,7 +30,7 @@ export class CallbackRegistry {
     if (this.map[setKey]) throw `Key [ ${setKey} ] have already been mapped.`;
     if (!key) {
       if (setKey in this.registry) key = setKey;
-      else key = "Default";
+      else key = 'Default';
     }
     this.map[setKey] = this.registry[key];
   }

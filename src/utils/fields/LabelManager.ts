@@ -1,5 +1,7 @@
+/* eslint-disable no-magic-numbers */
 import * as PIXI from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
+
 import groupLabels from './groupLabels';
 
 /** Data for label. */

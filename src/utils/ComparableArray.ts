@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 /**
  * Class for comparing arrays of numbers. Also supports objects with numeric elements.
  */
@@ -89,7 +90,7 @@ export default class ComparableArray<T extends object> {
     // Create an array of a, if number
     if (typeof a === 'number') a = [a];
 
-    if (this.numbers.length != a.length) return false;
+    if (this.numbers.length !== a.length) return false;
 
     const tempNumbers: number[] = [];
     for (let i = 0; i < a.length; i++) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { pixiOverlayBase } from './pixiOverlayInterfaces';
 import * as PIXI from 'pixi.js';
 
@@ -36,7 +37,7 @@ export abstract class ModuleInterface {
    * @returns True if new visibility was set
    */
   setVisibility(visible: boolean) {
-    if (visible != this.visibility) {
+    if (visible !== this.visibility) {
       this.root.visible = visible;
       this.visibility = visible;
       return true;
@@ -44,10 +45,10 @@ export abstract class ModuleInterface {
     return false;
   }
 
-  onAdd(map: L.Map) : void {}
+  onAdd(_map: L.Map) : void {}
 
-  onRemove(map: L.Map) : void {};
+  onRemove(_map: L.Map) : void {}
 
-  resize(zoom: number) : void {};
+  resize(_zoom: number) : void {}
 
 }

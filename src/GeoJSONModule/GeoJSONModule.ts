@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import * as PIXI from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -13,6 +14,7 @@ import { FeatureProps } from './interfaces';
 /** Interface for config. */
 interface Config {
   customEventHandler?: EventHandler;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   onFeatureHover?: (event: MouseEvent, data: any) => void;
   outlineResize?: ResizeConfig;
   labelResize?: LabelResizeConfig;
@@ -20,7 +22,7 @@ interface Config {
 
 /** Module for displaying fields. */
 export default class GeoJSONModule extends ModuleInterface {
-
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   onFeatureHover: (event: MouseEvent, data: any) => void;
   points: GeoJSONPoint;
   linestrings: GeoJSONLineString;
@@ -39,6 +41,7 @@ export default class GeoJSONModule extends ModuleInterface {
     this.config = config;
   }
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
     this.labelRoot = new PIXI.Container();
     data.features.forEach(feature => {
@@ -68,6 +71,7 @@ export default class GeoJSONModule extends ModuleInterface {
    * @param pos Target position in lat-long
    * @returns List of features at the given position
    */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   testPosition(pos: Vector2) : any {
     let result = [];
     if (this.polygons) result.push(this.polygons.testPosition(pos));
@@ -78,7 +82,7 @@ export default class GeoJSONModule extends ModuleInterface {
     return result;
   }
 
-  onAdd(map: import("leaflet").Map): void {
+  onAdd(map: import('leaflet').Map): void {
     const element = this.pixiOverlay.utils.getRenderer().view.parentNode;
     const callbacks = {
       mousemove: this.handleMouseMove.bind(this),
@@ -90,7 +94,7 @@ export default class GeoJSONModule extends ModuleInterface {
     this._eventHandler.register(map, element, callbacks);
   }
 
-  onRemove(map: import("leaflet").Map): void {
+  onRemove(_map: import('leaflet').Map): void {
     this._eventHandler.unregister();
   }
 

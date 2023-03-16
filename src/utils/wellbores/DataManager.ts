@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { SourceData, WellboreData, RootData, Group } from './data';
 
-export default class DataManager {
+export default abstract class DataManager {
   wellbores: { [key: number]: WellboreData } = {}
   roots: { [key: number]: RootData } = {}
 
   /** Map group keys ('Drilled', 'Planned', etc.) to keys in wellbores dictionary. */
   groups: { [key: string]: Group } = {}
 
-  addWellbore(key: number, data: SourceData) {
+  addWellbore(_key: number, _data: SourceData) {
 
   }
 
-  removeWellbore(key: number) {
+  removeWellbore(_key: number) {
 
   }
 }

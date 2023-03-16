@@ -2,15 +2,15 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./dist",
-    "module": "es6",
+    "module": "ESNext",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
-    "target": "es5",
+    "target": "ES2022",
     "esModuleInterop": true
   },
   "include": [
-    "src/*"
+    "./src"
   ],
   "exclude": ["node_modules"],
 }

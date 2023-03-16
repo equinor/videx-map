@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import Vector2 from '@equinor/videx-vector2';
 import { VectorLike } from '@equinor/videx-linear-algebra';
 
@@ -29,7 +30,7 @@ import { VectorLike } from '@equinor/videx-linear-algebra';
       .rescale(dir[0])
       .add(lineStart[0], lineStart[1])
       .immutable;
-  };
+  }
 
   /**
    * Find the shortest distance from a point to a line segment.
@@ -55,7 +56,7 @@ import { VectorLike } from '@equinor/videx-linear-algebra';
     else if(dir[0] > len) return Vector2.distance(point, lineEnd);
 
     return Math.abs(dir.y);
-  };
+  }
 
   /**
    * Get the relative displacement of the point in respect to lineStart.
@@ -77,4 +78,4 @@ import { VectorLike } from '@equinor/videx-linear-algebra';
       .rotate(-lineAngle)
       .modify(Math.abs)
       .immutable;
-  };
+  }

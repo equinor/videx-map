@@ -1,4 +1,5 @@
-import Vector2 from "@equinor/videx-vector2";
+/* eslint-disable no-magic-numbers, @typescript-eslint/no-explicit-any */
+import Vector2 from '@equinor/videx-vector2';
 import * as PIXI from 'pixi.js';
 
 /**
@@ -9,7 +10,6 @@ import * as PIXI from 'pixi.js';
  * @return New circle mesh with shader uniforms attached
  */
 export default function generateCircle(center: Vector2, radius: number, shader: any): PIXI.Mesh {
-
   // Winding order:
   // 2    3
   //

@@ -1,13 +1,15 @@
+/* eslint-disable no-magic-numbers, curly */
 import * as PIXI from 'pixi.js';
+import { clamp } from '@equinor/videx-math';
+import Vector2 from '@equinor/videx-vector2';
+
 import { ModuleInterface } from './ModuleInterface';
 import Mesh, { MeshData, MeshNormalData } from './utils/Mesh';
 import centerOfMass from './utils/centerOfMass';
 import Highlighter from './utils/fields/Highlighter';
 import preprocessFields from './utils/fields/preprocessFields';
 import LabelManager, { LabelData } from './utils/fields/LabelManager';
-import { clamp } from '@equinor/videx-math';
 import TriangleDictionary from './utils/TriangleDictionary';
-import Vector2 from '@equinor/videx-vector2';
 
 type vec3 = [number, number, number];
 
@@ -142,7 +144,7 @@ export default class FieldModule extends ModuleInterface {
       fontSize: 64,
       fontWeight: '600',
       fill : 0x454545,
-      align : 'center'
+      align : 'center',
     });
 
     this.labelManager = new LabelManager(textStyle, 0.029);
@@ -215,7 +217,12 @@ export default class FieldModule extends ModuleInterface {
 
     this.root.addChild(polygonMesh);
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices, outlineData.triangles, FieldModule.vertexShaderOutline, FieldModule.fragmentShaderOutline, outlineUniform, outlineData.normals);
+    const polygonOutlineMesh = Mesh.from(outlineData.vertices,
+      outlineData.triangles,
+      FieldModule.vertexShaderOutline,
+      FieldModule.fragmentShaderOutline,
+      outlineUniform,
+      outlineData.normals);
     polygonOutlineMesh.zIndex = zIndex + 1;
     this.root.addChild(polygonOutlineMesh);
 
@@ -291,30 +298,10 @@ export default class FieldModule extends ModuleInterface {
     });
   }
 
-  resize(zoom: number) {
+  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+  resize(_zoom: number) {
 
   }
-
-  /*
-  resize(outlineScale: number, hashScale: number, labelScale: number): void {
-    const clampedHashWidth = clamp(hashScale, this.config.minHash, this.config.maxHash);
-    let clampedOutlineWidth = outlineScale - 1;
-    if (clampedOutlineWidth < 0) clampedOutlineWidth = 0;
-    // const clampedLabelScale = labelScale > 15 ? 15 : labelScale;
-    for (let i = 0; i < this.fields.length; i++) {
-      const d = this.fields[i];
-      d.fill.uniform.hashWidth = clampedHashWidth;
-      d.outline.uniform.width = clampedOutlineWidth;
-    }
-
-    if (labelScale > 20) {
-      if (this.labelManager.visible) this.labelManager.hideLabels();
-    } else {
-      if (!this.labelManager.visible) this.labelManager.showLabels();
-      this.labelManager.resize(labelScale);
-    }
-  }
-  */
 
   highlight(lat: number, long: number): boolean {
     const field: number = this.dict.getPolygonAt([long, lat]);
@@ -322,7 +309,7 @@ export default class FieldModule extends ModuleInterface {
       if (this.highlighter.revert()) this.pixiOverlay.redraw();
       this.prevField = -1;
       return false;
-    };
+    }
     // Don't highlight field twice
     if (this.prevField === field) return true;
     this.highlighter.highlight(field);

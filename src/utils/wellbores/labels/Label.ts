@@ -1,5 +1,5 @@
+/* eslint-disable no-magic-numbers */
 import * as PIXI from 'pixi.js';
-import { Color } from '../Colors';
 
 interface State {
   zoom: number;
@@ -41,7 +41,7 @@ export class Label {
       fontFamily : 'Arial',
       fontSize: fontSize,
       fill: 0xFFFFFF, // Initially white to use tint
-      align : 'center'
+      align : 'center',
     });
     Label.height = PIXI.TextMetrics.measureText(' ', Label.style).height;
   }

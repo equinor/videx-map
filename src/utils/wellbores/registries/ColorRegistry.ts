@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 import { Colors } from '../Colors';
 import { getDefaultColors } from '../Colors';
 
@@ -32,7 +33,7 @@ export class ColorRegistry {
     if (this.map[setKey]) throw `Key [ ${setKey} ] have already been mapped.`;
     if (!key) {
       if (setKey in this.registry) key = setKey;
-      else key = "Default";
+      else key = 'Default';
     }
     this.map[setKey] = this.registry[key];
   }

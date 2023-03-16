@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import * as PIXI from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { SourceData } from './SourceData';
@@ -33,6 +34,12 @@ export enum FilterStatus {
 }
 
 export class WellboreData {
+
+  public static state = {
+    wellboreRadius: 1,
+    rootRadius: 1,
+  };
+
   data: SourceData;
   group: Group;
   wellboreWidth: number;
@@ -90,7 +97,7 @@ export class WellboreData {
   }
 
   get active(): boolean {
-    const activeUniform = (this.mesh && this.mesh.shader.uniforms.status == 0);
+    const activeUniform = (this.mesh && this.mesh.shader.uniforms.status === 0);
     return this.group.active && (activeUniform || this.filter === FilterStatus.none);
   }
 
@@ -101,11 +108,11 @@ export class WellboreData {
   }
 
   get selected(): boolean {
-    return this.status == WellboreStatus.selected;
+    return this.status === WellboreStatus.selected;
   }
 
   get highlighted(): boolean {
-    return this.status == WellboreStatus.highlighted || this.status == WellboreStatus.multiHighlighted;
+    return this.status === WellboreStatus.highlighted || this.status === WellboreStatus.multiHighlighted;
   }
 
   get order() {
@@ -113,7 +120,7 @@ export class WellboreData {
   }
 
   get uniforms(): WellboreUniforms {
-    return this.mesh.shader.uniforms;
+    return this.mesh.shader.uniforms as WellboreUniforms;
   }
 
   private createWellboreMesh(intervals: [number, number][], tick: TickConfig): PIXI.Mesh {
@@ -203,6 +210,8 @@ export class WellboreData {
       let status = this.filter;
       if (!this.group.active) status = 4;
       this.mesh.shader.uniforms.status = status;
+      this.mesh.shader.uniforms.wellboreRadius = WellboreData.state.wellboreRadius;
+      this.mesh.shader.uniforms.rootRadius = WellboreData.state.rootRadius;
     }
     this.label.visible = active;
   }

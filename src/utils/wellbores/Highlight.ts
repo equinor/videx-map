@@ -1,4 +1,5 @@
-import { WellboreData, RootData } from "./data"
+/* eslint-disable curly */
+import { WellboreData, RootData } from './data'
 
 export class Highlight {
   active: boolean = false;
@@ -7,7 +8,7 @@ export class Highlight {
 
   /** Return true of highlight is single. */
   get single() {
-    return this.wellbores.length == 1;
+    return this.wellbores.length === 1;
   }
 
   /** Get first wellbore. */
@@ -73,8 +74,8 @@ export class Highlight {
   }
 
   equals(root: RootData, wellbores: WellboreData[]) {
-    if (this.root != root) return false;
-    if (this.wellbores.length != wellbores.length) return false;
+    if (this.root !== root) return false;
+    if (this.wellbores.length !== wellbores.length) return false;
 
     // Compare wellbores
     for (let i = 0; i < this.wellbores.length; i++) {
