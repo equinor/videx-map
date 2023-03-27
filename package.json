@@ -95,7 +95,7 @@
     "@equinor/videx-vector2": "^1.0.44",
     "d3-color": "^3.1.0",
     "earcut": "^2.2.2",
-    "pixi.js": "^7.1.2",
+    "pixi.js": "^7.2.2",
     "uuid": "^8.3.2"
   }
 }

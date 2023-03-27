@@ -151,6 +151,7 @@ export default class WellboreModule extends ModuleInterface {
     // Append wellbore to root
     root?.append(wellbore);
 
+    // eslint-disable-next-line max-len
     if (this._deferredSelector && (this._deferredSelectorKeys === null || this._deferredSelectorKeys.includes(group.key)) && this._deferredSelector(wellbore.data)) {
       this._deferredSelector = undefined;
       wellbore.setSelected(true);

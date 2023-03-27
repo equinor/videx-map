@@ -49,8 +49,8 @@ export default class GeoJSONPoint {
         point = new PIXI.Graphics();
         this.container.addChild(point);
       }
-      const fillColor = properties.style.fillColor ? PIXI.utils.string2hex(color(properties.style.fillColor).hex()) : 0x0;
-      const lineColor = properties.style.lineColor ? PIXI.utils.string2hex(color(properties.style.lineColor).hex()) : 0x0;
+      const fillColor = properties.style.fillColor ? new PIXI.Color(color(properties.style.fillColor).formatHex()).toNumber() : 0x0;
+      const lineColor = properties.style.lineColor ? new PIXI.Color(color(properties.style.lineColor).formatHex()).toNumber()  : 0x0;
       const opacity = properties.style.fillOpacity || 0;
       const offset = 4;
       point.lineStyle(properties.style.lineWidth, lineColor);
