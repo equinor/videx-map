@@ -45,7 +45,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@equinor/videx-storybook-input": "^1.0.0",
-    "@storybook/html": "^6.2.3",
+    "@storybook/html": "^7.0.5",
     "@types/d3": "^5.7.2",
     "@types/earcut": "^2.1.1",
     "@types/geojson": "^7946.0.3",
