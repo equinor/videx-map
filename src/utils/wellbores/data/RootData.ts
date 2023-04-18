@@ -8,21 +8,25 @@ import generateCircle from '../../generateCircle';
 import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
 
 export class RootData {
+
+  public static state = {
+    rootRadius: 1,
+    maxScale: 1,
+  };
+
   mesh: PIXI.Mesh;
   wellbores: WellboreData[] = [];
   position: Vector2;
-  radius: number;
   labelIndex: number = 0;
   rootLabelsBBox: PIXI.Rectangle = null;
 
   /** Target wellbore data for color */
   target: WellboreData = null;
 
-  constructor(position: Vector2, radius: number) {
+  constructor(position: Vector2) {
     this.position = position;
-    this.radius = radius;
     const shader: PIXI.Shader = RootShader.get();
-    this.mesh = generateCircle(position, radius, shader);
+    this.mesh = generateCircle(position, RootData.state.maxScale, shader);
   }
 
   /** Active if  */
@@ -107,7 +111,8 @@ export class RootData {
       // 0: normal,  1: highlighted, 2: multiHighlighted, 3: selected
       this.mesh.zIndex = this.target.status;
     }
-    uniform.rootRadius = this.radius;
+
+    uniform.rootRadius = RootData.state.rootRadius;
   }
 
   updateLabels(): void {

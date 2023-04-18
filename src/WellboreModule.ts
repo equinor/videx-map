@@ -90,6 +90,8 @@ export default class WellboreModule extends ModuleInterface {
 
     // Build wellbore shader
     WellboreShader.build(config.wellboreResize.max.scale, extra.wellboreDash);
+
+    RootData.state.maxScale = config.rootResize.max.scale;
   }
 
   destroy(): void {
@@ -107,7 +109,7 @@ export default class WellboreModule extends ModuleInterface {
 
     if (overlapping) return overlapping.val;
 
-    const wellboreRoot = new RootData(position, this.config.rootResize.max.scale);
+    const wellboreRoot = new RootData(position);
     this.containers.roots.addChild(wellboreRoot.mesh);
     this.pointDict.add(position, wellboreRoot);
     this.roots.push(wellboreRoot); // Add root
@@ -433,13 +435,28 @@ export default class WellboreModule extends ModuleInterface {
     Label.state.zoom = zoom; // Update label zoom
     Label.state.scale = scale; // Update label scale
     Label.state.rootDisplacement = rootRadius;
+    RootData.state.rootRadius = rootRadius;
 
     const labelVisible = zoom > 10;
     this.containers.labels.visible = labelVisible; // set label visibility
 
     // Only update labels on resize if labels and container is visible
-    if (labelVisible && Label.state.visible) this.roots.forEach(root => root.updateLabels());
-    Object.values(this.groups).forEach(({wellbores}) => wellbores.forEach(wellbore => wellbore.update()));
+    if (labelVisible && Label.state.visible) {
+      this.roots.forEach(root => {
+        root.updateLabels();
+      });
+    }
+
+    Object.values(this.groups).forEach(({wellbores}) => {
+      wellbores.forEach(wellbore => {
+        wellbore.update();
+      });
+    });
+
+    this.roots.forEach(root => {
+      root.recalculate();
+    });
+
   }
 
   onAdd(map: import('leaflet').Map): void {
