@@ -1,6 +1,5 @@
-import * as PIXI from "pixi.js";
-import { WellboreData } from "../src/utils/wellbores/data";
-import { Label, positionAtRoot } from "../src/utils/wellbores/labels";
+import * as PIXI from 'pixi.js';
+import { Label, positionAtRoot } from '../src/utils/wellbores/labels';
 
 Label.height = 1;
 Label.state.scale = 1;
@@ -25,7 +24,7 @@ describe('positionAtRoot', () => {
   const position0 = 0;
   const position1 = 1;
 
-  test('Should attatch label to root', () => {
+  test('Should attach label to root', () => {
     const wellbore = getWellbore();
     positionAtRoot(wellbore as any, position0);
     expect(wellbore.label.attachToRoot).toBeTruthy();

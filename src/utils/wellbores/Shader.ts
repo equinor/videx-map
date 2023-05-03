@@ -14,7 +14,7 @@ function toShader(n: number): string {
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// WELLBORE SHADER
+// #region WELLBORE SHADER
 
 /** Uniforms used by the shader. */
 export interface WellboreUniforms {
@@ -137,8 +137,6 @@ export class WellboreShader {
           alpha = 0.03;
         }
 
-        else discard;
-
         col *= alpha;
         gl_FragColor = vec4(col, alpha);
       }
@@ -148,8 +146,9 @@ export class WellboreShader {
   }
 }
 
+// #endregion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// CIRCLE SHADER / ROOT SHADER
+// #region CIRCLE SHADER
 
 export interface RootUniforms {
   active: boolean;
@@ -231,4 +230,5 @@ export class RootShader {
   }
 }
 
+// #endregion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

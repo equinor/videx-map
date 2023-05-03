@@ -3,6 +3,7 @@ import { Colors, getDefaultColors, InputColors } from '../Colors';
 import { WellboreData, FilterStatus } from './WellboreData';
 import { RootData } from './RootData';
 import { SourceData } from './SourceData';
+import { Detail, DetailOptions, getDetail } from './details';
 
 export interface GroupOptions {
   order?: number;
@@ -23,6 +24,7 @@ export class Group {
   order: number = 0;
   mirrorLabels: boolean = false;
   wellbores: WellboreData[] = [];
+  details: { [key: string]: Detail } = {};
   active: boolean = true;
   activeFilter: Filter = null;
   /** Is active filter soft or hard (Ghost) */
@@ -49,6 +51,43 @@ export class Group {
     }
   }
 
+  registerDetail(key: string, detail: DetailOptions) {
+    if (key in this.details)  {
+      throw Error(`Detail already registered, ${key}, for group: ${this.key}!`);
+    }
+    this.details[key] = getDetail(detail);
+  }
+
+  setDetailVisibility(key: string, visible: boolean) {
+    if (key in this.details)  {
+      const detail = this.details[key];
+
+      // Always initialize a visible detail, if not already done
+      if (visible && !detail.initialized) {
+        this.wellbores.forEach(wellbore => {
+          wellbore.tryDrawDetail(key, detail);
+        });
+
+        detail.initialized = true;
+      }
+
+      // If duplicate
+      if (visible === detail.visible) return;
+
+      this.wellbores.forEach(wellbore => {
+        wellbore.setDetailsVisibility(key, visible);
+      });
+
+      detail.visible = visible;
+    }
+  }
+
+  resetDetails() {
+    Object.values(this.details).forEach(detail => {
+      detail.initialized = false;
+    });
+  }
+
   append(wellbore: WellboreData) {
     wellbore.zIndex = this.order * 10000 + this.wellbores.length;
     if (this.activeFilter) {
@@ -56,6 +95,13 @@ export class Group {
       wellbore.setFilter(this.activeFilter(wellbore.data) ? FilterStatus.none : targetFilter);
       wellbore.root.recalculate(true);
     }
+
+    // If appended wellbore belongs to an initialized detail
+    Object.entries(this.details).forEach(([key, detail]) => {
+      if (!detail.initialized) return;
+      wellbore.tryDrawDetail(key, detail);
+    });
+
     this.wellbores.push(wellbore);
   }
 
