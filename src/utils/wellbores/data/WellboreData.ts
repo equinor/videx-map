@@ -11,15 +11,19 @@ import { WellboreShader, WellboreUniforms } from '../Shader';
 import { Label } from '../labels/Label';
 import { Colors, Color } from '../Colors';
 import { TickConfig } from '../Config';
+import { Detail } from './details';
 
 export interface WellboreDataInput {
   data: SourceData,
   group: Group,
   root: RootData,
+
   /** Projected coordinates. */
   coords: Vector2[],
+
   /** Threshold for radius considered to be single point. */
   pointThreshold: number;
+
   wellboreWidth: number;
   tick: TickConfig;
 }
@@ -44,9 +48,14 @@ export class WellboreData {
   group: Group;
   wellboreWidth: number;
   interpolator: LineInterpolator;
-  mesh: PIXI.Mesh;
+  container: PIXI.Container;
   label: Label;
   private _zIndex: number = 0;
+
+  private details: PIXI.Container;
+  private detailsDict: { [key: string]: PIXI.Container } = {};
+
+  private mesh: PIXI.Mesh;
 
   root: RootData;
   status: WellboreStatus = WellboreStatus.normal;
@@ -64,8 +73,15 @@ export class WellboreData {
     if (this.interpolator.singlePoint) {
       this.label.attachToRoot = true;
     } else {
+      this.container = new PIXI.Container();
+
       const intervals = processIntervals(input.data.intervals);
+
+      this.details = new PIXI.Container();
       this.mesh = this.createWellboreMesh(intervals, input.tick);
+
+      // All details should be sorted below the wellbore mesh
+      this.container.addChild(this.details, this.mesh);
     }
 
     // Update WellboreData with current state
@@ -101,6 +117,31 @@ export class WellboreData {
     return this.group.active && (activeUniform || this.filter === FilterStatus.none);
   }
 
+  /**
+   * Render wellbore details if data is available.
+   * @param key - Unique identifier for the detail to render
+   * @param detail - Object containing information to draw
+   */
+  tryDrawDetail(key: string, detail: Detail) {
+    if (!this.container) return;
+
+    // Get relative positions along wellbore, if available for data
+    const relative = detail.getRelative(this.data);
+    if (!relative) return;
+
+    const container = new PIXI.Container();
+    container.visible = detail.visible;
+
+    relative.forEach(p => {
+      const graphics = detail.getGraphics(p, this.interpolator);
+      container.addChild(graphics);
+    });
+
+    // Add details and store container reference by key
+    this.details.addChild(container);
+    this.detailsDict[key] = container;
+  }
+
   setFilter(filter: FilterStatus) {
     if (this.filter === filter) return; // If flag is duplicate
     this.filter = filter;
@@ -115,7 +156,7 @@ export class WellboreData {
     return this.status === WellboreStatus.highlighted || this.status === WellboreStatus.multiHighlighted;
   }
 
-  get order() {
+  get order(): number {
     return this.group.order;
   }
 
@@ -144,6 +185,12 @@ export class WellboreData {
 
   setWellboreVisibility(visible: boolean) {
     if (this.mesh) this.uniforms.wellboreVisible = visible;
+  }
+
+  setDetailsVisibility(key: string, visible: boolean) {
+    if (key in this.detailsDict) {
+      this.detailsDict[key].visible = visible;
+    }
   }
 
   setHighlight(isHighlighted: boolean, multiple: boolean = false) : void {
@@ -205,15 +252,26 @@ export class WellboreData {
   }
 
   update() : void {
-    const active = (this.group.active && this.filter === FilterStatus.none);
-    if (this.mesh) {
-      let status = this.filter;
-      if (!this.group.active) status = 4;
-      this.mesh.shader.uniforms.status = status;
-      this.mesh.shader.uniforms.wellboreRadius = WellboreData.state.wellboreRadius;
-      this.mesh.shader.uniforms.rootRadius = WellboreData.state.rootRadius;
-    }
-    this.label.visible = active;
-  }
+    if (this.group.active) {
+      // Labels and details are only visible if no filter.
+      const noFilter = (this.filter === FilterStatus.none);
 
+      if (this.container) {
+        this.container.visible = true;
+        this.mesh.shader.uniforms.status = this.filter;
+        this.mesh.shader.uniforms.wellboreRadius = WellboreData.state.wellboreRadius;
+        this.mesh.shader.uniforms.rootRadius = WellboreData.state.rootRadius;
+        this.details.visible = noFilter;
+      }
+
+      this.label.visible = noFilter;
+    } else { // If group is inactive
+      if (this.container) {
+        this.container.visible = false;
+        this.details.visible = false;
+      }
+
+      this.label.visible = false;
+    }
+  }
 }

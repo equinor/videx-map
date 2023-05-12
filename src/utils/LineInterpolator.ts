@@ -2,70 +2,45 @@
 import Vector2 from '@equinor/videx-vector2';
 import { mix } from '@equinor/videx-linear-algebra';
 
-/**
- * Path used by the interpolator.
- */
+/** Path used by the interpolator. */
 interface PathPoint {
-  /**
-   * Point along the line.
-   */
+  /** Point along the line. */
   point: Vector2;
-  /**
-   * Normalized direction towards next point.
-   */
+
+  /** Normalized direction towards next point. */
   direction: Vector2;
-  /**
-   * Distance to point along line.
-   */
+
+  /** Distance to point along line. */
   distance: number;
-  /**
-   * Relative distance to point along line.
-   */
+
+  /** Relative distance to point along line. */
   relative: number;
 }
 
-/**
- * Point in returned segment.
- */
+/** Point in returned segment. */
 export interface SegmentPoint {
-  /**
-   * Point along line.
-   */
+  /** Point along line. */
   position: Vector2;
-  /**
-   * Normalized direction towards next point.
-   */
+
+  /** Normalized direction towards next point. */
   direction: Vector2;
-  /**
-   * Distance to point along line.
-   */
+
+  /** Distance to point along line. */
   distance: number;
 }
 
-/**
- * Interpolator for finding points and subsegments on a line defined by a collection
- * of Vector2 or 2D vectors.
- */
+/** Interpolator for finding points and subsegments on a line defined by a collection of Vector2 or 2D vectors. */
 export class LineInterpolator {
-
-  /**
-   * Amount of provided points.
-   */
+  /** Amount of provided points. */
   amount : number;
 
-  /**
-   * Length of line.
-   */
+  /** Length of line. */
   length : number;
 
-  /**
-   * True if line is an approximation of a single point.
-   */
+  /** True if line is an approximation of a single point. */
   singlePoint : boolean = true;
 
-  /**
-   * Collection of points along line with distances.
-   */
+  /** Collection of points along line with distances. */
   path: PathPoint[];
 
   /**
@@ -106,7 +81,9 @@ export class LineInterpolator {
       };
 
       // Not a single point if outside radius
-      if(Vector2.distance(point, root) > radius) this.singlePoint = false;
+      if(Vector2.distance(point, root) > radius) {
+        this.singlePoint = false;
+      }
     }
 
     // Re-iterate over path to calculate relative distances

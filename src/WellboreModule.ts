@@ -6,7 +6,14 @@ import Vector2 from '@equinor/videx-vector2';
 import { ModuleInterface } from './ModuleInterface';
 import { Config, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
 import { RootShader, WellboreShader } from './utils/wellbores/Shader';
-import { SourceData, Group, GroupOptions, WellboreData, RootData } from './utils/wellbores/data';
+import {
+  SourceData,
+  Group,
+  GroupOptions,
+  DetailOptions,
+  WellboreData,
+  RootData,
+} from './utils/wellbores/data';
 import LineDictionary from './utils/LineDictionary';
 import PointDictionary from './utils/PointDictionary';
 import Projector from './utils/wellbores/Projector';
@@ -100,8 +107,18 @@ export default class WellboreModule extends ModuleInterface {
   }
 
   registerGroup(key: string, options?: GroupOptions) : void {
-    if (this.groups[key]) throw Error(`Group [${key}] already registered!`);
+    if (this.groups[key]) throw Error(`Group already registered: ${key}!`);
     this.groups[key] = new Group(key, options);
+  }
+
+  /**
+   * Registers a new detail on given group.
+   * @param key Detail key.
+   * @param groupKeys Target group keys.
+   * @param options
+   */
+  registerDetail(key: string, groupKeys: string[], options: DetailOptions) : void {
+    this.forEachGroup(groupKeys, group => group.registerDetail(key, options));
   }
 
   private addRoot(position: Vector2) : RootData {
@@ -119,8 +136,8 @@ export default class WellboreModule extends ModuleInterface {
 
   /**
    * Add a single wellbore
-   * @param key data group to add wellbore into
-   * @param data wellbore data
+   * @param data Wellbore data
+   * @param group Group to add wellbore into
    */
   addWellbore(data: SourceData, group: Group = this.groups.default) : void {
     if (data.path.length === 0) throw Error('Empty wellbore path!');
@@ -140,8 +157,8 @@ export default class WellboreModule extends ModuleInterface {
       wellboreWidth: wellboreResize.max.scale,
       tick,
     });
-    if (wellbore.mesh) {
-      this.containers.wellbores.addChild(wellbore.mesh);
+    if (wellbore.container) {
+      this.containers.wellbores.addChild(wellbore.container);
     }
     this.containers.labels.addChild(wellbore.label.container);
     group.append(wellbore);
@@ -184,6 +201,11 @@ export default class WellboreModule extends ModuleInterface {
         reject(err);
       }
     });
+  }
+
+  private forAllGroups(func: (group: Group, key: string) => void) {
+    Object.keys(this.groups).forEach(key => func(this.groups[key], key));
+    this.requestRedraw();
   }
 
   private forEachGroup(keys: string[], func: (group: Group, key: string) => void): void {
@@ -265,6 +287,15 @@ export default class WellboreModule extends ModuleInterface {
    */
   setWellboresVisibility(visible: boolean, ...keys: string[]) {
     this.forEachGroup(keys, group => group.setWellboreVisibility(visible));
+  }
+
+  /**
+   * Enable/disable details
+   * @param visible
+   * @param key Key of detail to set visibility for
+   */
+  setDetailVisibility(visible: boolean, key: string) {
+    this.forAllGroups(group => group.setDetailVisibility(key, visible));
   }
 
 
@@ -362,6 +393,7 @@ export default class WellboreModule extends ModuleInterface {
 
     Object.values(this.groups).forEach(g => {
       g.wellbores = [];
+      g.resetDetails();
     });
     this.roots = [];
 
@@ -379,7 +411,8 @@ export default class WellboreModule extends ModuleInterface {
   clear(...keys: string[]) : void {
     // clear all?
     if (keys.length === 0) {
-      return this.clearAll();
+      this.clearAll();
+      return;
     }
     this.highlight.clear();
 
@@ -396,10 +429,11 @@ export default class WellboreModule extends ModuleInterface {
         }
 
         // remove PIXI elements
-        w.mesh?.destroy();
+        w.container?.destroy();
         w.label?.container?.destroy();
       });
       group.wellbores = [];
+      group.resetDetails();
     });
 
     // update roots
@@ -509,6 +543,5 @@ export default class WellboreModule extends ModuleInterface {
       this.pixiOverlay.redraw();
       this._redrawAnimFrame = null;
     });
-
   }
 }
