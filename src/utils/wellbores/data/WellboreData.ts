@@ -127,7 +127,7 @@ export class WellboreData {
 
     // Get relative positions along wellbore, if available for data
     const relative = detail.getRelative(this.data);
-    if (!relative) return;
+    if (!Array.isArray(relative) || relative.length === 0) return;
 
     const container = new PIXI.Container();
     container.visible = detail.visible;
