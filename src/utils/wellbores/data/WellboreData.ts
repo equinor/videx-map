@@ -90,7 +90,9 @@ export class WellboreData {
 
   set zIndex (val: number) {
     this._zIndex = val;
-    if (this.mesh) this.mesh.zIndex = this._zIndex;
+    if (this.container) {
+      this.container.zIndex = this._zIndex;
+    }
   }
 
   get colors(): Colors {
@@ -206,7 +208,7 @@ export class WellboreData {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = color.col1;
         this.mesh.shader.uniforms.wellboreColor2 = color.col2;
-        this.mesh.zIndex = this._zIndex + 100000;
+        this.container.zIndex = this._zIndex + 100000;
       }
       this.label.container.zIndex = 1;
       this.label.background.tint = color.labelBg;
@@ -216,7 +218,7 @@ export class WellboreData {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
-        this.mesh.zIndex = this._zIndex;
+        this.container.zIndex = this._zIndex;
       }
       this.label.container.zIndex = 0;
       this.label.background.tint = this.colors.default.labelBg;
@@ -232,7 +234,7 @@ export class WellboreData {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = this.colors.selected.col1;
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.selected.col2;
-        this.mesh.zIndex = this._zIndex + 1000000;
+        this.container.zIndex = this._zIndex + 1000000;
       }
       this.label.container.zIndex = 1;
       this.label.background.tint = this.colors.selected.labelBg;
@@ -241,7 +243,7 @@ export class WellboreData {
       if (this.mesh) {
         this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
         this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
-        this.mesh.zIndex = this._zIndex;
+        this.container.zIndex = this._zIndex;
       }
       this.label.container.zIndex = 0;
       this.label.background.tint = this.colors.default.labelBg;
