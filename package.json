@@ -61,7 +61,7 @@
     "jest": "^26.4.2",
     "jest-canvas-mock": "^2.2.0",
     "leaflet": "^1.7.1",
-    "leaflet-pixi-overlay": "^1.8.2",
+    "leaflet-pixi-overlay": "^1.9.4",
     "lint-staged": "^11.1.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.45.2",
