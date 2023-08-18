@@ -475,7 +475,7 @@ export default class WellboreModule extends ModuleInterface {
     this.containers.labels.visible = labelVisible; // set label visibility
 
     // Only update labels on resize if labels and container is visible
-    if (labelVisible && Label.state.visible) {
+    if (labelVisible) {
       this.roots.forEach(root => {
         root.updateLabels();
       });

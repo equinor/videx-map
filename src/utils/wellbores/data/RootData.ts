@@ -48,6 +48,7 @@ export class RootData {
     }
   }
 
+  /** Position wellbore label along wellbore. Should never be called if labels are disabled. */
   private positionLabel(wellbore: WellboreData) : void {
     if (wellbore.label.attachToRoot) {
       const index = this.labelIndex++;
@@ -63,7 +64,7 @@ export class RootData {
     if (!wellbore.active) return; // No need to recalculte if inactive wellbore
     if (!this.target) this.recalculate(true); // Recalculate if first target
     else if (wellbore.order < this.target.order && wellbore.status > this.target.status) this.recalculate(true);
-    else this.positionLabel(wellbore); // Position label if lower order
+    else if (Label.state.visible) this.positionLabel(wellbore); // Position label if lower order and visible
   }
 
   /** Recalculate target and update uniforms */
@@ -118,9 +119,12 @@ export class RootData {
   updateLabels(): void {
     this.labelIndex = 0;
     this.rootLabelsBBox = null;
-    this.wellbores.forEach(wellbore => {
-      if (wellbore.active) this.positionLabel(wellbore);
-    });
+
+    if (Label.state.visible) {
+      this.wellbores.forEach(wellbore => {
+        if (wellbore.active) this.positionLabel(wellbore);
+      });
+    }
   }
 
   setLabelVisibility(visible: boolean) {
