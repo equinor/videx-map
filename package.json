@@ -45,7 +45,7 @@
   "devDependencies": {
     "@babel/core": "^7.22.1",
     "@equinor/videx-storybook-input": "^1.0.0",
-    "@storybook/html": "^6.2.3",
+    "@storybook/html": "^7.0.0",
     "@types/d3": "^5.7.2",
     "@types/earcut": "^2.1.1",
     "@types/geojson": "^7946.0.3",
@@ -58,7 +58,7 @@
     "copyfiles": "^2.3.0",
     "eslint-formatter-table": "^7.32.1",
     "husky": "^8.0.3",
-    "jest": "^26.4.2",
+    "jest": "^27.0.0",
     "jest-canvas-mock": "^2.2.0",
     "leaflet": "^1.7.1",
     "leaflet-pixi-overlay": "^1.8.2",
