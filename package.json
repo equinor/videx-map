@@ -58,7 +58,7 @@
     "copyfiles": "^2.3.0",
     "eslint-formatter-table": "^7.32.1",
     "husky": "^8.0.3",
-    "jest": "^26.4.2",
+    "jest": "^27.0.0",
     "jest-canvas-mock": "^2.2.0",
     "leaflet": "^1.7.1",
     "leaflet-pixi-overlay": "^1.8.2",
