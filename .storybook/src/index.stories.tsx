@@ -29,20 +29,20 @@ const initialZoom: number = 12;
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Sample data
-const faultlineDataTroll = require('./Samples/Troll-Faultlines.json');
-const outlineDataTroll = require('./Samples/Troll-Outlines.json');
-const wellboreDataTroll = require('./Samples/Troll-Wellbores.json');
-const wbData = Object.values(wellboreDataTroll) as any[];
+// const faultlineDataTroll = require('./Samples/Troll-Faultlines.json');
+// const outlineDataTroll = require('./Samples/Troll-Outlines.json');
+// const wellboreDataTroll = require('./Samples/Troll-Wellbores.json');
+// const wbData = Object.values(wellboreDataTroll) as any[];
 const licenseData = require('./.Samples/licenses.json');
 const pipelineData = require('./.Samples/pipelines.json');
 const facilityData = require('./.Samples/facilities.json');
-const prospectData = require('./Samples/Prospects100.json');
+// const prospectData = require('./Samples/Prospects100.json');
 
-let explorationData = processExploration(
-  require('./Samples/Exploration.json'),
-);
+// let explorationData = processExploration(
+//   require('./Samples/Exploration.json'),
+// );
 
-explorationData = removeExpDuplicates(explorationData, wbData);
+// explorationData = removeExpDuplicates(explorationData, wbData);
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export const layer = () => {
@@ -145,13 +145,13 @@ export const layer = () => {
     pixiLayer.addTo(map);
 
     // fields.set(fieldData.features);
-    faultlines.set(faultlineDataTroll);
-    outlines.set(outlineDataTroll);
+    // faultlines.set(faultlineDataTroll);
+    // outlines.set(outlineDataTroll);
 
-    const split = Math.floor(wbData.length * 0.9);
+    // const split = Math.floor(wbData.length * 0.9);
 
-    const drilled = wbData.slice(0, split);
-    const planned = wbData.slice(split + 1, wbData.length);
+    // const drilled = wbData.slice(0, split);
+    // const planned = wbData.slice(split + 1, wbData.length);
 
     wellbores.registerGroup('Drilled', {
       order: 0,
@@ -173,7 +173,7 @@ export const layer = () => {
       },
     });
 
-    wellbores.set(drilled, 'Drilled'); // Set first half (Emulate 'Drilled')
+    // wellbores.set(drilled, 'Drilled'); // Set first half (Emulate 'Drilled')
     // wellbores.set(planned, 'Planned'); // Set second half (Emulate 'Planned')
     // wellbores.set(explorationData, 'Exploration');
 
@@ -370,7 +370,7 @@ export const layer = () => {
     const licenseGeoJSON: SingleGeoJSON = { module: licenses, data: licenseData, props: licenseProps, visible: false };
     const pipelineGeoJSON: SingleGeoJSON = { module: pipelines, data: pipelineData, props: pipelineProps, visible: false };
     const facilityGeoJSON: SingleGeoJSON = { module: facilities, data: facilityData, props: facilityProps, visible: false };
-    const prospectGeoJSON: SingleGeoJSON = { module: prospects, data: prospectData, props: prospectProps, visible: false };
+    // const prospectGeoJSON: SingleGeoJSON = { module: prospects, data: prospectData, props: prospectProps, visible: false };
 
     const toggleGeoJSON = (collection: any) => {
       collection.visible = !collection.visible;
@@ -387,7 +387,7 @@ export const layer = () => {
     groupGeoJSON.add('Toggle licenses', () => toggleGeoJSON(licenseGeoJSON));
     groupGeoJSON.add('Toggle pipelines', () => toggleGeoJSON(pipelineGeoJSON));
     groupGeoJSON.add('Toggle facilities', () => toggleGeoJSON(facilityGeoJSON));
-    groupGeoJSON.add('Toggle prospects', () => toggleGeoJSON(prospectGeoJSON));
+    // groupGeoJSON.add('Toggle prospects', () => toggleGeoJSON(prospectGeoJSON));
   });
 
   return root.node();
