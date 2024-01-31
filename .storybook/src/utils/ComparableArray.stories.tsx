@@ -1,5 +1,5 @@
 import ComparableArray from '../../../src/utils/ComparableArray';
-import * as d3 from 'd3';
+import { create } from 'd3-selection';
 
 export default { title: 'utils/ComparableArray' };
 
@@ -9,7 +9,7 @@ export const layer = () => {
     const height: number = 200;
     const width: number = 200;
 
-    const root = d3.create('div')
+    const root = create('div')
     .attr('height', `${height}px`)
     .attr('width', `${width}px`);
 

@@ -1,6 +1,6 @@
-import * as d3 from 'd3';
+import { Selection } from 'd3-selection';
 
-type Div = d3.Selection<HTMLDivElement, undefined, null, undefined>;
+type Div = Selection<HTMLDivElement, undefined, null, undefined>;
 
 interface Config {
   /** Margin of buttons in percent. */

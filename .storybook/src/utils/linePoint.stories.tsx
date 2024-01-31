@@ -1,7 +1,7 @@
 import Vector2 from '@equinor/videx-vector2';
 import { closestPointOnLine } from '../../../src/utils/linePoint';
 
-import * as d3 from 'd3';
+import { create, pointer, Selection } from 'd3-selection';
 
 export default { title: 'utils/linePoint' };
 
@@ -14,10 +14,10 @@ export const ClosestPointOnLine = () => {
   const width = 500;
   const height = 500;
 
-  let pointer: d3.Selection<SVGCircleElement, undefined, null, undefined>;
-  let pointerLine: d3.Selection<SVGLineElement, undefined, null, undefined>;
+  let pointer: Selection<SVGCircleElement, undefined, null, undefined>;
+  let pointerLine: Selection<SVGLineElement, undefined, null, undefined>;
 
-  const root = d3.create('div')
+  const root = create('div')
 
   const distanceDiv = root.append('div')
     .style('height', '25px')
@@ -37,7 +37,7 @@ export const ClosestPointOnLine = () => {
     })
     .on('mousemove', (event) => {
       // @ts-ignore
-      const mousePos = d3.pointer(event);
+      const mousePos = pointer(event);
 
       const point = new Vector2(mousePos[0] - 1, mousePos[1])
 

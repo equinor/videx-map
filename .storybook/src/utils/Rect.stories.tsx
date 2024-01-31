@@ -1,5 +1,5 @@
 import Rect from '../../../src/utils/Rect';
-import * as d3 from 'd3';
+import { create, pointer } from 'd3-selection';
 import Vector2 from '@equinor/videx-vector2';
 
 export default { title: 'utils/Rect' };
@@ -10,7 +10,7 @@ export const OnHover = () => {
     const height: number = 200;
     const width: number = 200;
 
-    const root = d3.create('svg')
+    const root = create('svg')
     .attr('height', `${height}px`)
     .attr('width', `${width}px`);
 
@@ -45,7 +45,7 @@ export const OnHover = () => {
 
     root.on('mousemove', (event) => {
       // @ts-ignore
-      const mousePos = d3.pointer(event);
+      const mousePos = pointer(event);
       rectangle.attr('fill', rect.isInside(mousePos) ? 'Red' : 'Olive');
     })
 

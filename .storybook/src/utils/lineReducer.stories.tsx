@@ -2,7 +2,8 @@ import Vector2 from '@equinor/videx-vector2';
 import { slider } from '@equinor/videx-storybook-input';
 import { reduce } from '../../../src/utils/lineReducer';
 
-import * as d3 from 'd3';
+import { create } from 'd3-selection';
+import { interpolateRainbow } from 'd3-scale-chromatic';
 
 export default { title: 'utils/lineReducer' };
 
@@ -10,7 +11,7 @@ export const Quick = () => {
   const width = 500;
   const height = 500;
 
-  const root = d3.create('div');
+  const root = create('div');
 
   let draw: (data: Vector2[]) => void = () => {};
 
@@ -81,13 +82,13 @@ export const Quick = () => {
     circles // Update current
       .attr('cx', d => (width - 50) * (d.x - minX) / xRange + 25)
       .attr('cy', d => (height - 50) * (d.y - minY) / yRange + 25)
-      .attr('fill', (_, i) => d3.interpolateRainbow(i / inputData.length));
+      .attr('fill', (_, i) => interpolateRainbow(i / inputData.length));
     circles.enter() // Add missing
       .append('circle')
       .attr('cx', d => (width - 50) * (d.x - minX) / xRange + 25)
       .attr('cy', d => (height - 50) * (d.y - minY) / yRange + 25)
       .attr('r', 2)
-      .attr('fill', (_, i) => d3.interpolateRainbow(i / inputData.length));
+      .attr('fill', (_, i) => interpolateRainbow(i / inputData.length));
 
       output.text(`Points: ${inputData.length}`);
   }

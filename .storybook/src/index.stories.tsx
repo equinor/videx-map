@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+import { create } from 'd3-selection';
 import * as L from 'leaflet';
 import { FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
 import { RootData } from '../../src/utils/wellbores/data';
@@ -46,7 +46,7 @@ const facilityData = require('./.Samples/facilities.json');
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export const layer = () => {
-  const root = d3.create('div')
+  const root = create('div')
     .style('width', '100%')
     .style('height', '1400px');
 

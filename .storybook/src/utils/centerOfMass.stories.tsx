@@ -2,7 +2,7 @@ import centerOfMass from '../../../src/utils/centerOfMass';
 import earcut from 'earcut';
 import Vector2 from '@equinor/videx-vector2';
 import { flatten } from '@equinor/videx-linear-algebra';
-import * as d3 from 'd3';
+import { create } from 'd3-selection';
 
 export default { title: 'utils/centerOfMass' };
 
@@ -10,7 +10,7 @@ export default { title: 'utils/centerOfMass' };
 // Circle
 export const Circle = () => {
   {
-    const root = d3.create('svg')
+    const root = create('svg')
       .attr('width', '500px')
       .attr('height', '500px');
 
@@ -61,7 +61,7 @@ export const Circle = () => {
 // Arrow
 export const Arrow = () => {
   {
-    const root = d3.create('svg')
+    const root = create('svg')
       .attr('width', '500px')
       .attr('height', '500px');
 
@@ -110,7 +110,7 @@ export const Arrow = () => {
 // Letter T
 export const LetterT = () => {
   {
-    const root = d3.create('svg')
+    const root = create('svg')
       .attr('width', '500px')
       .attr('height', '500px');
 
