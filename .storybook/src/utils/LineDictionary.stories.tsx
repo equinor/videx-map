@@ -1,7 +1,7 @@
 import Vector2 from '@equinor/videx-vector2';
 import LineDictionary from '../../../src/utils/LineDictionary';
 
-import * as d3 from 'd3';
+import { create, pointer, Selection } from 'd3-selection';
 
 const SimplexNoise: any = require('simplex-noise');
 
@@ -53,31 +53,31 @@ const lineData  = perlinWorms(100);
 
 interface lineRender {
   line: Vector2[],
-  render: d3.Selection<SVGPathElement, undefined, null, undefined>,
+  render: Selection<SVGPathElement, undefined, null, undefined>,
 }
 
 export const Lines = () => {
   {
-    const root: d3.Selection<HTMLDivElement, undefined, null, undefined> = d3.create('div')
+    const root: Selection<HTMLDivElement, undefined, null, undefined> = create('div')
 
     root.append('div')
       .style('height', '25px')
       .style('font-weight', 'bold')
       .text('Using line dictionary:');
 
-    const initializationDiv: d3.Selection<HTMLDivElement, undefined, null, undefined> = root.append('div')
+    const initializationDiv: Selection<HTMLDivElement, undefined, null, undefined> = root.append('div')
       .style('height', '25px');
 
-    const lookupPerformanceDiv: d3.Selection<HTMLDivElement, undefined, null, undefined> = root.append('div')
+    const lookupPerformanceDiv: Selection<HTMLDivElement, undefined, null, undefined> = root.append('div')
       .style('height', '25px')
       .text('Look-up performance: ---');
 
-    let prevSelection: d3.Selection<SVGPathElement, undefined, null, undefined> = null;
+    let prevSelection: Selection<SVGPathElement, undefined, null, undefined> = null;
 
     // Lines
     const lines: lineRender[] = [];
 
-    const svg: d3.Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
+    const svg: Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
       .style('width', `${width}px`)
       .style('height', `${height}px`)
       .style('border', '2px dotted DimGrey')
@@ -95,7 +95,7 @@ export const Lines = () => {
         }
 
         // @ts-ignore
-        const mousePos: [number, number] = d3.pointer(event);
+        const mousePos: [number, number] = pointer(event);
         const t0: number = performance.now();
         const latLong = new Vector2(mousePos[0], mousePos[1]);
         const closestObj = dict.getClosest(latLong);
@@ -148,7 +148,7 @@ export const Lines = () => {
     };
 
     const init0: number = performance.now(); // Init timer start
-    const dict: LineDictionary<d3.Selection<SVGPathElement, undefined, null, undefined>> = new LineDictionary(-2);
+    const dict: LineDictionary<Selection<SVGPathElement, undefined, null, undefined>> = new LineDictionary(-2);
 
     lines.forEach(line => {
       dict.add(line.line, line.render);

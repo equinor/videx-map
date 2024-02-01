@@ -1,5 +1,6 @@
+import { interpolateRainbow } from 'd3-scale-chromatic';
 import { compressIntervals } from '../../../src/utils/wellbores/intervals';
-import * as d3 from 'd3';
+import { create, Selection } from 'd3-selection';
 
 export default { title: 'utils/compressInterval' };
 
@@ -38,12 +39,12 @@ export const Interval1 = () => {
   {
     const barHeight: number = 15;
     const height: number = barHeight * intervals.length;
-    const root: d3.Selection<HTMLDivElement, undefined, null, undefined> = d3.create('div');
+    const root: Selection<HTMLDivElement, undefined, null, undefined> = create('div');
 
     root.append('p')
       .html('<b>Before</b> compression:')
 
-    const svg: d3.Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
+    const svg: Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
       .attr('width', '800px')
       .attr('height', `${height}px`)
       .style('border', '2px dotted DimGrey')
@@ -59,7 +60,7 @@ export const Interval1 = () => {
         ${end},${barHeight * (i + 1)}
         ${start},${barHeight * (i + 1)}
       `)
-      .attr('fill', d3.interpolateRainbow(i / intervals.length))
+      .attr('fill', interpolateRainbow(i / intervals.length))
     }
 
     // Compressed
@@ -69,7 +70,7 @@ export const Interval1 = () => {
     root.append('p')
       .html('<b>After</b> compression:')
 
-    const compressedSvg: d3.Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
+    const compressedSvg: Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
       .attr('width', '800px')
       .attr('height', `${compressedHeight}px`)
       .style('border', '2px dotted DimGrey')
@@ -85,7 +86,7 @@ export const Interval1 = () => {
         ${end},${barHeight * (i + 1)}
         ${start},${barHeight * (i + 1)}
       `)
-      .attr('fill', d3.interpolateRainbow(i / compressed.length))
+      .attr('fill', interpolateRainbow(i / compressed.length))
     }
 
     return root.node();
@@ -98,12 +99,12 @@ export const Interval2 = () => {
   {
     const barHeight: number = 15;
     const height: number = barHeight * intervals2.length;
-    const root: d3.Selection<HTMLDivElement, undefined, null, undefined> = d3.create('div');
+    const root: Selection<HTMLDivElement, undefined, null, undefined> = create('div');
 
     root.append('p')
       .html('<b>Before</b> compression:')
 
-    const svg: d3.Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
+    const svg: Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
       .attr('width', '800px')
       .attr('height', `${height}px`)
       .style('border', '2px dotted DimGrey')
@@ -119,7 +120,7 @@ export const Interval2 = () => {
         ${end},${barHeight * (i + 1)}
         ${start},${barHeight * (i + 1)}
       `)
-      .attr('fill', d3.interpolateRainbow(i / intervals2.length))
+      .attr('fill', interpolateRainbow(i / intervals2.length))
     }
 
     // Compressed
@@ -129,7 +130,7 @@ export const Interval2 = () => {
     root.append('p')
       .html('<b>After</b> compression:')
 
-    const compressedSvg: d3.Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
+    const compressedSvg: Selection<SVGSVGElement, undefined, null, undefined> = root.append('svg')
       .attr('width', '800px')
       .attr('height', `${compressedHeight}px`)
       .style('border', '2px dotted DimGrey')
@@ -145,7 +146,7 @@ export const Interval2 = () => {
         ${end},${barHeight * (i + 1)}
         ${start},${barHeight * (i + 1)}
       `)
-      .attr('fill', d3.interpolateRainbow(i / compressed.length))
+      .attr('fill', interpolateRainbow(i / compressed.length))
     }
 
     return root.node();

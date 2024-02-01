@@ -2,7 +2,7 @@
 import Vector2 from '@equinor/videx-vector2';
 import { LineInterpolator } from '../../../src/utils/LineInterpolator';
 
-import * as d3 from 'd3';
+import { create } from 'd3-selection';
 
 export default { title: 'utils/Line Interpolator' };
 
@@ -27,7 +27,7 @@ export const Circle = () => {
     // Create the line interpolator
     const interp: LineInterpolator = new LineInterpolator(points, 0.001);
 
-    const svg = d3.create('svg')
+    const svg = create('svg')
       .attr('width', '500px')
       .attr('height', '500px')
 
@@ -98,7 +98,7 @@ export const Ticks = () => {
     // Create the line interpolator
     const interp = new LineInterpolator(points, 0.001);
 
-    const svg = d3.create('svg')
+    const svg = create('svg')
       // .style('background-color', 'red').style('opacity', .5)
       .attr('width', '800px')
       .attr('height', '200px')
@@ -148,7 +148,7 @@ export const Waves = () => {
     // Create the line interpolator
     const interp = new LineInterpolator(points, 0.001);
 
-    const svg = d3.create('svg')
+    const svg = create('svg')
       // .style('background-color', 'red').style('opacity', .5)
       .attr('width', '800px')
       .attr('height', '200px')
