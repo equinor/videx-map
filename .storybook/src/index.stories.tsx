@@ -2,11 +2,8 @@ import { create } from 'd3-selection';
 import * as L from 'leaflet';
 import { FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
 import { RootData } from '../../src/utils/wellbores/data';
-import processExploration from './processExploration';
-import removeExpDuplicates from './removeExpDuplicates';
 
 import PixiLayer from './helper/PixiLayer';
-import { ProspectColors } from './helper/ProspectColors';
 import Sidebar from './Sidebar';
 
 export default { title: 'Leaflet layer' };
@@ -29,20 +26,9 @@ const initialZoom: number = 12;
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Sample data
-// const faultlineDataTroll = require('./Samples/Troll-Faultlines.json');
-// const outlineDataTroll = require('./Samples/Troll-Outlines.json');
-// const wellboreDataTroll = require('./Samples/Troll-Wellbores.json');
-// const wbData = Object.values(wellboreDataTroll) as any[];
-const licenseData = require('./.Samples/licenses.json');
-const pipelineData = require('./.Samples/pipelines.json');
-const facilityData = require('./.Samples/facilities.json');
-// const prospectData = require('./Samples/Prospects100.json');
-
-// let explorationData = processExploration(
-//   require('./Samples/Exploration.json'),
-// );
-
-// explorationData = removeExpDuplicates(explorationData, wbData);
+const licenseData = require('./samples/licenses.json');
+const pipelineData = require('./samples/pipelines.json');
+const facilityData = require('./samples/facilities.json');
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export const layer = () => {
@@ -353,20 +339,6 @@ export const layer = () => {
      additionalData: {},
     });
 
-    const prospectProps = (feature: any) => {
-      const period = feature.properties?.chronoPeriod?.toLowerCase();
-      const { fillColor, lineColor } = ProspectColors.valid(period) ? ProspectColors.get(period) : { fillColor: '#666666', lineColor: '#444444' };
-
-      return {
-        style: {
-          lineColor,
-          lineWidth: 0.1,
-          fillColor,
-          fillOpacity: 0.6,
-        },
-      }
-    };
-
     const licenseGeoJSON: SingleGeoJSON = { module: licenses, data: licenseData, props: licenseProps, visible: false };
     const pipelineGeoJSON: SingleGeoJSON = { module: pipelines, data: pipelineData, props: pipelineProps, visible: false };
     const facilityGeoJSON: SingleGeoJSON = { module: facilities, data: facilityData, props: facilityProps, visible: false };
@@ -387,7 +359,6 @@ export const layer = () => {
     groupGeoJSON.add('Toggle licenses', () => toggleGeoJSON(licenseGeoJSON));
     groupGeoJSON.add('Toggle pipelines', () => toggleGeoJSON(pipelineGeoJSON));
     groupGeoJSON.add('Toggle facilities', () => toggleGeoJSON(facilityGeoJSON));
-    // groupGeoJSON.add('Toggle prospects', () => toggleGeoJSON(prospectGeoJSON));
   });
 
   return root.node();
