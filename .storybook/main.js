@@ -1,5 +1,5 @@
 const config = {
-  stories: ['./src/*.stories.tsx'],
+  stories: ['./src/**/*.stories.tsx'],
 
   framework: {
     name: '@storybook/html-webpack5',
@@ -7,7 +7,7 @@ const config = {
   },
 
   docs: {
-    autodocs: true
+    autodocs: false
   }
 };
   export default config;
