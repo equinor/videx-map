@@ -1,6 +1,6 @@
 {
   "name": "@equinor/videx-map",
-  "version": "1.14.6",
+  "version": "1.14.7",
   "description": "Component for Pixi-overlay in Leaflet.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -74,7 +74,7 @@
     "leaflet": "^1.7.1",
     "leaflet-pixi-overlay": "^1.9.4",
     "lint-staged": "^11.1.2",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.0.1",
     "rollup": "^3.29.4",
     "simplex-noise": "^2.4.0",
     "storybook": "^8.2.9",
