@@ -2,7 +2,15 @@ import typescript from '@rollup/plugin-typescript';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
-import pkg from './package.json' assert { type: 'json' };
+// rollup.config.mjs
+import { readFileSync } from 'node:fs';
+
+// Use import.meta.url to make the path relative to the current source
+// file instead of process.cwd(). For more information:
+// https://nodejs.org/docs/latest-v16.x/api/esm.html#importmetaurl
+const pkg = JSON.parse(
+	readFileSync(new URL('./package.json', import.meta.url)),
+);
 
 export default [
   {
