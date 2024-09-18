@@ -10,7 +10,8 @@
     "esModuleInterop": true
   },
   "include": [
-    "./src"
+    "./src",
+    "postdocs.copyfiles.mjs"
   ],
   "exclude": ["node_modules"],
 }
