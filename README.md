@@ -1,5 +1,6 @@
 [![npm version](https://badge.fury.io/js/%40equinor%2Fvidex-map.svg)](https://badge.fury.io/js/%40equinor%2Fvidex-map)
 ![](https://github.com/equinor/videx-map/workflows/Unit%20test/badge.svg)
+[![SCM Compliance](https://scm-compliance-api.radix.equinor.com/repos/equinor/videx-map/badge)](https://scm-compliance-api.radix.equinor.com/repos/equinor/videx-map/badge)
 
 # Videx map
 
