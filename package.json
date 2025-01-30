@@ -1,6 +1,6 @@
 {
   "name": "@equinor/videx-map",
-  "version": "1.14.7",
+  "version": "1.14.8",
   "description": "Component for Pixi-overlay in Leaflet.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -91,7 +91,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "npm run lint:ci"
+      "npm run lint"
     ]
   },
   "dependencies": {
