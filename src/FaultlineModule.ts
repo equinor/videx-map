@@ -73,8 +73,9 @@ export default class FaultlineModule extends ModuleInterface {
   /**
    * Set collection of faultlines to display. Clears previous content on execution.
    * @param data Faultlines to draw
+   * @param redraw Should pixiOverlay be redrawn after setting data? (Default: false)
    */
-  set(data: FaultlineData[]) {
+  set(data: FaultlineData[], redraw: boolean = false) {
     // Clear graphics before drawing new
     this.clear();
 
@@ -119,6 +120,11 @@ export default class FaultlineModule extends ModuleInterface {
 
     if (lineCount > 0) {
       log(`Drawing ${lineCount} faultline polygons as lines.`);
+    }
+
+    // Redraw if required
+    if (redraw) {
+      this.pixiOverlay.redraw();
     }
   }
 
