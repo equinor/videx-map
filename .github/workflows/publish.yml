@@ -2,7 +2,7 @@ name: NPM Publish
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
     types: [closed]
 
 jobs:
