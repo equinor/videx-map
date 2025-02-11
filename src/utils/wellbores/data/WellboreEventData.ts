@@ -5,7 +5,7 @@ import { WellboreData } from './WellboreData';
 export class WellboreEventData {
   public group: string;
   public data: SourceData;
-
+  public mouseEvent?: MouseEvent;
 
   constructor(group: string, data: SourceData) {
     this.group = group;
