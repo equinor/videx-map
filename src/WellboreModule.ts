@@ -246,12 +246,13 @@ export default class WellboreModule extends ModuleInterface {
     return this.clearHighlight(this.config.onHighlightOff);
   }
 
-  private handleMouseClick() : boolean {
+  private handleMouseClick(mouseEvent?: MouseEvent) : boolean {
     if (this.config.onWellboreClick && this.highlight.active && this.highlight.single) {
       const wellbore = this.highlight.first;
       this.config.onWellboreClick({
         group: wellbore.group.key,
         data: wellbore.data,
+        mouseEvent,
       });
       return true;
     }
