@@ -3,7 +3,7 @@ import LineDictionary from '../../../src/utils/LineDictionary';
 
 import { create, pointer, Selection } from 'd3-selection';
 
-const SimplexNoise: any = require('simplex-noise');
+import { createNoise2D } from 'simplex-noise';
 
 export default { title: 'utils/Line Dictionary' };
 
@@ -12,8 +12,8 @@ const height: number = 700;
 
 // Function for generating data
 const perlinWorms: (amount: number) => Vector2[][] = (amount: number) => {
-  // Simplex noise with random seed
-  const simplexNoise: any = new SimplexNoise();
+  // initialize the noise function
+  const noise2D = createNoise2D();
 
   const lines: Vector2[][] = [];
 
@@ -38,7 +38,7 @@ const perlinWorms: (amount: number) => Vector2[][] = (amount: number) => {
     // 50 iterations
     for (let j: number = 0; j < 50; j++) {
       pos = pos.add(dir);
-      dir = dir.rotate(simplexNoise.noise2D(pos.x * 0.1, pos.y * 0.1));
+      dir = dir.rotate(noise2D(pos.x * 0.1, pos.y * 0.1));
       // Don't add line sections outside
       if (pos.x < 0 || pos.y < 0 || pos.x >= width || pos.y >= height) break;
       line.push(pos);
@@ -72,7 +72,7 @@ export const Lines = () => {
       .style('height', '25px')
       .text('Look-up performance: ---');
 
-    let prevSelection: Selection<SVGPathElement, undefined, null, undefined> = null;
+    let prevSelection: Selection<SVGPathElement, undefined, null, undefined>;
 
     // Lines
     const lines: lineRender[] = [];
@@ -148,7 +148,7 @@ export const Lines = () => {
     };
 
     const init0: number = performance.now(); // Init timer start
-    const dict: LineDictionary<Selection<SVGPathElement, undefined, null, undefined>> = new LineDictionary(-2);
+    const dict: LineDictionary<Selection<SVGPathElement, undefined, null, undefined>> = new LineDictionary();
 
     lines.forEach(line => {
       dict.add(line.line, line.render);
