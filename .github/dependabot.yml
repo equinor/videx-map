@@ -1,0 +1,70 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "02:00"
+      timezone: Europe/Oslo
+    commit-message:
+      prefix: "[github-actions] "
+      
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "03:00"
+      timezone: Europe/Oslo
+    groups:
+      babel:
+        applies-to: version-updates
+        patterns:
+          - "@babel*"
+        update-types:
+          - "minor"
+          - "patch"
+      rollup:
+        applies-to: version-updates
+        patterns:
+          - "@rollup*"
+        update-types:
+          - "minor"
+          - "patch"
+      jest:
+        applies-to: version-updates
+        patterns:
+          - "jest*"
+        update-types:
+          - "minor"
+          - "patch"
+      d3:
+        applies-to: version-updates
+        patterns:
+          - "d3*"
+        update-types:
+          - "minor"
+          - "patch"
+      leaflet-pixi:
+        applies-to: version-updates
+        patterns:
+          - "leaflet*"
+          - "pixi*"
+        update-types:
+          - "minor"
+          - "patch"
+      videx-math:
+        applies-to: version-updates
+        patterns:
+          - "@equinor/videx-math*"
+      videx-linear-algebra:
+        applies-to: version-updates
+        patterns:
+          - "@equinor/videx-linear-algebra*"
+      videx-vector2:
+        applies-to: version-updates
+        patterns:
+          - "@equinor/videx-vector2*"
+    commit-message:
+      prefix: "[npm] "
