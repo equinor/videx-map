@@ -21,7 +21,7 @@ test('Can instantitate dictionary', () => {
 test('Cannot instantitate with grid smaller than radius', () => {
   expect(
     () => new PointDictionary<number>(distanceTreshold, gridSize, gridSize + 0.0001),
-  ).toThrowError();
+  ).toThrow();
 });
 
 test('Can add to tile (center)', () => {
