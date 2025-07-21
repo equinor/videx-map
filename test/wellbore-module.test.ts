@@ -122,7 +122,7 @@ test('can add a single wellbore', () => {
 test('can set and clear data', async () => {
   const module = createModule();
 
-  expect(module.set(wellbores, 'test')).rejects.toThrowError();
+  expect(module.set(wellbores, 'test')).rejects.toThrow();
 
   module.registerGroup('group1');
   module.registerGroup('group2');
