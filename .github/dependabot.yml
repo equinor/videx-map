@@ -17,6 +17,7 @@ updates:
       day: monday
       time: "03:00"
       timezone: Europe/Oslo
+    open-pull-requests-limit: 15
     groups:
       babel:
         applies-to: version-updates
