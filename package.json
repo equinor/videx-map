@@ -102,7 +102,7 @@
     "d3-scale-chromatic": "^3.0.0",
     "d3-selection": "^3.0.0",
     "earcut": "^2.2.4",
-    "pixi.js": "^7.3.2",
+    "pixi.js": "^8.11.0",
     "uuid": "^8.3.2"
   }
 }
