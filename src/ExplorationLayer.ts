@@ -99,7 +99,7 @@ export default class ExplorationLayer extends ModuleInterface {
 
     if (this.selection) {
       const point = this.selection.point;
-      point.uniforms.circleColor1 = [0.3, 0.3, 0.3],
+      point.uniforms.circleColor1 = [0.3, 0.3, 0.3];
       point.mesh.zIndex = this.selection.zIndex;
       this.selection = null;
     }
