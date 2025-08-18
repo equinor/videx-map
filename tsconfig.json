@@ -4,7 +4,6 @@
     "declarationDir": "./dist",
     "module": "ESNext",
     "moduleResolution": "node",
-    "noImplicitAny": true,
     "outDir": "./dist",
     "target": "ES2022",
     "esModuleInterop": true
