@@ -68,7 +68,7 @@
     "jest-environment-jsdom": "^30.0.5",
     "leaflet": "^1.7.1",
     "leaflet-pixi-overlay": "^1.9.4",
-    "lint-staged": "^15.5.2",
+    "lint-staged": "^16.1.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.46.3",
     "simplex-noise": "^4.0.3",
