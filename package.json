@@ -77,16 +77,6 @@
     "typescript": "^5.9.2",
     "vitest": "^4.0.7"
   },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "testRegex": "(/tests/.*|(\\.|/)test)\\.ts$",
-    "setupFiles": [
-      "jest-canvas-mock"
-    ]
-  },
   "lint-staged": {
     "*.ts": [
       "npm run lint"
