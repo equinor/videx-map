@@ -17,6 +17,7 @@
     "pub": "npm publish --access=public",
     "test": "vitest",
     "test:watch": "vitest --watchAll",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
     "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx src --fix",
     "predocs": "rimraf docs",
