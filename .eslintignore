@@ -5,3 +5,4 @@ tsconfig.json
 test
 rollup.config.mjs
 vitest.config.ts
+canvas.setup.js
