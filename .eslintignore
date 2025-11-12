@@ -4,3 +4,5 @@ package-lock.json
 tsconfig.json
 test
 rollup.config.mjs
+vitest.config.ts
+canvas.setup.js
