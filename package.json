@@ -68,7 +68,7 @@
     "leaflet": "^1.7.1",
     "leaflet-pixi-overlay": "^1.9.4",
     "lint-staged": "^15.5.2",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "rollup": "^4.46.3",
     "simplex-noise": "^4.0.3",
     "storybook": "^8.6.8",
