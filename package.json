@@ -8,9 +8,6 @@
   "files": [
     "dist"
   ],
-  "engines": {
-    "npm": "^11.7.0"
-  },
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "storybook dev",
