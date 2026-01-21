@@ -1,12 +1,29 @@
 import { create } from 'd3-selection';
 import * as L from 'leaflet';
-import { FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
+import { FieldModule, FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
 import { RootData } from '../../src/utils/wellbores/data';
+import { SourceData } from '../../src/utils/wellbores/data';
+import { transformDrilledData } from './helper/transform-drilled-data';
+import { transformExplorationData } from './helper/transform-exploration-data';
+import { OutlineData } from '../../src/OutlineModule'
+import { Field } from '../../src/FieldModule'
 
 import PixiLayer from './helper/PixiLayer';
 import Sidebar from './Sidebar';
+import field from './samples/field.json';
+import wells from './samples/wellbores.json';
+import exploration from './samples/exploration.json';
+import licenseData from './samples/licenses.json';
+import pipelineData from './samples/pipelines.json';
+import facilityData from './samples/facilities.json';
+import outlineData from './samples/outlines.json';
 
-export default { title: 'Leaflet layer' };
+export default {
+  title: 'Leaflet layer',
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
 
 const factors: any = {
   10: 0.3,
@@ -23,49 +40,56 @@ const factors: any = {
 };
 
 const initialZoom: number = 12;
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// Sample data
-const licenseData = require('./samples/licenses.json');
-const pipelineData = require('./samples/pipelines.json');
-const facilityData = require('./samples/facilities.json');
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// Clone the wells array so that we don't modify the values
+// as it affects wellbore rendering after code changes
+const wellsClone = structuredClone(wells);
+const wellboreData: any[] = transformDrilledData(wellsClone as any[]) as SourceData[];
+const theOutlines: any[] = outlineData as OutlineData[];
+const explorationData: any[] = transformExplorationData(exploration as any[]) as SourceData[];
+const fieldData: Field[] = field as any[];
 
 export const layer = () => {
   const root = create('div')
     .style('width', '100%')
-    .style('height', '1400px');
+    .style('height', '100%');
 
   const mapRoot = root.append('div')
     .style('position', 'absolute')
-    .style('width', '88%')
-    .style('height', '1400px');
+    .style('width', '85%')
+    .style('height', '100%');
 
   mapRoot.append('link')
     .attr('rel', 'stylesheet')
     .attr('href', 'https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
 
   const sidebarRoot = root.append('div')
-      .style('position', 'absolute')
-      .style('left', '88%')
-      .style('width', '12%')
-      .style('height', '1400px')
+    .style('font-family', "Nunito Sans")
+    .style('background-color', '#f6f9fc')
+    .style('position', 'absolute')
+    .style('left', '85%')
+    .style('width', '15%')
+    .style('height', '100%')
+    .style('overflow-y', 'auto');
 
   const sidebar = new Sidebar(sidebarRoot, { marginPct: 7 });
+  const mapRootNode = mapRoot.node() as HTMLElement;
 
-  requestAnimationFrame(() => {
-    const map = L.map(mapRoot.node()).setView([60.81, 3.57], initialZoom);
-    // const map = L.map(root.node()).setView([72.395, 20.13], initialZoom); // JC
-    // const map = L.map(root.node()).setView([59.227, 2.507], initialZoom); // Grand
-    // const map = L.map(root.node()).setView([59.186, 2.491], initialZoom); // Grane
+  requestAnimationFrame(async () => {
+    const map = L.map(mapRootNode).setView([
+      58.43843594055731,
+      1.8892790113941798
+    ], initialZoom);
+
     L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}.png', {
       maxNativeZoom: 10,
       noWrap: true,
     }).addTo(map);
 
     const pixiLayer = new PixiLayer();
+    await pixiLayer.setRenderer();
+
     const faultlines: FaultlineModule = new FaultlineModule();
-    // const fields: FieldModule = new FieldModule();
+    const fields: FieldModule = new FieldModule();
     const outlines: OutlineModule = new OutlineModule({
       minExtraWidth: 0.0,
       maxExtraWidth: 0.3,
@@ -77,7 +101,6 @@ export const layer = () => {
         labelBgOpacity: 0.2,
         zoomOrigin: 0,
         wellboreDash: 0.08,
-        // @ts-ignore
         scaling: zoom => factors[zoom] || 0,
         wellboreResize: {
           min: { zoom: 10, scale: 0.5 },
@@ -92,17 +115,33 @@ export const layer = () => {
           height: 0.1,
         },
         onHighlightOn: event => {
-          if (event.count === 1) mapRoot.node().style.cursor = 'pointer'; // Set cursor style
-          else mapRoot.node().style.cursor = null; // Remove cursor style
+          if (event.count === 1) {
+            mapRootNode.style.cursor = 'pointer'; // Set cursor style
+          } else {
+            mapRootNode.style.cursor = 'default'; // Remove cursor style
+          }
         },
         onHighlightOff: () => {
-          mapRoot.node().style.cursor = null; // Remove cursor style
+          mapRootNode.style.cursor = 'default'; // Remove cursor style
         },
         onWellboreClick: wellbore => {
           wellbores.setSelected(d => d === wellbore.data);
         }
       },
     );
+
+    const geoConfig = {
+      outlineResize: {
+        min: { zoom: 6, scale: 3.0 },
+        max: { zoom: 18, scale: 0.05 },
+      },
+      labelResize: {
+        min: { zoom: 11, scale: 0.1 },
+        max: { zoom: 17, scale: 0.025 },
+        threshold: 8,
+        baseScale: 0.15,
+      },
+    }
 
     const licenses: GeoJSONModule = new GeoJSONModule({
       outlineResize: {
@@ -116,28 +155,27 @@ export const layer = () => {
         baseScale: 0.15,
       },
     });
-    const pipelines: GeoJSONModule = new GeoJSONModule();
-    const facilities: GeoJSONModule = new GeoJSONModule();
-    const prospects: GeoJSONModule = new GeoJSONModule();
+    const pipelines: GeoJSONModule = new GeoJSONModule(geoConfig);
+    const facilities: GeoJSONModule = new GeoJSONModule(geoConfig);
+    // const prospects: GeoJSONModule = new GeoJSONModule(geoConfig);
 
     pixiLayer.addModule(faultlines);
-    // pixiLayer.addModule(fields);
+    pixiLayer.addModule(fields);
     pixiLayer.addModule(outlines);
     pixiLayer.addModule(wellbores);
     pixiLayer.addModule(licenses);
     pixiLayer.addModule(pipelines);
     pixiLayer.addModule(facilities);
-    pixiLayer.addModule(prospects);
+    // await pixiLayer.addModule(prospects);
     pixiLayer.addTo(map);
 
-    // fields.set(fieldData.features);
+    fields.set(fieldData);
     // faultlines.set(faultlineDataTroll);
-    // outlines.set(outlineDataTroll);
+    outlines.set(theOutlines);
 
-    // const split = Math.floor(wbData.length * 0.9);
-
-    // const drilled = wbData.slice(0, split);
-    // const planned = wbData.slice(split + 1, wbData.length);
+    const split = Math.floor(wellboreData.length * 0.75);
+    const drilled = wellboreData.slice(0, split);
+    const planned = wellboreData.slice(split + 1, wellboreData.length);
 
     wellbores.registerGroup('Drilled', {
       order: 0,
@@ -159,10 +197,9 @@ export const layer = () => {
       },
     });
 
-    // wellbores.set(drilled, 'Drilled'); // Set first half (Emulate 'Drilled')
-    // wellbores.set(planned, 'Planned'); // Set second half (Emulate 'Planned')
-    // wellbores.set(explorationData, 'Exploration');
-
+    wellbores.set(drilled, 'Drilled'); // Set first half (Emulate 'Drilled')
+    wellbores.set(planned, 'Planned'); // Set second half (Emulate 'Planned')
+    wellbores.set(explorationData, 'Exploration');
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Buttons
@@ -174,43 +211,64 @@ export const layer = () => {
       else wellbores.enable(key);
     }
 
+    let labelActive = true;
+    let completionDrilledVisible = true;
+    let completionPlannedVisible = true;
+
+    fields.setVisibility(false);
+    outlines.setVisibility(false);
+
     groupShowHide.add('Disable wellbores', () => wellbores.disable());
     groupShowHide.add('Enable wellbores', () => wellbores.enable());
     groupShowHide.add('Toggle \'Drilled\'', () => toggle('Drilled'));
     groupShowHide.add('Toggle \'Planned\'', () => toggle('Planned'));
-
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    let labelActive = true;
-
-    const groupShowHideLabel = sidebar.addGroup('Show/Hide labels');
-
-    groupShowHideLabel.add('Toggle labels', () => {
+    groupShowHide.add('Toggle \'Exploration\'', () => toggle('Exploration'));
+    groupShowHide.add('Toggle labels', () => {
       labelActive = !labelActive;
       wellbores.setLabelVisibility(labelActive);
     });
 
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    let completionDrilledVisible = true;
-    let completionPlannedVisible = true;
-
-    const groupShowHideCompletion = sidebar.addGroup('Show/Hide completion');
-
-    groupShowHideCompletion.add('Toggle completion', () => {
+    groupShowHide.add('Toggle completion', () => {
       const completionVisible = !(completionDrilledVisible && completionPlannedVisible);
       completionDrilledVisible = completionVisible;
       completionPlannedVisible = completionVisible;
       wellbores.setCompletionVisibility(completionDrilledVisible);
     });
 
-    groupShowHideCompletion.add('Toggle \'Drilled\'', () => {
-      completionDrilledVisible = !completionDrilledVisible;
-      wellbores.setCompletionVisibility(completionDrilledVisible, 'Drilled');
+    groupShowHide.add('Toggle field', () => {
+      fields.toggle();
+      fields.pixiOverlay.redraw();
     });
-    groupShowHideCompletion.add('Toggle \'Planned\'', () => {
-      completionPlannedVisible = !completionPlannedVisible;
-      wellbores.setCompletionVisibility(completionPlannedVisible, 'Planned');
+
+    let hcTypeInt = 0;
+
+    groupShowHide.add('Toggle field type', () => {
+      const hcTypes = [
+        'OIL/GAS',
+        'GAS',
+        'GAS/CONDENSATE',
+      ]
+
+      if (hcTypeInt === hcTypes.length - 1) {
+        hcTypeInt = 0;
+      } else {
+        hcTypeInt++;
+      }
+
+      fields.set([{
+        type: fieldData[0].type,
+        geometry: fieldData[0].geometry,
+        properties: {
+          ...fieldData[0].properties,
+          hctype: hcTypes[hcTypeInt],
+        }
+      }]);
+      fields.pixiOverlay.redraw();
+    });
+
+    groupShowHide.add('Toggle outline', () => {
+      outlines.toggle();
+      outlines.pixiOverlay.redraw();
     });
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -270,12 +328,12 @@ export const layer = () => {
 
     const groupHighlightOverride = sidebar.addGroup('Highlight');
 
-    groupHighlightOverride.add('31/3-Q-21 AY1H', () => {
-      wellbores.setHighlight('NO 31/3-Q-21 AY1H', 'Drilled');
+    groupHighlightOverride.add('15/9-F-10', () => {
+      wellbores.setHighlight('NO 15/9-F-10', 'Drilled');
     });
 
-    groupHighlightOverride.add('31/2-3', () => {
-      wellbores.setHighlight('NO 31/2-3', 'Drilled');
+    groupHighlightOverride.add('15/9-F-15', () => {
+      wellbores.setHighlight('NO 15/9-F-15', 'Drilled');
     });
 
     groupHighlightOverride.add('Clear highlight', () => {
@@ -283,19 +341,19 @@ export const layer = () => {
     });
 
 
-    const groupAnimate = sidebar.addGroup('Animate');
+    // const groupAnimate = sidebar.addGroup('Animate');
 
-    groupAnimate.add('Animate 1970 to 2020', () => {
-      let year = 1970;
-        let handle: any;
-        const func = () => {
-          wellbores.softFilter(d => d.drillEndYear < year);
-          year++;
-          if (year > 2020) clearInterval(handle);
-        };
+    // groupAnimate.add('Animate 1970 to 2020', () => {
+    //   let year = 1970;
+    //     let handle: any;
+    //     const func = () => {
+    //       wellbores.softFilter(d => d.drillEndYear < year);
+    //       year++;
+    //       if (year > 2020) clearInterval(handle);
+    //     };
 
-        handle = setInterval(func, 200);
-    });
+    //     handle = setInterval(func, 200);
+    // });
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -353,6 +411,7 @@ export const layer = () => {
       }
 
       collection.module.setVisibility(collection.visible);
+      collection.module?.pixiOverlay?.redraw();
     }
 
 

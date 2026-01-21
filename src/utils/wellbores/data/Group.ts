@@ -162,14 +162,14 @@ export class Group {
   setCompletionVisibility(visible: boolean) {
     this.state.completionVisible = visible;
     this.wellbores.forEach(wellbore => {
-      wellbore.setCompletionVisibility(visible);
+      wellbore.setCompletionVisibility(visible ? 1 : 0);
     });
   }
 
   setWellboreVisibility(visible: boolean) {
     this.state.wellboreVisible = visible;
     this.wellbores.forEach(wellbore => {
-      wellbore.setWellboreVisibility(visible);
+      wellbore.setWellboreVisibility(visible ? 1 : 0);
     });
   }
 }

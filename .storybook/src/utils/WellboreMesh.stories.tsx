@@ -1,5 +1,5 @@
 import Vector2 from '@equinor/videx-vector2';
-import * as PIXI from "pixi.js";
+import { Application, Geometry, Mesh, Shader } from "pixi.js";
 
 import { LineInterpolator } from '../../../src/utils/LineInterpolator';
 import { WellboreMesh } from '../../../src/utils/WellboreMesh';
@@ -59,30 +59,28 @@ const stairWellbore: Vector2[] = generateStairWellbore(10);
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Vertex shader
 const vertexShader = `
-      attribute vec2 verts;
-      attribute vec4 inputData;
-      attribute float inputType;
+      in vec2 verts;
+      in vec4 inputData;
+      in float inputType;
 
-      uniform mat3 translationMatrix;
-      uniform mat3 projectionMatrix;
+      out vec4 data;
+      out float type;
 
-      varying vec4 data;
-      varying float type;
+      uniform mat3 uWorldTransformMatrix;
+      uniform mat3 uProjectionMatrix;
 
       void main() {
+          gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix * vec3(verts, 1.0)).xy, 0.0, 1.0);
           data = inputData;
           type = inputType;
-          gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts, 1.0)).xy, 0.0, 1.0);
       }
   `;
 
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // Fragment shader
   const fragShader = `
-      precision mediump float;
-
-      varying vec4 data;
-      varying float type;
+      in vec4 data;
+      in float type;
 
       uniform float length;
 
@@ -94,8 +92,8 @@ const vertexShader = `
   const fragShader2 = `
       precision mediump float;
 
-      varying vec4 data;
-      varying float type;
+      in vec4 data;
+      in float type;
 
       uniform float length;
 
@@ -105,82 +103,140 @@ const vertexShader = `
   `;
 
 export const Spiral = () => {
-  const app = new PIXI.Application({ width: 1000, height: 1000, backgroundColor: 0x66AACC,});
+  const app = new Application();
 
-  const interp = new LineInterpolator(circleWellbore, 0.001);
+  app.init({
+    width: 1000, height: 1000, backgroundColor: 0x66AACC,
+  }).then(() => {
+      const wrapper = document.getElementById('spiral-wrapper');
+      wrapper?.appendChild(app.canvas);
 
-  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
-  const { vertices, triangles, vertexData, extraData } = mesh.generate();
+      const interp = new LineInterpolator(circleWellbore, 0.001);
 
-  let geometry = new PIXI.Geometry();
-  geometry.addAttribute('verts', vertices, 2);
-  geometry.addAttribute('inputData', vertexData, 4);
-  geometry.addAttribute('inputType', extraData, 1);
-  geometry.addIndex(triangles);
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
+      const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
-  const uniforms = {
-    length: interp.length,
-  }
+      let geometry = new Geometry();
+      geometry.addAttribute('verts', vertices);
+      geometry.addAttribute('inputData', vertexData);
+      geometry.addAttribute('inputType', extraData);
+      geometry.addIndex(triangles);
 
-  const lineShader: any = PIXI.Shader.from(vertexShader, fragShader, uniforms);
-  const lineMesh = new PIXI.Mesh(geometry, lineShader);
-  app.stage.addChild(lineMesh);
 
-  return app.view;
+      const lineShader: Shader = Shader.from({
+        gl: {
+          vertex: vertexShader,
+          fragment: fragShader,
+        },
+        resources: {
+          lengthUniforms: {
+            length: {
+              value: new Float32Array(interp.length),
+              type: 'f32',
+            }
+          }
+        },
+      });
+      const lineMesh = new Mesh({geometry, shader: lineShader});
+      app.stage.addChild(lineMesh);
+
+    });
+
+  return "<div id='spiral-wrapper'></div>";
 };
 
 export const SpiralTicks = () => {
-  const app = new PIXI.Application({ width: 1000, height: 1000, backgroundColor: 0x66AACC,});
+  const app = new Application();
 
-  const interp = new LineInterpolator(circleWellbore, 0.001);
+  app.init({
+    width: 1000, height: 1000, backgroundColor: 0x66AACC,
+  }).then(() => {
+      const wrapper = document.getElementById('spiral-ticks-wrapper');
+      wrapper?.appendChild(app.canvas);
 
-  const intervals: [number, number][] = [[0.1, 0.2], [0.3, 0.5], [0.7, 0.75], [0.8, 0.8], [0.85, 0.95]];
+      const interp = new LineInterpolator(circleWellbore, 0.001);
 
-  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
-  const { vertices, triangles, vertexData, extraData } = mesh.generate(intervals);
+      const intervals: [number, number][] = [[0.1, 0.2], [0.3, 0.5], [0.7, 0.75], [0.8, 0.8], [0.85, 0.95]];
 
-  let geometry = new PIXI.Geometry();
-  geometry.addAttribute('verts', vertices, 2);
-  geometry.addAttribute('inputData', vertexData, 4);
-  geometry.addAttribute('inputType', extraData, 1);
-  geometry.addIndex(triangles);
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
+      const { vertices, triangles, vertexData, extraData } = mesh.generate(intervals);
 
-  const uniforms = {
-    length: interp.length,
-  }
 
-  const lineShader = PIXI.Shader.from(vertexShader, fragShader2, uniforms);
+      const geometry: Geometry = new Geometry({
+          attributes: {
+            verts: vertices,
+            inputData: vertexData,
+            inputType: extraData,
+          },
+          indexBuffer: triangles
+        });
 
-  // @ts-ignore
-  const lineMesh = new PIXI.Mesh(geometry, lineShader);
-  app.stage.addChild(lineMesh);
+      const uniforms = {
+        value: interp.length,
+        type: 'f32',
+      }
 
-  return app.view;
+      const lineShader = Shader.from({
+        gl: {
+          vertex: vertexShader,
+          fragment: fragShader2,
+        },
+        resources: {
+          theUniforms: {
+            length: { value: interp.length, type: 'f32' },
+          },
+        },
+      });
+
+      // @ts-ignore
+      const lineMesh = new Mesh({geometry, shader: lineShader});
+      app.stage.addChild(lineMesh);
+    });
+
+  return "<div id='spiral-ticks-wrapper'></div>";
 };
 
 export const Stairs = () => {
-  const app = new PIXI.Application({ width: 1000, height: 1000, backgroundColor: 0x66AACC,});
+    const app = new Application();
 
-  const interp = new LineInterpolator(stairWellbore, 0.001);
+    app.init({
+      canvas: document.createElement('canvas'),
+      width: 1000,
+      height: 1000,
+      backgroundColor: 0x66AACC,
+    }).then(() => {
+      const wrapper = document.getElementById('stairs-wrapper');
+      wrapper?.appendChild(app.canvas);
 
-  const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
-  const { vertices, triangles, vertexData, extraData } = mesh.generate();
+      const interp = new LineInterpolator(stairWellbore, 0.001);
 
-  let geometry = new PIXI.Geometry();
-  geometry.addAttribute('verts', vertices, 2);
-  geometry.addAttribute('inputData', vertexData, 4);
-  geometry.addAttribute('inputType', extraData, 1);
-  geometry.addIndex(triangles);
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
+      const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
-  const uniforms = {
-    length: interp.length,
-  }
+      const geometry: Geometry = new Geometry({
+        attributes: {
+          verts: vertices,
+          inputData: vertexData,
+          inputType: extraData,
+        },
+        indexBuffer: triangles
+      });
 
-  const lineShader = PIXI.Shader.from(vertexShader, fragShader, uniforms);
+      const lineShader = Shader.from({
+        gl: {
+          vertex: vertexShader,
+          fragment: fragShader,
+        },
+        resources: {
+          theUniforms: {
+            length: { value: interp.length, type: 'f32' },
+          },
+        }
+      });
 
-  // @ts-ignore
-  const lineMesh = new PIXI.Mesh(geometry, lineShader);
-  app.stage.addChild(lineMesh);
+      const lineMesh = new Mesh({geometry, shader: lineShader});
+      app.stage.addChild(lineMesh);
+    });
 
-  return app.view;
+    return "<div id='stairs-wrapper'></div>";
 };

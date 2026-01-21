@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import Vector2 from '@equinor/videx-vector2';
-import * as PIXI from 'pixi.js';
+import { Mesh, Geometry, Shader } from 'pixi.js';
 import { flatten, VectorLike } from '@equinor/videx-linear-algebra';
 import earcut from 'earcut';
 
@@ -38,7 +38,7 @@ function Intersection(p1: Vector2, d1: Vector2, p2: Vector2, d2: Vector2): [numb
   return c;
 }
 
-export default class Mesh {
+export default class LineMesh {
   /**
    * Create mesh for a line.
    * @param points Collection of points used to construct mesh
@@ -347,24 +347,31 @@ export default class Mesh {
    * @param normals UV data
    * @returns Created pixi mesh
    */
-  static from(vertices: number[],
-      triangles: number[],
-      vertexShader: string,
-      fragmentShader: string,
-      uniforms?: object,
-      normals?: number[]): PIXI.Mesh {
+  static from(
+    vertices: number[],
+    triangles: number[],
+    vertexShader: string,
+    fragmentShader: string,
+    uniforms?: object,
+    normals?: number[],
+  ): Mesh<Geometry, Shader> {
     // Create geometry
-    const geometry = new PIXI.Geometry();
-    geometry.addAttribute('inputVerts', vertices, 2);
-    if (normals) geometry.addAttribute('inputNormals', normals, 2);
+    const geometry: Geometry = new Geometry();
+    geometry.addAttribute('inputVerts', vertices);
+    if (normals) geometry.addAttribute('inputNormals', normals);
     geometry.addIndex(triangles);
 
     // Shader
-    const shader: any = PIXI.Shader.from(
-      vertexShader,
-      fragmentShader,
-      uniforms,
-    );
-    return new PIXI.Mesh(geometry, shader);
+    const shader = Shader.from({
+      gl: {
+        vertex: vertexShader,
+        fragment: fragmentShader,
+      },
+      resources: {
+        uniforms,
+      },
+    });
+
+    return new Mesh({geometry, shader});
   }
 }

@@ -1,5 +1,12 @@
 /* eslint-disable no-magic-numbers */
-import * as PIXI from 'pixi.js';
+import {
+  CanvasTextMetrics,
+  Container,
+  Graphics,
+  Rectangle,
+  Text,
+  TextStyle,
+} from 'pixi.js';
 
 interface State {
   zoom: number;
@@ -24,26 +31,26 @@ export class Label {
     rootDisplacement: 1,
   };
 
-  private static style: PIXI.TextStyle;
+  private static style: TextStyle;
 
   static config: Common;
   static height: number; // Height of labels
 
-  container: PIXI.Container;
-  private text: PIXI.Text;
-  background: PIXI.Graphics;
-  metrics: PIXI.TextMetrics;
+  container: Container;
+  private text: Text;
+  background: Graphics;
+  metrics: CanvasTextMetrics;
 
   private _attachToRoot: boolean = false;
 
   static setStyle(fontSize: number) {
-    Label.style = new PIXI.TextStyle({
+    Label.style = new TextStyle({
       fontFamily : 'Arial',
       fontSize: fontSize,
       fill: 0xFFFFFF, // Initially white to use tint
       align : 'center',
     });
-    Label.height = PIXI.TextMetrics.measureText(' ', Label.style).height;
+    Label.height = CanvasTextMetrics.measureText(' ', Label.style).height;
   }
 
   static setCommon(config: Common) {
@@ -58,25 +65,24 @@ export class Label {
    */
   constructor (label: string, fontColor: number, bgColor: number) {
     // Metrics
-    const metrics = PIXI.TextMetrics.measureText(label, Label.style);
+    const metrics = CanvasTextMetrics.measureText(label, Label.style);
     this.metrics = metrics;
 
-    const container = new PIXI.Container();
+    const container = new Container();
     container.visible = Label.state.visible;
     container.zIndex = 0;
     this.container = container;
 
     // Background
-    const background = new PIXI.Graphics();
-    background.beginFill(0xFFFFFF);
-    background.drawRect(-metrics.width * 0.55, -Label.height * 0.525, metrics.width * 1.1, Label.height * 1.05);
-    background.endFill();
+    const background = new Graphics();
+    background.rect(-metrics.width * 0.55, -Label.height * 0.525, metrics.width * 1.1, Label.height * 1.05);
+    background.fill({color: 0xFFFFFF});
     background.alpha = Label.config.backgroundOpacity;
     background.tint = bgColor;
     this.background = background;
 
     // Label
-    const text: PIXI.Text = new PIXI.Text(label, Label.style);
+    const text: Text = new Text({text: label, style: Label.style});
     text.resolution = window.devicePixelRatio; // Increases text resolution
     text.tint = fontColor;
     text.anchor.set(0.5);
@@ -111,6 +117,6 @@ export class Label {
   getBoundingBox() {
     const { y, width, height } = this.container;
     const x = this.container.x - width / 2;
-    return new PIXI.Rectangle(x, y, width, height);
+    return new Rectangle(x, y, width, height);
   }
 }

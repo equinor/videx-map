@@ -1,10 +1,10 @@
 /* eslint-disable no-magic-numbers, curly */
-import * as PIXI from 'pixi.js';
+import { Geometry, Shader, Mesh } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { inverseLerp, lerp } from '@equinor/videx-math'
 
 import { ModuleInterface } from './ModuleInterface';
-import Mesh from './utils/Mesh';
+import LineMesh from './utils/LineMesh';
 import log from './utils/Log';
 
 export interface OutlineData {
@@ -65,7 +65,7 @@ export default class OutlineModule extends ModuleInterface {
   outlineDict: {[key: string]: Uniforms} = {};
 
   /** Graphic elements currently existing in world space. */
-  spawned: PIXI.Mesh[] = [];
+  spawned: Mesh<Geometry, Shader>[] = [];
 
   /** Vertex shader for the outlines. */
   static vertexShader: string;
@@ -141,20 +141,33 @@ export default class OutlineModule extends ModuleInterface {
             log(`Skipping outline (Polygon) with ${projected.length} points.`);
             continue;
           }
-          outlineData = Mesh.PolygonOutline(projected, this.config.baseWidth);
+          outlineData = LineMesh.PolygonOutline(projected, this.config.baseWidth);
         } else {
           if (projected.length <= 1) { // * Avoid insufficient points
             log(`Skipping outline (Line) with ${projected.length} points.`);
             continue;
           }
-          outlineData = Mesh.SimpleLine(projected, this.config.baseWidth);
+          outlineData = LineMesh.SimpleLine(projected, this.config.baseWidth);
         }
 
-        const outline = Mesh.from(outlineData.vertices,
+        const outline = LineMesh.from(outlineData.vertices,
           outlineData.triangles,
           OutlineModule.vertexShader,
           OutlineModule.fragmentShader,
-          uniforms,
+          {
+            color: {
+              value: uniforms.color,
+              type: 'vec3<f32>',
+            },
+            visible: {
+              value: uniforms.visible,
+              type: 'i32',
+            },
+            width: {
+              value: uniforms.width,
+              type: 'f32',
+            },
+          },
           outlineData.normals);
         this.root.addChild(outline);
 
@@ -185,7 +198,7 @@ export default class OutlineModule extends ModuleInterface {
   /** Clear all spawned graphic elements and return to pool. */
   clear(): void {
     while (this.spawned.length > 0) {
-      const temp: PIXI.Mesh = this.spawned.pop();
+      const temp: Mesh<Geometry, Shader> = this.spawned.pop();
       this.root.removeChild(temp);
       temp.destroy();
     }
@@ -205,17 +218,17 @@ export default class OutlineModule extends ModuleInterface {
 }
 
 OutlineModule.vertexShader = `
-  attribute vec2 inputVerts;
-  attribute vec2 inputNormals;
+  in vec2 inputVerts;
+  in vec2 inputNormals;
 
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
+  uniform mat3 uWorldTransformMatrix;
+  uniform mat3 uProjectionMatrix;
 
   uniform float width;
 
   void main() {
     vec2 pos = inputVerts + inputNormals * width;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(pos, 1.0)).xy, 0.0, 1.0);
+    gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix * vec3(pos, 1.0)).xy, 0.0, 1.0);
   }
 `;
 
@@ -223,10 +236,10 @@ OutlineModule.fragmentShader = `
   precision mediump float;
 
   uniform vec3 color;
-  uniform bool visible;
+  uniform int visible;
 
   void main() {
-    if (!visible) discard;
+    if (visible == 0) discard;
     gl_FragColor = vec4(color, 1.0);
   }
 `;

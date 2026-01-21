@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly */
-import * as PIXI from 'pixi.js';
+import { Geometry, Mesh, Rectangle, Shader } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 
 import { WellboreData } from './WellboreData';
@@ -10,22 +10,22 @@ import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
 export class RootData {
 
   public static state = {
-    rootRadius: 1,
-    maxScale: 1,
+    rootRadius: 1.0,
+    maxScale: 1.0,
   };
 
-  mesh: PIXI.Mesh;
+  mesh: Mesh<Geometry, Shader>;
   wellbores: WellboreData[] = [];
   position: Vector2;
   labelIndex: number = 0;
-  rootLabelsBBox: PIXI.Rectangle = null;
+  rootLabelsBBox: Rectangle = null;
 
   /** Target wellbore data for color */
   target: WellboreData = null;
 
   constructor(position: Vector2) {
     this.position = position;
-    const shader: PIXI.Shader = RootShader.get();
+    const shader: Shader = RootShader.get();
     this.mesh = generateCircle(position, RootData.state.maxScale, shader);
   }
 
@@ -102,8 +102,8 @@ export class RootData {
   }
 
   private updateUniforms() {
-    const uniform: RootUniforms = this.mesh.shader.uniforms as RootUniforms;
-    uniform.active = this.active;
+    const uniform: RootUniforms = this.mesh.shader.resources.uniforms.uniforms as RootUniforms;
+    uniform.active = this.active ? 1 : 0;
     if (this.target) {
       const color = this.target.color;
       uniform.circleColor1 = color.col1;

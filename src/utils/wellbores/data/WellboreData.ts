@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
-import * as PIXI from 'pixi.js';
+import { Container, Geometry, Mesh, Shader } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { SourceData } from './SourceData';
 import { RootData } from './RootData';
@@ -48,14 +48,14 @@ export class WellboreData {
   group: Group;
   wellboreWidth: number;
   interpolator: LineInterpolator;
-  container: PIXI.Container;
+  container: Container;
   label: Label;
   private _zIndex: number = 0;
 
-  private details: PIXI.Container;
-  private detailsDict: { [key: string]: PIXI.Container } = {};
+  private details: Container;
+  private detailsDict: { [key: string]: Container } = {};
 
-  private mesh: PIXI.Mesh;
+  private mesh: Mesh<Geometry, Shader>;
 
   root: RootData;
   status: WellboreStatus = WellboreStatus.normal;
@@ -73,11 +73,11 @@ export class WellboreData {
     if (this.interpolator.singlePoint) {
       this.label.attachToRoot = true;
     } else {
-      this.container = new PIXI.Container();
+      this.container = new Container();
 
       const intervals = processIntervals(input.data.intervals);
 
-      this.details = new PIXI.Container();
+      this.details = new Container();
       this.mesh = this.createWellboreMesh(intervals, input.tick);
 
       // All details should be sorted below the wellbore mesh
@@ -115,7 +115,7 @@ export class WellboreData {
   }
 
   get active(): boolean {
-    const activeUniform = (this.mesh && this.mesh.shader.uniforms.status === 0);
+    const activeUniform = (this.mesh && this.mesh.shader.resources.uniforms.uniforms.status === 0);
     return this.group.active && (activeUniform || this.filter === FilterStatus.none);
   }
 
@@ -131,7 +131,7 @@ export class WellboreData {
     const relative = detail.getRelative(this.data);
     if (!Array.isArray(relative) || relative.length === 0) return;
 
-    const container = new PIXI.Container();
+    const container = new Container();
     container.visible = detail.visible;
 
     relative.forEach(p => {
@@ -163,30 +163,34 @@ export class WellboreData {
   }
 
   get uniforms(): WellboreUniforms {
-    return this.mesh.shader.uniforms as WellboreUniforms;
+    return this.mesh.shader.resources.uniforms.uniforms as WellboreUniforms;
   }
 
-  private createWellboreMesh(intervals: [number, number][], tick: TickConfig): PIXI.Mesh {
+  private createWellboreMesh(intervals: [number, number][], tick: TickConfig): Mesh<Geometry, Shader> {
     const line = new WellboreMesh(this.interpolator, this.wellboreWidth, tick);
     const { vertices, triangles, vertexData, extraData } = line.generate(intervals);
 
-    // Create geometry
-    const geometry = new PIXI.Geometry();
-    geometry.addAttribute('verts', vertices, 2);
-    geometry.addAttribute('vertCol', vertexData, 4);
-    geometry.addAttribute('typeData', extraData, 1);
+    const geometry = new Geometry();
+    geometry.addAttribute('verts', vertices);
+    geometry.addAttribute('vertCol', vertexData);
+    geometry.addAttribute('typeData', extraData);
     geometry.addIndex(triangles);
 
-    const shader: any = WellboreShader.get(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
-    return new PIXI.Mesh(geometry, shader);
+    const shader = WellboreShader.get(this.colors.default, this.group.state.completionVisible, this.group.state.wellboreVisible);
+
+    return new Mesh({geometry, shader});
   }
 
-  setCompletionVisibility(visible: boolean) {
-    if (this.mesh) this.uniforms.completionVisible = visible;
+  setCompletionVisibility(visible: number) {
+    if (this.mesh) {
+      this.uniforms.completionVisible = visible ? 1 : 0;
+    }
   }
 
-  setWellboreVisibility(visible: boolean) {
-    if (this.mesh) this.uniforms.wellboreVisible = visible;
+  setWellboreVisibility(visible: number) {
+    if (this.mesh) {
+      this.uniforms.wellboreVisible = visible ? 1 : 0;
+    }
   }
 
   setDetailsVisibility(key: string, visible: boolean) {
@@ -206,8 +210,8 @@ export class WellboreData {
     if (isHighlighted) {
       const color = multiple ? this.colors.multiHighlight : this.colors.highlight;
       if (this.mesh) {
-        this.mesh.shader.uniforms.wellboreColor1 = color.col1;
-        this.mesh.shader.uniforms.wellboreColor2 = color.col2;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor1 = color.col1;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor2 = color.col2;
         this.container.zIndex = this._zIndex + 100000;
       }
       this.label.container.zIndex = 1;
@@ -216,8 +220,8 @@ export class WellboreData {
       this.label.fontColor = this.colors.interactFontColor;
     } else {
       if (this.mesh) {
-        this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
-        this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor1 = this.colors.default.col1;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor2 = this.colors.default.col2;
         this.container.zIndex = this._zIndex;
       }
       this.label.container.zIndex = 0;
@@ -232,8 +236,8 @@ export class WellboreData {
 
     if (isSelected) {
       if (this.mesh) {
-        this.mesh.shader.uniforms.wellboreColor1 = this.colors.selected.col1;
-        this.mesh.shader.uniforms.wellboreColor2 = this.colors.selected.col2;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor1 = this.colors.selected.col1;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor2 = this.colors.selected.col2;
         this.container.zIndex = this._zIndex + 1000000;
       }
       this.label.container.zIndex = 1;
@@ -241,8 +245,8 @@ export class WellboreData {
       this.label.background.alpha = 0.75;
     } else {
       if (this.mesh) {
-        this.mesh.shader.uniforms.wellboreColor1 = this.colors.default.col1;
-        this.mesh.shader.uniforms.wellboreColor2 = this.colors.default.col2;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor1 = this.colors.default.col1;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreColor2 = this.colors.default.col2;
         this.container.zIndex = this._zIndex;
       }
       this.label.container.zIndex = 0;
@@ -260,9 +264,9 @@ export class WellboreData {
 
       if (this.container) {
         this.container.visible = true;
-        this.mesh.shader.uniforms.status = this.filter;
-        this.mesh.shader.uniforms.wellboreRadius = WellboreData.state.wellboreRadius;
-        this.mesh.shader.uniforms.rootRadius = WellboreData.state.rootRadius;
+        this.mesh.shader.resources.uniforms.uniforms.status = this.filter;
+        this.mesh.shader.resources.uniforms.uniforms.wellboreRadius = WellboreData.state.wellboreRadius;
+        this.mesh.shader.resources.uniforms.uniforms.rootRadius = WellboreData.state.rootRadius;
         this.details.visible = noFilter;
       }
 

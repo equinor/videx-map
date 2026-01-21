@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import * as PIXI from 'pixi.js';
+import { Container, BitmapFont, BitmapFontManager, BitmapText, TextStyle } from 'pixi.js';
 import {v4 as uuidv4} from 'uuid';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -12,20 +12,20 @@ export type GeoJSONLabelData = {
 interface Label {
   name: string;
   position: Vector2;
-  instance?: PIXI.BitmapText;
+  instance?: BitmapText;
 }
 
 /** Class used to manage field labels. Handles scaling and grouping of labels. */
 export default class GeoJSONLabels {
 
   /**PIXI container  to hold all labels*/
-  container: PIXI.Container;
+  container: Container;
 
   /** The textstyle used for labels. */
-  textStyle: PIXI.TextStyle;
+  textStyle: TextStyle;
 
   /** The font used for labels. */
-  font: PIXI.BitmapFont;
+  font: BitmapFont;
 
   /** font name */
   fontName: string;
@@ -40,15 +40,20 @@ export default class GeoJSONLabels {
   visible: boolean = true;
 
   /** construct a new label container. */
-  constructor(root: PIXI.Container, textStyle: PIXI.TextStyle, baseScale: number, fontName?: string) {
-    this.container = new PIXI.Container();
+  constructor(root: Container, textStyle: TextStyle, baseScale: number, fontName?: string) {
+    this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
 
     this.textStyle = textStyle;
     this.baseScale = baseScale;
     this.fontName = fontName || uuidv4();
-    this.font = PIXI.BitmapFont.from(this.fontName, this.textStyle, {resolution: window.devicePixelRatio, chars: PIXI.BitmapFont.ASCII});
+    this.font = BitmapFontManager.install({
+      name: this.fontName,
+      style: this.textStyle,
+      resolution: window.devicePixelRatio,
+      chars: BitmapFontManager.ASCII,
+    });
   }
 
   /**
@@ -71,7 +76,7 @@ export default class GeoJSONLabels {
   draw() {
     // Function for drawing single label
     const drawLabel = (name: string, position: Vector2) => {
-      const instance: PIXI.BitmapText = new PIXI.BitmapText(name, {fontName: this.fontName});
+      const instance: BitmapText = new BitmapText({text: name, style: { fontFamily: this.fontName }});
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
       instance.anchor.set(0.5, 0.5);

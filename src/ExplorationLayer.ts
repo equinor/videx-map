@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers, curly */
 import Vector2 from '@equinor/videx-vector2';
-import * as PIXI from 'pixi.js';
+import { Mesh, Geometry, Shader } from 'pixi.js';
 
 import { ModuleInterface } from './ModuleInterface';
 import generateCircle from './utils/generateCircle';
@@ -29,7 +29,7 @@ interface ExplorationWell {
  * Data assigned each point in point dictionary.
  */
 interface PointData {
-  mesh: PIXI.Mesh;
+  mesh: Mesh<Geometry, Shader>;
   uniforms: RootUniforms;
 }
 

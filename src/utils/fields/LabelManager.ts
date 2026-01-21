@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import * as PIXI from 'pixi.js';
+import { CanvasTextMetrics, Container, Text, TextStyle } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 
 import groupLabels from './groupLabels';
@@ -14,14 +14,14 @@ export type LabelData = {
 interface Field {
   name: string;
   position: Vector2;
-  instance?: PIXI.Text;
+  instance?: Text;
 }
 
 /** Instance of a multi-label entry. */
 export type Label = {
   position: Vector2;
   mass: number;
-  instance: PIXI.Text;
+  instance: Text;
   active: boolean;
 }
 
@@ -36,7 +36,7 @@ export interface MultiField {
 export default class LabelManager {
 
   /** The textstyle used for labels. */
-  textStyle: PIXI.TextStyle;
+  textStyle: TextStyle;
 
   /** Scale of labels when size is set to 1. */
   baseScale: number;
@@ -54,7 +54,7 @@ export default class LabelManager {
   visible: boolean = true;
 
   /** construct a new label manager. */
-  constructor(textStyle: PIXI.TextStyle, baseScale: number) {
+  constructor(textStyle: TextStyle, baseScale: number) {
     this.textStyle = textStyle;
     this.baseScale = baseScale;
   }
@@ -72,7 +72,7 @@ export default class LabelManager {
         instance: null,
       });
     } else { // Multi-polygon
-      const textMetrics: PIXI.TextMetrics = PIXI.TextMetrics.measureText(name, this.textStyle);
+      const textMetrics: CanvasTextMetrics = CanvasTextMetrics.measureText(name, this.textStyle);
       const width: number = textMetrics.width * this.baseScale; // Multiply by scale
       const height: number = textMetrics.height * this.baseScale; // Multiply by scale
 
@@ -95,10 +95,10 @@ export default class LabelManager {
    * Draw all labels assigned to manager.
    * @param root Target root for labels
    */
-  draw(root: PIXI.Container) {
+  draw(root: Container) {
     // Function for drawing single label
     const drawLabel = (name: string, position: Vector2) => {
-      const instance: PIXI.Text = new PIXI.Text(name, this.textStyle);
+      const instance: Text = new Text({text: name, style: this.textStyle});
       instance.resolution = 2; // Increases text resolution
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);

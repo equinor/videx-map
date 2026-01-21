@@ -54,18 +54,18 @@ export default class Hightlighter {
 
       // Cache colors before highlight
       this.cached[i] = {
-        fillCol1: field.fill.uniform.col1,
-        fillCol2: field.fill.uniform.col2,
-        outlineCol: field.outline.uniform.color,
+        fillCol1: field.fill.uniform.col1.value,
+        fillCol2: field.fill.uniform.col2.value,
+        outlineCol: field.outline.uniform.color.value,
         baseZIndex: field.fill.mesh.zIndex,
         field,
       }
 
       // Highlight
-      field.fill.uniform.col1 = this.fillColor1;
-      field.fill.uniform.col2 = this.fillColor2;
+      field.fill.uniform.col1.value = this.fillColor1;
+      field.fill.uniform.col2.value = this.fillColor2;
       field.fill.mesh.zIndex += 10000;
-      field.outline.uniform.color = this.outlineColor;
+      field.outline.uniform.color.value = this.outlineColor;
       field.outline.mesh.zIndex += 10000;
     }
   }
@@ -75,10 +75,10 @@ export default class Hightlighter {
     if (!this.cached) return false;
     // Revert selection
     this.cached.forEach(d => {
-      d.field.fill.uniform.col1 = d.fillCol1;
-      d.field.fill.uniform.col2 = d.fillCol2;
+      d.field.fill.uniform.col1.value = d.fillCol1;
+      d.field.fill.uniform.col2.value = d.fillCol2;
       d.field.fill.mesh.zIndex = d.baseZIndex;
-      d.field.outline.uniform.color = d.outlineCol;
+      d.field.outline.uniform.color.value = d.outlineCol;
       d.field.outline.mesh.zIndex = d.baseZIndex + 1;
     });
     this.cached = undefined;
