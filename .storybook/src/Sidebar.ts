@@ -26,8 +26,10 @@ export default class Sidebar {
         .style('margin-left', `${marginPct}%`)
         .style('margin-right', `${marginPct}%`)
         .style('margin-bottom', '5px')
-        .style('height', '25px')
+        .style('padding', '10px')
         .style('overflow', 'hidden')
+        .style('borderRadius', '8px')
+        .style('cursor', 'pointer')
         .on('click', onClick);
     }
 
@@ -35,24 +37,16 @@ export default class Sidebar {
       const { marginPct } = this;
 
       const group = this.root.append('div')
-        .style('width', `${100 - 2 * marginPct}%`)
-        .style('margin-left', `${marginPct}%`)
-        .style('margin-right', `${marginPct}%`)
-        .style('padding-top', '5px')
-        .style('padding-bottom', '5px')
-        .style('margin-bottom', '10px')
-        .style('background-color', 'LightGray')
-        .style('border-radius', '5px')
+        .style('padding', '8px 0');
 
       group.append('div')
         .text(label)
-        .style('font-size', '16px')
+        .style('font-size', '14px')
         .style('width', `${100 - 2 * marginPct}%`)
+        .style('margin', '5px 0')
         .style('margin-left', `${marginPct}%`)
         .style('margin-right', `${marginPct}%`)
-        .style('height', '25px')
         .style('overflow', 'hidden')
-        .style('font-weight', 'bold')
         .style('text-align', 'center');
 
         return new Sidebar(group, { marginPct: this.marginPct });

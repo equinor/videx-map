@@ -1,10 +1,10 @@
 /* eslint-disable no-magic-numbers, curly */
-import * as PIXI from 'pixi.js';
+import { Container, Geometry, Mesh, Shader, TextStyle } from 'pixi.js';
 import { color } from 'd3-color';
 import Vector2 from '@equinor/videx-vector2';
 
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
-import Mesh, { MeshNormalData } from '../utils/Mesh';
+import LineMesh, { MeshNormalData } from '../utils/LineMesh';
 import LineDictionary from '../utils/LineDictionary';
 import { FeatureProps, FeatureStyle } from '.';
 import { GeoJSONFragmentShaderOutline, GeoJSONVertexShaderOutline } from './shader';
@@ -15,13 +15,19 @@ import { Defaults } from './constants';
 type vec3 = [number, number, number];
 
 interface OutlineUniform {
-  color: vec3;
-  width: number;
+  color: {
+    value: vec3,
+    type: string,
+  };
+  width: {
+    value: number,
+    type: string,
+  }
 }
 
 export interface FeatureMesh {
   outline: {
-    mesh: PIXI.Mesh;
+    mesh: Mesh<Geometry, Shader>;
     uniform: OutlineUniform;
   };
 }
@@ -46,16 +52,16 @@ export default class GeoJSONLineString {
   config: Config = {
   };
 
-  container: PIXI.Container;
+  container: Container;
   pixiOverlay: pixiOverlayBase;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: LineDictionary<any> = new LineDictionary(1.2);
-  textStyle: PIXI.TextStyle;
+  textStyle: TextStyle;
   currentZoom: number = Defaults.INITIAL_ZOOM;
 
-  constructor(root: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
+  constructor(root: Container, pixiOverlay: pixiOverlayBase, config?: Config) {
 
-    this.container = new PIXI.Container();
+    this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
 
@@ -76,7 +82,7 @@ export default class GeoJSONLineString {
       projected.pop(); // Remove overlapping
 
       this.dict.add(projected, feature.properties);
-      const outlineData = Mesh.SimpleLine(projected, Defaults.DEFAULT_LINE_WIDTH);
+      const outlineData = LineMesh.SimpleLine(projected, Defaults.DEFAULT_LINE_WIDTH);
 
       meshes.push(
         this.drawPolygons(this.container, outlineData, properties.style, Defaults.DEFAULT_Z_INDEX),
@@ -89,15 +95,21 @@ export default class GeoJSONLineString {
    * Draw each polygon in a polygon collection.
    * @param polygons
    */
-  drawPolygons(container: PIXI.Container, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
+  drawPolygons(container: Container, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
 
     const lineColor = color(featureStyle.lineColor).rgb();
     const outlineUniform: OutlineUniform = {
-      color: [lineColor.r, lineColor.g, lineColor.b],
-      width: featureStyle.lineWidth,
+      color:{
+        value: [lineColor.r, lineColor.g, lineColor.b],
+        type: 'vec3<f32>',
+      },
+      width: {
+        value: featureStyle.lineWidth,
+        type: 'f32',
+      },
     }
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
       outlineData.triangles,
       GeoJSONVertexShaderOutline,
       GeoJSONFragmentShaderOutline,
@@ -136,13 +148,13 @@ export default class GeoJSONLineString {
      * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
      * instead of iterating over every mesh and manually updating each of the selected
      */
-    this.container.children.map((child: PIXI.DisplayObject) => {
+    this.container.children.map((child: Container ) => {
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
-      if (child.shader.uniformGroup.uniforms.outlineWidth) {
+      if (child.shader.resources.uniforms.uniforms.outlineWidth) {
         /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
-        child.shader.uniformGroup.uniforms.outlineWidth = outlineRadius;
+        child.shader.resources.uniforms.uniforms.outlineWidth = outlineRadius;
       }
     });
     this.currentZoom = zoom;

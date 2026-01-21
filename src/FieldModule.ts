@@ -1,10 +1,10 @@
 /* eslint-disable no-magic-numbers, curly */
-import * as PIXI from 'pixi.js';
+import { Geometry, Mesh, Shader, TextStyle } from 'pixi.js';
 import { clamp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 
 import { ModuleInterface } from './ModuleInterface';
-import Mesh, { MeshData, MeshNormalData } from './utils/Mesh';
+import LineMesh, { MeshData, MeshNormalData } from './utils/LineMesh';
 import centerOfMass from './utils/centerOfMass';
 import Highlighter from './utils/fields/Highlighter';
 import preprocessFields from './utils/fields/preprocessFields';
@@ -14,17 +14,41 @@ import TriangleDictionary from './utils/TriangleDictionary';
 type vec3 = [number, number, number];
 
 interface FillUniform {
-  col1: vec3;
-  col2: vec3;
-  opacity: number;
-  hashed: boolean;
-  hashDisp: number;
-  hashWidth: number;
+  col1: {
+    value: vec3,
+    type: string;
+  };
+  col2: {
+    value: vec3,
+    type: string;
+  };
+  opacity: {
+    value: number,
+    type: string;
+  };
+  hashed: {
+    value: number,
+    type: string;
+  };
+  hashDisp: {
+    value: number,
+    type: string;
+  };
+  hashWidth: {
+    value: number,
+    type: string;
+  };
 }
 
 interface OutlineUniform {
-  color: vec3;
-  width: number;
+  color: {
+    value: vec3,
+    type: string;
+  };
+  outlineWidth: {
+    value: number,
+    type: string;
+  };
 }
 
 /** Collection of data describing colors used for fill. */
@@ -33,7 +57,7 @@ interface FieldStyle {
   fillColor2: vec3;
   fillOpacity: number;
   outlineColor: vec3;
-  hashed: boolean;
+  hashed: number;
 }
 
 export interface Field {
@@ -62,11 +86,11 @@ export interface Field {
 
 export interface FieldMesh {
   fill: {
-    mesh: PIXI.Mesh;
+    mesh: Mesh<Geometry, Shader>;
     uniform: FillUniform;
   };
   outline: {
-    mesh: PIXI.Mesh;
+    mesh: Mesh<Geometry, Shader>;
     uniform: OutlineUniform;
   }
 }
@@ -139,7 +163,7 @@ export default class FieldModule extends ModuleInterface {
     // Clear fields
     this.fields = [];
 
-    const textStyle: PIXI.TextStyle = new PIXI.TextStyle({
+    const textStyle: TextStyle = new TextStyle({
       fontFamily : 'Arial',
       fontSize: 64,
       fontWeight: '600',
@@ -171,9 +195,9 @@ export default class FieldModule extends ModuleInterface {
         const projected = this.projectPolygons(polygon.coordinates);
         projected.pop(); // Remove overlapping
 
-        const meshData = Mesh.Polygon(projected);
+        const meshData = LineMesh.Polygon(projected);
         this.dict.add(polygon.coordinates, meshData.triangles, fieldID);
-        const outlineData = Mesh.PolygonOutline(projected, 0.15);
+        const outlineData = LineMesh.PolygonOutline(projected, 0.15);
         const [position, mass] = centerOfMass(projected, meshData.triangles);
 
         meshes.push(
@@ -199,25 +223,55 @@ export default class FieldModule extends ModuleInterface {
   drawPolygons(meshData: MeshData, outlineData: MeshNormalData, fieldStyle: FieldStyle, zIndex: number): FieldMesh {
 
     const fillUniform: FillUniform = {
-      col1: fieldStyle.fillColor1,
-      col2: fieldStyle.fillColor2,
-      opacity: fieldStyle.fillOpacity,
-      hashed: fieldStyle.hashed,
-      hashDisp: Math.random() * 10,
-      hashWidth: this.config.initialHash,
+      col1: {
+        value: fieldStyle.fillColor1,
+        type: 'vec3<f32>',
+      },
+      col2: {
+        value: fieldStyle.fillColor2,
+        type: 'vec3<f32>',
+      },
+      opacity: {
+        value: fieldStyle.fillOpacity,
+        type: 'f32',
+      },
+      hashed: {
+        value: fieldStyle.hashed,
+        type: 'i32',
+      },
+      hashDisp: {
+        value: Math.random() * 10,
+        type: 'f32',
+      },
+      hashWidth: {
+        value: this.config.initialHash,
+        type: 'f32',
+      },
     };
 
     const outlineUniform: OutlineUniform = {
-      color: fieldStyle.outlineColor,
-      width: 0.0,
+      color: {
+        value: fieldStyle.outlineColor,
+        type: 'vec3<f32>',
+      },
+      outlineWidth: {
+        value: 0.0,
+        type: 'f32',
+      },
     }
 
-    const polygonMesh = Mesh.from(meshData.vertices, meshData.triangles, FieldModule.vertexShaderFill, FieldModule.fragmentShaderFill, fillUniform);
+    const polygonMesh = LineMesh.from(
+      meshData.vertices,
+      meshData.triangles,
+      FieldModule.vertexShaderFill,
+      FieldModule.fragmentShaderFill,
+      fillUniform,
+    );
     polygonMesh.zIndex = zIndex;
 
     this.root.addChild(polygonMesh);
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
       outlineData.triangles,
       FieldModule.vertexShaderOutline,
       FieldModule.fragmentShaderOutline,
@@ -251,7 +305,7 @@ export default class FieldModule extends ModuleInterface {
         fillColor2: gray,
         outlineColor: outlineGray,
         fillOpacity: 0.15,
-        hashed: false,
+        hashed: 0,
       }
     }
 
@@ -261,7 +315,7 @@ export default class FieldModule extends ModuleInterface {
       fillColor2: green,
       outlineColor: green,
       fillOpacity: 0.6,
-      hashed: false,
+      hashed: 0,
     };
 
     switch(hctype) {
@@ -274,11 +328,11 @@ export default class FieldModule extends ModuleInterface {
         fill.fillColor1 = pink;
         fill.fillColor2 = red;
         fill.outlineColor = outlineRed;
-        fill.hashed = true;
+        fill.hashed = 1;
         break;
       case 'OIL/GAS':
         fill.fillColor1 = red;
-        fill.hashed = true;
+        fill.hashed = 1;
         break;
     }
 
@@ -327,34 +381,34 @@ export default class FieldModule extends ModuleInterface {
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // FILL
 FieldModule.vertexShaderFill = `
-  attribute vec2 inputVerts;
+  in vec2 inputVerts;
 
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
+  uniform mat3 uWorldTransformMatrix;
+  uniform mat3 uProjectionMatrix;
 
-  varying vec2 verts;
+  out vec2 verts;
 
   void main() {
     verts = inputVerts;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(inputVerts, 1.0)).xy, 0.0, 1.0);
+    gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix * vec3(inputVerts, 1.0)).xy, 0.0, 1.0);
   }
 `;
 
 FieldModule.fragmentShaderFill = `
   precision mediump float;
 
-  varying vec2 verts;
+  in vec2 verts;
 
   uniform vec3 col1;
   uniform vec3 col2;
   uniform float opacity;
 
-  uniform bool hashed;
+  uniform int hashed;
   uniform float hashDisp;
   uniform float hashWidth;
 
   void main() {
-    if(hashed && mod(verts.y + hashDisp, hashWidth * 2.0) > hashWidth) {
+    if(hashed == 1 && mod(verts.y + hashDisp, hashWidth * 2.0) > hashWidth) {
       gl_FragColor = vec4(col2, 1.0) * opacity;
     }
     else {
@@ -366,17 +420,17 @@ FieldModule.fragmentShaderFill = `
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // OUTLINE
 FieldModule.vertexShaderOutline = `
-  attribute vec2 inputVerts;
-  attribute vec2 inputNormals;
+  in vec2 inputVerts;
+  in vec2 inputNormals;
 
-  uniform mat3 translationMatrix;
-  uniform mat3 projectionMatrix;
+  uniform mat3 uWorldTransformMatrix ;
+  uniform mat3 uProjectionMatrix;
 
   uniform float width;
 
   void main() {
     vec2 pos = inputVerts + inputNormals * width;
-    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(pos, 1.0)).xy, 0.0, 1.0);
+    gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix  * vec3(pos, 1.0)).xy, 0.0, 1.0);
   }
 `;
 

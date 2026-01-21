@@ -1,11 +1,11 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
-import * as PIXI from 'pixi.js';
+import { Container, Mesh, Geometry, Shader, TextStyle, TextStyleAlign, TextStyleFontWeight } from 'pixi.js';
 import { color } from 'd3-color';
 import { clamp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
-import Mesh, { MeshData, MeshNormalData } from '../utils/Mesh';
+import LineMesh, { MeshData, MeshNormalData } from '../utils/LineMesh';
 import centerOfMass from '../utils/centerOfMass';
 import GeoJSONLabels from './labels';
 import TriangleDictionary from '../utils/TriangleDictionary';
@@ -23,27 +23,50 @@ import { Defaults } from './constants';
 type vec3 = [number, number, number];
 
 interface FillUniform {
-  col1: vec3;
-  col2: vec3;
-  opacity: number;
-  hashed: boolean;
-  hashDisp: number;
-  hashWidth: number;
+  col1: {
+    value: vec3,
+    type: string;
+  };
+  col2: {
+    value: vec3,
+    type: string;
+  };
+  opacity: {
+    value: number,
+    type: string;
+  };
+  hashed: {
+    value: number,
+    type: string;
+  };
+  hashDisp: {
+    value: number,
+    type: string;
+  };
+  hashWidth: {
+    value: number,
+    type: string;
+  };
 }
 
 interface OutlineUniform {
-  color: vec3;
-  outlineWidth: number;
-
+  color: {
+    value: vec3,
+    type: string;
+  };
+  outlineWidth: {
+    value: number,
+    type: string;
+  };
 }
 
 export interface FeatureMesh {
   fill: {
-    mesh: PIXI.Mesh;
+    mesh: Mesh<Geometry, Shader>;
     uniform: FillUniform;
   };
   outline: {
-    mesh: PIXI.Mesh;
+    mesh: Mesh<Geometry, Shader>;
     uniform: OutlineUniform;
   };
 }
@@ -96,21 +119,21 @@ export default class GeoJSONPolygon {
     maxHash: Infinity,
   };
 
-  container: PIXI.Container;
+  container: Container;
   pixiOverlay: pixiOverlayBase;
   dict: TriangleDictionary<any> = new TriangleDictionary(1.2);
-  textStyle: PIXI.TextStyle;
+  textStyle: TextStyle;
   labels: GeoJSONLabels;
   currentZoom: number = Defaults.INITIAL_ZOOM;
   outlineThickness: number = Defaults.DEFAULT_LINE_WIDTH;
   zIndex: number = Defaults.DEFAULT_Z_INDEX;
 
-  constructor(root: PIXI.Container, labelRoot: PIXI.Container, pixiOverlay: pixiOverlayBase, config?: Config) {
+  constructor(root: Container, labelRoot: Container, pixiOverlay: pixiOverlayBase, config?: Config) {
     if (config?.initialHash && typeof config.initialHash === 'number') this.config.initialHash = config.initialHash;
     if (config?.minHash && typeof config.minHash === 'number') this.config.minHash = config.minHash;
     if (config?.maxHash && typeof config.maxHash === 'number') this.config.maxHash = config.maxHash;
 
-    this.container = new PIXI.Container();
+    this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
 
@@ -119,12 +142,12 @@ export default class GeoJSONPolygon {
     this.config = config;
     this.config.initialHash = clamp(this.config.initialHash);
 
-    this.textStyle = new PIXI.TextStyle({
+    this.textStyle = new TextStyle({
       fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
       fontSize: config?.labelFontSize || Defaults.DEFAULT_FONT_SIZE,
-      fontWeight: (config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT) as PIXI.TextStyleFontWeight,
+      fontWeight: (config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT) as TextStyleFontWeight,
       fill: config?.labelColor || Defaults.DEFAULT_LABEL_COLOR,
-      align: (config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN) as PIXI.TextStyleAlign,
+      align: (config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN) as TextStyleAlign,
     });
 
     this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE);
@@ -142,9 +165,9 @@ export default class GeoJSONPolygon {
       const projected = this.projectPolygons(coordinates[0]);
       projected.pop(); // Remove overlapping
 
-      const meshData = Mesh.Polygon(projected);
+      const meshData = LineMesh.Polygon(projected);
       this.dict.add(coordinates[0], meshData.triangles, feature.properties);
-      const outlineData = Mesh.PolygonOutline(projected, this.outlineThickness);
+      const outlineData = LineMesh.PolygonOutline(projected, this.outlineThickness);
       const [position, mass] = centerOfMass(projected, meshData.triangles);
 
       meshes.push(
@@ -161,31 +184,55 @@ export default class GeoJSONPolygon {
    * Draw each polygon in a polygon collection.
    * @param polygons
    */
-  drawPolygons(container: PIXI.Container, meshData: MeshData, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
+  drawPolygons(container: Container, meshData: MeshData, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
 
     const fillColor = featureStyle.fillColor ? color(featureStyle.fillColor).rgb() : undefined;
     const fillColor2 = featureStyle.fillColor2 ? color(featureStyle.fillColor2).rgb() : undefined;
     const fillUniform: FillUniform = {
-      col1: fillColor ? [fillColor.r, fillColor.g, fillColor.b] : [0, 0, 0],
-      col2: fillColor2 ? [fillColor2.r, fillColor2.g, fillColor2.b] : [0, 0, 0],
-      opacity: featureStyle.fillOpacity,
-      hashed: featureStyle.hashed,
-      hashDisp: Math.random() * 10,
-      hashWidth: this.config.initialHash,
+      col1: {
+        value: fillColor ? [fillColor.r, fillColor.g, fillColor.b] : [0, 0, 0],
+        type: 'vec3<f32>',
+      },
+      col2: {
+        value: fillColor2 ? [fillColor2.r, fillColor2.g, fillColor2.b] : [0, 0, 0],
+        type: 'vec3<f32>',
+      },
+      opacity: {
+        value: featureStyle.fillOpacity,
+        type: 'f32',
+      },
+      hashed: {
+        value: featureStyle.hashed ? 1 : 0,
+        type: 'f32',
+      },
+      hashDisp: {
+        value: Math.random() * 10,
+        type: 'f32',
+      },
+      hashWidth: {
+        value: this.config.initialHash,
+        type: 'f32',
+      },
     };
 
     const lineColor = color(featureStyle.lineColor).rgb();
     const outlineUniform: OutlineUniform = {
-      color: [lineColor.r, lineColor.g, lineColor.b],
-      outlineWidth: featureStyle.lineWidth,
+      color: {
+        value: [lineColor.r, lineColor.g, lineColor.b],
+        type: 'vec3<f32>',
+      },
+      outlineWidth: {
+        value: featureStyle.lineWidth,
+        type: 'f32',
+      },
     }
 
-    const polygonMesh = Mesh.from(meshData.vertices, meshData.triangles, GeoJSONVertexShaderFill, GeoJSONFragmentShaderFill, fillUniform);
+    const polygonMesh = LineMesh.from(meshData.vertices, meshData.triangles, GeoJSONVertexShaderFill, GeoJSONFragmentShaderFill, fillUniform);
     polygonMesh.zIndex = zIndex;
 
     container.addChild(polygonMesh);
 
-    const polygonOutlineMesh = Mesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
       outlineData.triangles,
       GeoJSONVertexShaderOutline,
       GeoJSONFragmentShaderOutline,
@@ -247,10 +294,10 @@ export default class GeoJSONPolygon {
     this.container.children.map((child: object) => {
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
-      if (child.shader.uniformGroup.uniforms.outlineWidth) {
+      if (child.shader.resources.uniforms.uniforms.outlineWidth) {
         /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
-        child.shader.uniformGroup.uniforms.outlineWidth = outlineRadius;
+        child.shader.resources.uniforms.uniforms.outlineWidth = outlineRadius;
       }
     });
     this.currentZoom = zoom;

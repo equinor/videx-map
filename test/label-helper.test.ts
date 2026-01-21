@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import { Point } from 'pixi.js';
 import { Label, positionAtRoot } from '../src/utils/wellbores/labels';
 
 Label.height = 1;
@@ -9,9 +9,9 @@ const getWellbore = () => ({
   label: {
     attachToRoot: false,
     container: {
-      pivot: new PIXI.Point(0, 0),
-      position: new PIXI.Point(0, 0),
-      scale: new PIXI.Point(0, 0),
+      pivot: new Point(0, 0),
+      position: new Point(0, 0),
+      scale: new Point(0, 0),
       rotation: 0,
     },
   },

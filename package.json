@@ -65,9 +65,9 @@
     "eslint-plugin-storybook": "^0.11.6",
     "husky": "^9.1.7",
     "jsdom": "^27.1.0",
-    "leaflet": "^1.7.1",
-    "leaflet-pixi-overlay": "^1.9.4",
+    "leaflet": "^1.9.4",
     "lint-staged": "^15.5.2",
+    "proj4": "^2.20.2",
     "rimraf": "^6.1.2",
     "rollup": "^4.46.3",
     "simplex-noise": "^4.0.3",
@@ -93,7 +93,7 @@
     "d3-scale-chromatic": "^3.1.0",
     "d3-selection": "^3.0.0",
     "earcut": "^3.0.2",
-    "pixi.js": "^7.3.2",
+    "pixi.js": "^8.16.0",
     "uuid": "^11.1.0",
     "yaml": "^2.8.1"
   }

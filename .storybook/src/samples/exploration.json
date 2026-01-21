@@ -1,0 +1,32 @@
+[
+  {
+    "uniqueWellboreIdentifier": "EXP 1",
+    "latitude": 58.4416083,
+    "longitude": 1.8482167
+  },
+  {
+    "uniqueWellboreIdentifier": "EXP 2",
+    "latitude": 58.4656083,
+    "longitude": 1.8782167
+  },
+  {
+    "uniqueWellboreIdentifier": "EXP 3",
+    "latitude": 58.4676083,
+    "longitude": 1.9182167
+  },
+  {
+    "uniqueWellboreIdentifier": "EXP 4",
+    "latitude": 58.4456083,
+    "longitude": 1.9482167
+  },
+  {
+    "uniqueWellboreIdentifier": "EXP 5",
+    "latitude": 58.4156083,
+    "longitude": 1.9182167
+  },
+  {
+    "uniqueWellboreIdentifier": "EXP 6",
+    "latitude": 58.4116083,
+    "longitude": 1.8782167
+  }
+]

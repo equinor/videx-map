@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { pixiOverlayBase } from './pixiOverlayInterfaces';
-import * as PIXI from 'pixi.js';
+import { Container } from 'pixi.js';
 
 /** Class with common functions shared by all layers. */
 export abstract class ModuleInterface {
@@ -9,19 +9,21 @@ export abstract class ModuleInterface {
   pixiOverlay: pixiOverlayBase;
 
   /** Root container for layer. */
-  root: PIXI.Container;
+  root: Container;
 
   /** True if layer is currently visible. */
   visibility: boolean = true;
 
+  // prevZoom: number;
+
   /** Common constructor for all map layers. */
   constructor() {
-    this.root = new PIXI.Container(); // Group content in container
+    this.root = new Container(); // Group content in container
     this.root.sortableChildren = true; // Make container sortable
   }
 
   destroy(){
-    this.root.destroy({ children: true, texture: true, baseTexture: true });
+    this.root.destroy({ children: true, texture: true, textureSource: true });
     this.root = null;
   }
 

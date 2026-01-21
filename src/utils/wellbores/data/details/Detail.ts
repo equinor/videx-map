@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import { Color, Graphics } from 'pixi.js';
 import { SourceData } from '../SourceData';
 import { LineInterpolator } from '../../../LineInterpolator';
 import { DetailOptions, RelativePosition } from './DetailOptions';
@@ -9,12 +9,12 @@ export abstract class Detail {
   public visible: boolean = false;
 
   protected getData: (wellbore: SourceData, group: string) => RelativePosition[];
-  protected color: PIXI.Color;
+  protected color: Color;
   protected group: string;
 
   constructor(options: DetailOptions, group: string = 'default') {
     this.getData = options.getData;
-    this.color = new PIXI.Color(options.color || [0, 0, 0]);
+    this.color = new Color(options.color || [0, 0, 0]);
 
     this.group = group;
   }
@@ -28,5 +28,5 @@ export abstract class Detail {
     return this.getData(wellbore, this.group);
   }
 
-  public abstract getGraphics(relative: RelativePosition, interpolator: LineInterpolator) : PIXI.Graphics;
+  public abstract getGraphics(relative: RelativePosition, interpolator: LineInterpolator) : Graphics;
 }

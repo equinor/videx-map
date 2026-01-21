@@ -2,7 +2,7 @@
 import Vector2 from '@equinor/videx-vector2';
 
 import { SegmentPoint, LineInterpolator } from './LineInterpolator';
-import Mesh from './Mesh';
+import LineMesh from './LineMesh';
 import { TickConfig } from './wellbores/Config';
 
 interface meshData {
@@ -92,7 +92,7 @@ export class WellboreMesh {
    */
   appendSegment(section: SegmentPoint[], type: number, vertices: number[], triangles: number[], vertexData: number[], extraData: number[]) : void {
      // Make line mesh and use callback to add extra attributes
-     const mesh = Mesh.WellboreSegment(section, this.thickness, type);
+     const mesh = LineMesh.WellboreSegment(section, this.thickness, type);
 
     vertices.push(...mesh.vertices);
     mesh.triangles.forEach(d => triangles.push(d + this.baseTris));

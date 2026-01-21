@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
-import * as PIXI from 'pixi.js';
+import { GlProgram, Shader } from 'pixi.js';
 
 import { Color } from './Colors';
 
@@ -20,18 +20,18 @@ function toShader(n: number): string {
 export interface WellboreUniforms {
   /** Color of lighted wellbore on the format: [R, G, B]. */
   wellboreColor1: vec3,
-/** Color of shaded wellbore on the format: [R, G, B]. */
+  /** Color of shaded wellbore on the format: [R, G, B]. */
   wellboreColor2: vec3,
   /** True if completion and ticks should be visible. */
-  completionVisible: boolean,
+  completionVisible: number
   /** True if wellbore should be visible. */
-  wellboreVisible: boolean,
+  wellboreVisible: number
   /* Status of wellbore. (0: Active, 1: Filtered, 2: Ghost, 3: Hidden) */
-  status: number,
+  status: number
 }
 
 export class WellboreShader {
-  private static program : PIXI.Program = null;
+  private static program : GlProgram = null;
 
   /**
  * Get shader for wellbore.
@@ -40,31 +40,52 @@ export class WellboreShader {
  * @return PIXI shader
  */
   static get(color: Color, completionVisible: boolean, wellboreVisible: boolean) {
-    return new PIXI.Shader(
-      WellboreShader.program,
-      {
-        wellboreColor1: color.col1,
-        wellboreColor2: color.col2,
-        completionVisible,
-        wellboreVisible,
-        status: 0,
-      } as WellboreUniforms,
-    );
+    return new Shader({
+      glProgram: WellboreShader.program,
+      resources: {
+        uniforms: {
+          wellboreColor1: {
+            value: color.col1,
+            type: 'vec3<f32>',
+          },
+          wellboreColor2: {
+            value: color.col2,
+            type: 'vec3<f32>',
+          },
+          completionVisible: {
+            value: completionVisible ? 1 : 0,
+            type: 'i32',
+          },
+          wellboreVisible: {
+            value: wellboreVisible ? 1 : 0,
+            type: 'i32',
+          },
+          status: {
+            value: 0,
+            type: 'i32',
+          },
+          wellboreRadius: {
+            value: 1.0,
+            type: 'f32',
+          },
+        },
+      },
+    });
   }
 
   /** Build wellbore shader with assigned variables. */
   static build(maxScale: number, wellboreDash: number) {
     const vertex = `
-      attribute vec2 verts;
-      attribute vec4 vertCol;
-      attribute float typeData;
+      in vec2 verts;
+      in vec4 vertCol;
+      in float typeData;
 
-      uniform mat3 translationMatrix;
-      uniform mat3 projectionMatrix;
+      uniform mat3 uWorldTransformMatrix;
+      uniform mat3 uProjectionMatrix;
       uniform float wellboreRadius;
 
-      varying vec4 vCol;
-      varying float type;
+      out vec4 vCol;
+      out float type;
 
       void main() {
         vCol = vertCol;
@@ -74,7 +95,7 @@ export class WellboreShader {
 
         float extraRadius = wellboreRadius - ${toShader(maxScale)};
 
-        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + normal * extraRadius, 1.0)).xy, 0.0, 1.0);
+        gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix * vec3(verts + normal * extraRadius, 1.0)).xy, 0.0, 1.0);
       }
     `;
 
@@ -85,13 +106,13 @@ export class WellboreShader {
     const fragment = `
       precision mediump float;
 
-      varying vec4 vCol;
-      varying float type;
+      in vec4 vCol;
+      in float type;
 
       uniform vec3 wellboreColor1;
       uniform vec3 wellboreColor2;
-      uniform bool completionVisible;
-      uniform bool wellboreVisible;
+      uniform int completionVisible;
+      uniform int wellboreVisible;
       uniform int status;
 
       const vec3 sunDir = vec3(0.6247, -0.6247, 0.4685);
@@ -102,17 +123,17 @@ export class WellboreShader {
 
         if (status == 0) {
           if(type == 0.0) {
-            if (!wellboreVisible) {
+            if (wellboreVisible == 0) {
               alpha = 0.03;
             }
           } else if (type == 1.0) {
-            if(completionVisible){
+            if(completionVisible == 1){
               if(mod(vCol.x, ${doubleDash}) > ${dash}) discard;
-            } else if(!wellboreVisible){
+            } else if(wellboreVisible == 0){
               alpha = 0.03;
             }
           }
-          if (!completionVisible && type == 2.0) discard;
+          if (completionVisible == 0 && type == 2.0) discard;
 
           float dist = clamp(vCol.z * vCol.z + vCol.w * vCol.w, 0.0, 1.0);
 
@@ -142,7 +163,7 @@ export class WellboreShader {
       }
     `;
 
-    WellboreShader.program = new PIXI.Program(vertex, fragment);
+    WellboreShader.program = new GlProgram({vertex, fragment});
   }
 }
 
@@ -151,38 +172,53 @@ export class WellboreShader {
 // #region CIRCLE SHADER
 
 export interface RootUniforms {
-  active: boolean;
+  active: number;
   circleColor1: [number, number, number]; // [R, G, B]
   circleColor2: [number, number, number]; // [R, G, B]
-  rootRadius: number,
+  rootRadius: number;
 }
 
 export class RootShader {
-  private static program : PIXI.Program = null;
+  private static program : GlProgram = null;
 
   /** Get root shader */
   static get() {
-    return new PIXI.Shader(
-      RootShader.program,
-      {
-        active: true,
-        circleColor1: [0, 0, 0],
-        circleColor2: [0, 0, 0],
+    return new Shader({
+      glProgram: RootShader.program,
+      resources: {
+        uniforms: {
+          circleColor1: {
+            value: new Float32Array([0, 0, 0]),
+            type: 'vec3<f32>',
+          },
+          circleColor2: {
+            value: new Float32Array([0, 0, 0]),
+            type: 'vec3<f32>',
+          },
+          active: {
+            value: 1,
+            type: 'i32',
+          },
+          rootRadius: {
+            value: 1.0,
+            type: 'f32',
+          },
+        },
       },
-    );
+    });
   }
 
   /** Build vertex shader from given resize configs */
   static build(maxScale: number) {
     const vertex = `
-      attribute vec2 verts;
-      attribute vec2 inputUVs;
+      in vec2 verts;
+      in vec2 inputUVs;
 
-      uniform mat3 translationMatrix;
-      uniform mat3 projectionMatrix;
+      uniform mat3 uWorldTransformMatrix;
+      uniform mat3 uProjectionMatrix;
       uniform float rootRadius;
 
-      varying vec2 UVs;
+      out vec2 UVs;
 
       void main() {
         UVs = inputUVs;
@@ -191,23 +227,23 @@ export class RootShader {
 
         float extraRadius = rootRadius - ${toShader(maxScale)};
 
-        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(verts + dir * extraRadius, 1.0)).xy, 0.0, 1.0);
+        gl_Position = vec4((uProjectionMatrix * uWorldTransformMatrix * vec3(verts + dir * extraRadius, 1.0)).xy, 0.0, 1.0);
       }
     `;
 
     const fragment = `
       precision mediump float;
 
-      varying vec2 UVs;
+      in vec2 UVs;
 
       uniform vec3 circleColor1;
       uniform vec3 circleColor2;
-      uniform bool active;
+      uniform int active;
 
       const vec3 sunDir = vec3(0.6247, -0.6247, 0.4685);
 
       void main() {
-        if (!active) {
+        if (active == 0) {
           discard;
           return;
         }
@@ -226,7 +262,7 @@ export class RootShader {
       }
     `;
 
-    RootShader.program = new PIXI.Program(vertex, fragment);
+    RootShader.program = new GlProgram({vertex, fragment});
   }
 }
 
