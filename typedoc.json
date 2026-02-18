@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "skipLibCheck": true,
+  },
   "validation": {
     "notExported": false,
   }
