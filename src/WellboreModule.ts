@@ -1,5 +1,6 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
-import * as PIXI from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
+import * as L from 'leaflet';
 import { clamp, lerp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -45,14 +46,14 @@ export default class WellboreModule extends ModuleInterface {
   private _redrawAnimFrame: number = null;
 
   containers: {
-    wellbores: PIXI.Container,
-    roots: PIXI.Container,
-    labels: PIXI.Container,
+    wellbores: Container,
+    roots: Container,
+    labels: Container,
   };
 
   /** Zoom event handler. */
   scaling: (zoom: number) => number;
-  marker : PIXI.Graphics;
+  marker : Graphics;
 
   constructor(inputConfig?: InputConfig) {
     super();
@@ -72,7 +73,7 @@ export default class WellboreModule extends ModuleInterface {
     this.registerGroup('default');
 
     const createContainer = () => {
-      const container = new PIXI.Container();
+      const container = new Container();
       container.sortableChildren = true;
       this.root.addChild(container);
       return container;
@@ -123,7 +124,6 @@ export default class WellboreModule extends ModuleInterface {
 
   private addRoot(position: Vector2) : RootData {
     const overlapping = this.pointDict.getOverlapping(position);
-
     if (overlapping) return overlapping.val;
 
     const wellboreRoot = new RootData(position);
@@ -157,6 +157,7 @@ export default class WellboreModule extends ModuleInterface {
       wellboreWidth: wellboreResize.max.scale,
       tick,
     });
+
     if (wellbore.container) {
       this.containers.wellbores.addChild(wellbore.container);
     }
@@ -228,7 +229,6 @@ export default class WellboreModule extends ModuleInterface {
   private handleMouseMove(event: MouseEvent): boolean {
     const map = this.pixiOverlay.utils.getMap();
     const latLng = map.mouseEventToLatLng(event);
-
     const worldspaceCoord = this.projector.getVector2(latLng);
 
     updateHighlighted(
@@ -399,9 +399,9 @@ export default class WellboreModule extends ModuleInterface {
     this.roots = [];
 
     // remove PIXI elements
-    this.containers.wellbores.removeChildren().forEach((child: PIXI.DisplayObject) => child.destroy());
-    this.containers.labels.removeChildren().forEach((child: PIXI.DisplayObject) => child.destroy());
-    this.containers.roots.removeChildren().forEach((child: PIXI.DisplayObject) => child.destroy());
+    this.containers.wellbores.removeChildren().forEach((child: Container ) => child.destroy());
+    this.containers.labels.removeChildren().forEach((child: Container ) => child.destroy());
+    this.containers.roots.removeChildren().forEach((child: Container ) => child.destroy());
     this.requestRedraw();
   }
 
@@ -494,8 +494,8 @@ export default class WellboreModule extends ModuleInterface {
 
   }
 
-  onAdd(map: import('leaflet').Map): void {
-    const element = this.pixiOverlay.utils.getRenderer().view.parentNode;
+  onAdd(map: L.Map):void {
+    const element = this.pixiOverlay.utils.getRenderer().canvas.parentNode;
     const callbacks = {
       mousemove: this.handleMouseMove.bind(this),
       mouseout: this.handleMouseOut.bind(this),
@@ -507,11 +507,13 @@ export default class WellboreModule extends ModuleInterface {
     this._eventHandler.register(map, element, callbacks);
   }
 
-  onRemove(_map: import('leaflet').Map): void {
+  onRemove(_map: L.Map): void {
     this._eventHandler.unregister();
   }
 
   get projector() {
+    const pixiOverlayUtils = this.pixiOverlay.utils;
+    if (!pixiOverlayUtils) console.log('pixiOverlayUtils undefined', pixiOverlayUtils);
     if (!this._projector) this._projector = new Projector(this.pixiOverlay.utils.latLngToLayerPoint);
     return this._projector;
   }

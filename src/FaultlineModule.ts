@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly, no-empty-function  */
-import * as PIXI from 'pixi.js';
+import { Graphics, Point } from 'pixi.js';
 import { ModuleInterface } from './ModuleInterface';
 import Vector2 from '@equinor/videx-vector2';
 import log from './utils/Log';
@@ -40,10 +40,10 @@ interface Config {
 export default class FaultlineModule extends ModuleInterface {
 
   /** Graphic elements currently existing in world space. */
-  spawned: PIXI.Graphics[] = [];
+  spawned: Graphics[] = [];
 
   /** Pool of initialized graphic elements. */
-  pool: PIXI.Graphics[] = [];
+  pool: Graphics[] = [];
 
   /** Default config. */
   config: Config = {
@@ -65,7 +65,7 @@ export default class FaultlineModule extends ModuleInterface {
 
   destroy(){
     super.destroy();
-    this.pool.forEach(g => g.destroy({ children: true, texture: true, baseTexture: true }));
+    this.pool.forEach(g => g.destroy({ children: true, texture: true, textureSource: true }));
     this.pool = null;
     this.spawned = null;
   }
@@ -88,7 +88,7 @@ export default class FaultlineModule extends ModuleInterface {
       if (this.pool.length > 0) {
         faultline = this.pool.pop();
       } else {
-        faultline = new PIXI.Graphics();
+        faultline = new Graphics();
       }
       this.root.addChild(faultline);
       this.spawned.push(faultline);
@@ -98,24 +98,23 @@ export default class FaultlineModule extends ModuleInterface {
 
       const projected = d.coordinates.map(p => {
         const coord = project(p);
-        return new PIXI.Point(coord.x, coord.y);
+        return new Point(coord.x, coord.y);
       });
 
       // Draw line
-      const first: PIXI.Point = projected[0];
-      const last: PIXI.Point = projected[projected.length - 1];
+      const first: Point = projected[0];
+      const last: Point = projected[projected.length - 1];
       if (!Vector2.equals([first.x, first.y], [last.x, last.y], 0.000001)) { // If no loop
         lineCount++; // Count lines appearing in data
-        faultline.lineStyle(this.config.outlineWidth, this.config.color).moveTo(first.x, first.y);
+        faultline.setStrokeStyle(this.config.outlineWidth, this.config.color).moveTo(first.x, first.y);
         for (let i = 1; i < projected.length; i++) faultline.lineTo(projected[i].x, projected[i].y);
         return;
       }
 
       // Draw polygon
-      faultline.beginFill(this.config.color);
-      faultline.lineStyle(this.config.outlineWidth, this.config.color);
-      faultline.drawPolygon(projected);
-      faultline.endFill();
+      faultline.poly(projected);
+      faultline.fill(this.config.color);
+      faultline.setStrokeStyle(this.config.outlineWidth, this.config.color);
     });
 
     if (lineCount > 0) {
@@ -131,7 +130,7 @@ export default class FaultlineModule extends ModuleInterface {
   /** Clear all spawned graphic elements and return to pool. */
   clear() {
     while (this.spawned.length > 0) {
-      const temp: PIXI.Graphics = this.spawned.pop();
+      const temp: Graphics = this.spawned.pop();
       this.root.removeChild(temp);
       temp.clear(); // Clear
       this.pool.push(temp); // Add to pool

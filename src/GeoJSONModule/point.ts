@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly */
-import * as PIXI from 'pixi.js';
+import { Color, Container, Graphics, TextStyle } from 'pixi.js';
 import { color } from 'd3-color';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -11,21 +11,21 @@ import { FeatureProps } from '.';
 export default class GeoJSONPoint {
 
   /** Graphic elements currently existing in world space. */
-  spawned: PIXI.Graphics[] = [];
+  spawned: Graphics[] = [];
 
   /** Pool of initialized graphic elements. */
-  pool: PIXI.Graphics[] = [];
+  pool: Graphics[] = [];
 
-  container: PIXI.Container;
+  container: Container;
   pixiOverlay: pixiOverlayBase;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: PointDictionary<any> = new PointDictionary<number>(0.25, 20, 4);
 
-  textStyle: PIXI.TextStyle;
+  textStyle: TextStyle;
 
-  constructor(root: PIXI.Container, pixiOverlay: pixiOverlayBase) {
+  constructor(root: Container, pixiOverlay: pixiOverlayBase) {
 
-    this.container = new PIXI.Container();
+    this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
 
@@ -46,17 +46,16 @@ export default class GeoJSONPoint {
       if (this.pool.length > 0) {
         point = this.pool.pop();
       } else {
-        point = new PIXI.Graphics();
+        point = new Graphics();
         this.container.addChild(point);
       }
-      const fillColor = properties.style.fillColor ? new PIXI.Color(color(properties.style.fillColor).formatHex()).toNumber() : 0x0;
-      const lineColor = properties.style.lineColor ? new PIXI.Color(color(properties.style.lineColor).formatHex()).toNumber()  : 0x0;
-      const opacity = properties.style.fillOpacity || 0;
+      const fillColor = properties.style.fillColor ? new Color(color(properties.style.fillColor).formatHex()).toNumber() : 0x0;
+      const lineColor = properties.style.lineColor ? new Color(color(properties.style.lineColor).formatHex()).toNumber()  : 0x0;
+      const alpha = properties.style.fillOpacity || 0;
       const offset = 4;
-      point.lineStyle(properties.style.lineWidth, lineColor);
-      point.beginFill(fillColor, opacity);
-      point.drawRect(projected[0] - offset, projected[1] - offset, offset*2, offset*2);
-      point.endFill();
+      point.rect(projected[0] - offset, projected[1] - offset, offset*2, offset*2);
+      point.fill({color: fillColor, alpha});
+      point.setStrokeStyle(properties.style.lineWidth, lineColor);
       this.spawned.push(point);
     }
   }

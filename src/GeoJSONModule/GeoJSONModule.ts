@@ -1,5 +1,6 @@
 /* eslint-disable curly */
-import * as PIXI from 'pixi.js';
+import { Container } from 'pixi.js';
+import * as L from 'leaflet';
 import Vector2 from '@equinor/videx-vector2';
 
 import { ModuleInterface } from '../ModuleInterface';
@@ -30,7 +31,7 @@ export default class GeoJSONModule extends ModuleInterface {
   multipolygons: GeoJSONMultiPolygon;
   _eventHandler: EventHandler;
   mapmoving: boolean;
-  labelRoot: PIXI.Container
+  labelRoot: Container
   config?: Config;
 
   constructor(config?: Config) {
@@ -43,7 +44,7 @@ export default class GeoJSONModule extends ModuleInterface {
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
-    this.labelRoot = new PIXI.Container();
+    this.labelRoot = new Container();
     data.features.forEach(feature => {
       if(feature.geometry.type === 'Point') {
         if (this.points === undefined) this.points = new GeoJSONPoint(this.root, this.pixiOverlay);
@@ -82,8 +83,8 @@ export default class GeoJSONModule extends ModuleInterface {
     return result;
   }
 
-  onAdd(map: import('leaflet').Map): void {
-    const element = this.pixiOverlay.utils.getRenderer().view.parentNode;
+  onAdd(map: L.Map): void {
+    const element = this.pixiOverlay.utils.getRenderer().canvas.parentNode;
     const callbacks = {
       mousemove: this.handleMouseMove.bind(this),
       mouseout: this.handleMouseOut.bind(this),
@@ -91,11 +92,12 @@ export default class GeoJSONModule extends ModuleInterface {
       mousedown: this.handleMouseDown.bind(this),
       mouseup: this.handleMouseUp.bind(this),
     };
+
     this._eventHandler.register(map, element, callbacks);
   }
 
-  onRemove(_map: import('leaflet').Map): void {
-    this._eventHandler.unregister();
+  onRemove(_map: L.Map): void {
+    this._eventHandler?.unregister();
   }
 
   resize(zoom: number) {

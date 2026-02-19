@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import { Graphics } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { LineInterpolator } from '../../../LineInterpolator';
 import { DetailOptions } from './DetailOptions';
@@ -37,13 +37,12 @@ export class ShoeDetail extends Detail {
     const to2 = Vector2.sub(to, normalBottom);
 
     // Draw shoe
-    return new PIXI.Graphics()
-      .beginFill(this.color, 1)
-      .lineStyle(0)
+    return new Graphics()
+      .fill({color: this.color, alpha: 1})
+      .setStrokeStyle(0)
       .moveTo(from1.x, from1.y)
       .lineTo(to1.x, to1.y)
       .lineTo(to2.x, to2.y)
-      .lineTo(from2.x, from2.y)
-      .endFill();
+      .lineTo(from2.x, from2.y);
   }
 }
