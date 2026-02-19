@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/equinor/videx-map/compare/v1.14.14...v2.0.0) (2026-02-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **175:** update pixijs to v8; update stories ([#241](https://github.com/equinor/videx-map/issues/241))
+
+### Features
+
+* **175:** update pixijs to v8; update stories ([#241](https://github.com/equinor/videx-map/issues/241)) ([79381a5](https://github.com/equinor/videx-map/commit/79381a5700c0d0ec8343e298ff5b551a7e0a8dae))
+
 ## [1.14.14](https://github.com/equinor/videx-map/compare/v1.14.13...v1.14.14) (2026-01-13)
 
 
