@@ -24,7 +24,8 @@
     "docs": "typedoc --out docs src",
     "postdocs": "node postdocs.copyfiles.mjs",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prettier": "prettier . --write"
   },
   "repository": {
     "type": "git",
@@ -68,6 +69,7 @@
     "leaflet": "^1.9.4",
     "lint-staged": "^15.5.2",
     "proj4": "^2.20.2",
+    "prettier": "3.7.4",
     "rimraf": "^6.1.2",
     "rollup": "^4.46.3",
     "simplex-noise": "^4.0.3",
