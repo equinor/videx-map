@@ -3,10 +3,10 @@ type Callback = (wellboreId: number) => void;
 
 export class CallbackRegistry {
   /** Internal callback register. */
-  registry: { [key: string]: Callback } = {}
+  registry: { [key: string]: Callback } = {};
 
   /** Can map multiple strings to same callback. */
-  map: { [key: string]: Callback } = {}
+  map: { [key: string]: Callback } = {};
 
   constructor() {
     // Register default callback
@@ -15,8 +15,10 @@ export class CallbackRegistry {
   }
 
   /** Register callback */
-  register (key: string, callback: Callback): void {
-    if (this.registry[key]) throw `Key [ ${key} ] have already been registered.`;
+  register(key: string, callback: Callback): void {
+    if (this.registry[key])
+      throw `Key [ ${key} ] have already been registered.`;
+
     this.registry[key] = callback;
   }
 
@@ -26,7 +28,7 @@ export class CallbackRegistry {
    * @param setKey Key to map to registry.
    * @param key Key in registry.
    */
-  mapKey (setKey: string, key?: string): void {
+  mapKey(setKey: string, key?: string): void {
     if (this.map[setKey]) throw `Key [ ${setKey} ] have already been mapped.`;
     if (!key) {
       if (setKey in this.registry) key = setKey;
@@ -35,7 +37,7 @@ export class CallbackRegistry {
     this.map[setKey] = this.registry[key];
   }
 
-  get (setKey?: string): Callback {
+  get(setKey?: string): Callback {
     return this.map[setKey];
   }
 }

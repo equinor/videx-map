@@ -106,10 +106,10 @@ import L from 'leaflet';
 
     _setEvents: function () {},
 
-    setRenderer: async function() {
+    setRenderer: async function () {
       this._renderer = await autoDetectRenderer(this._rendererOptions);
       if (this._doubleBuffering) {
-          this._auxRenderer = await autoDetectRenderer(this._rendererOptions);
+        this._auxRenderer = await autoDetectRenderer(this._rendererOptions);
       }
     },
 

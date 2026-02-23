@@ -8,7 +8,10 @@ export abstract class Detail {
   public initialized: boolean = false;
   public visible: boolean = false;
 
-  protected getData: (wellbore: SourceData, group: string) => RelativePosition[];
+  protected getData: (
+    wellbore: SourceData,
+    group: string,
+  ) => RelativePosition[];
   protected color: Color;
   protected group: string;
 
@@ -28,5 +31,8 @@ export abstract class Detail {
     return this.getData(wellbore, this.group);
   }
 
-  public abstract getGraphics(relative: RelativePosition, interpolator: LineInterpolator) : Graphics;
+  public abstract getGraphics(
+    relative: RelativePosition,
+    interpolator: LineInterpolator,
+  ): Graphics;
 }

@@ -68,7 +68,11 @@ describe('positionAtRoot', () => {
     positionAtRoot(wellbore0 as any, position0);
 
     // First label below root, second label below first
-    expect(wellbore0.root.position[1]).toBeLessThan(wellbore0.label.container.position.y)
-    expect(wellbore0.label.container.position.y).toBeLessThan(wellbore1.label.container.position.y);
+    expect(wellbore0.root.position[1]).toBeLessThan(
+      wellbore0.label.container.position.y,
+    );
+    expect(wellbore0.label.container.position.y).toBeLessThan(
+      wellbore1.label.container.position.y,
+    );
   });
 });

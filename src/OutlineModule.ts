@@ -1,7 +1,7 @@
 /* eslint-disable no-magic-numbers, curly */
 import { Geometry, Shader, Mesh } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
-import { inverseLerp, lerp } from '@equinor/videx-math'
+import { inverseLerp, lerp } from '@equinor/videx-math';
 
 import { ModuleInterface } from './ModuleInterface';
 import LineMesh from './utils/LineMesh';
@@ -15,7 +15,7 @@ export interface OutlineData {
     name: string;
     stroke: [number, number, number];
     type: string;
-  }
+  };
 }
 
 interface Uniforms {
@@ -60,9 +60,8 @@ interface State {
 
 /** Module for displaying outlines. */
 export default class OutlineModule extends ModuleInterface {
-
   /** Mapping outline collection name with corresponding uniforms. */
-  outlineDict: {[key: string]: Uniforms} = {};
+  outlineDict: { [key: string]: Uniforms } = {};
 
   /** Graphic elements currently existing in world space. */
   spawned: Mesh<Geometry, Shader>[] = [];
@@ -80,11 +79,11 @@ export default class OutlineModule extends ModuleInterface {
     maxZoom: 18,
     minExtraWidth: 0.1,
     maxExtraWidth: 10.0,
-  }
+  };
 
   state: State = {
     extraWidth: 1,
-  }
+  };
 
   scaling: (zoom: number) => number;
 
@@ -97,8 +96,11 @@ export default class OutlineModule extends ModuleInterface {
     if (!isNaN(config.minZoom)) this.config.minZoom = config.minZoom;
     if (!isNaN(config.maxZoom)) this.config.maxZoom = config.maxZoom;
 
-    if (!isNaN(config.minExtraWidth)) this.config.minExtraWidth = config.minExtraWidth;
-    if (!isNaN(config.maxExtraWidth)) this.config.maxExtraWidth = config.maxExtraWidth;
+    if (!isNaN(config.minExtraWidth))
+      this.config.minExtraWidth = config.minExtraWidth;
+
+    if (!isNaN(config.maxExtraWidth))
+      this.config.maxExtraWidth = config.maxExtraWidth;
   }
 
   /**
@@ -118,7 +120,7 @@ export default class OutlineModule extends ModuleInterface {
         color: outlineCollection.meta.stroke,
         width: this.state.extraWidth,
         visible: true,
-      }
+      };
 
       // Register layer
       this.outlineDict[outlineCollection.meta.name] = uniforms;
@@ -135,22 +137,37 @@ export default class OutlineModule extends ModuleInterface {
         }
 
         let outlineData;
-        if (Vector2.equals(projected[0], projected[projected.length - 1], 0.000001)) {
+        if (
+          Vector2.equals(
+            projected[0],
+            projected[projected.length - 1],
+            0.000001,
+          )
+        ) {
           projected.pop(); // Remove overlap
-          if (projected.length <= 2) { // * Avoid insufficient points
+
+          // * Avoid insufficient points
+          if (projected.length <= 2) {
             log(`Skipping outline (Polygon) with ${projected.length} points.`);
             continue;
           }
-          outlineData = LineMesh.PolygonOutline(projected, this.config.baseWidth);
+
+          outlineData = LineMesh.PolygonOutline(
+            projected,
+            this.config.baseWidth,
+          );
         } else {
-          if (projected.length <= 1) { // * Avoid insufficient points
+          // * Avoid insufficient points
+          if (projected.length <= 1) {
             log(`Skipping outline (Line) with ${projected.length} points.`);
             continue;
           }
+
           outlineData = LineMesh.SimpleLine(projected, this.config.baseWidth);
         }
 
-        const outline = LineMesh.from(outlineData.vertices,
+        const outline = LineMesh.from(
+          outlineData.vertices,
           outlineData.triangles,
           OutlineModule.vertexShader,
           OutlineModule.fragmentShader,
@@ -168,7 +185,8 @@ export default class OutlineModule extends ModuleInterface {
               type: 'f32',
             },
           },
-          outlineData.normals);
+          outlineData.normals,
+        );
         this.root.addChild(outline);
 
         this.spawned.push(outline);
@@ -185,7 +203,9 @@ export default class OutlineModule extends ModuleInterface {
    */
   setVisibleLayers(names: string[]): void {
     // Disable all layers
-    Object.keys(this.outlineDict).forEach(key => this.outlineDict[key].visible = false);
+    Object.keys(this.outlineDict).forEach(
+      key => (this.outlineDict[key].visible = false),
+    );
 
     // Enable selected
     names.forEach(name => {
@@ -205,14 +225,14 @@ export default class OutlineModule extends ModuleInterface {
     this.outlineDict = {};
   }
 
-  resize (zoom: number) {
+  resize(zoom: number) {
     const t = inverseLerp(this.config.minZoom, this.config.maxZoom, zoom);
     const width = lerp(this.config.maxExtraWidth, this.config.minExtraWidth, t);
 
     this.state.extraWidth = width; // Update width
 
     Object.keys(this.outlineDict).forEach(key => {
-      this.outlineDict[key].width = width
+      this.outlineDict[key].width = width;
     });
   }
 }

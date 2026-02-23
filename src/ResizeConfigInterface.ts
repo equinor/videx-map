@@ -1,7 +1,6 @@
-
 export interface ResizeConfig {
-  min: { zoom: number, scale: number },
-  max: { zoom: number, scale: number }
+  min: { zoom: number; scale: number };
+  max: { zoom: number; scale: number };
 }
 
 export interface LabelResizeConfig extends ResizeConfig {

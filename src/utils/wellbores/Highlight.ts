@@ -1,5 +1,5 @@
 /* eslint-disable curly */
-import { WellboreData, RootData } from './data'
+import { WellboreData, RootData } from './data';
 
 export class Highlight {
   active: boolean = false;
@@ -34,7 +34,7 @@ export class Highlight {
       this.wellbores = wellbores;
       this.highlightWellbores();
       this.highlightRoot();
-    } else { // If same root and highlight type
+    } else {
       this.clearWellbores(); // Only clear wellbores
       this.wellbores = wellbores; // Set new wellbore
       this.highlightWellbores(); // Highlight wellbores
@@ -48,7 +48,7 @@ export class Highlight {
   }
 
   private highlightWellbores() {
-    const multiple = (this.wellbores.length > 1);
+    const multiple = this.wellbores.length > 1;
     for (let i = 0; i < this.wellbores.length; i++) {
       this.wellbores[i].setHighlight(true, multiple);
     }

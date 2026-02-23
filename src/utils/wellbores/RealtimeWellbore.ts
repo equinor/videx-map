@@ -13,13 +13,12 @@ export default class RealtimeWellbore {
   constructor(pixiOverlay: pixiOverlayBase, wellbore: WellboreData);
   constructor(map: L.Map, wellbore: WellboreData);
   constructor(mapInput: L.Map | pixiOverlayBase, wellbore: WellboreData) {
-
     /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
     // @ts-ignore
-    if (mapInput.utils && 'getMap' in mapInput.utils) { // pixiOverlay
+    if (mapInput.utils && 'getMap' in mapInput.utils) {
       const pixiOverlay: pixiOverlayBase = mapInput as pixiOverlayBase;
       this.map = pixiOverlay.utils.getMap();
-    } else { // map
+    } else {
       this.map = mapInput;
     }
 
@@ -28,7 +27,7 @@ export default class RealtimeWellbore {
   }
 
   /** Get pixel coordinates of wellbore within map. */
-  get pixelCoordinates(): vec2{
+  get pixelCoordinates(): vec2 {
     const { map } = this;
 
     const containerPoint = map.latLngToContainerPoint(this.root);
@@ -39,14 +38,14 @@ export default class RealtimeWellbore {
   }
 
   /** Get pixel coordinates and check if value have changed since last call */
-  public getPixelCoordinates(): { coords: vec2, changed: boolean } {
+  public getPixelCoordinates(): { coords: vec2; changed: boolean } {
     const { prevCoords } = this; // Get before updating
     const coords = this.pixelCoordinates; // Get current coords
 
     return {
       coords,
       changed: !this.coordinatesEqual(coords, prevCoords, 0.00001),
-    }
+    };
   }
 
   /** Returns true, if coordinates are equal with delta precision */

@@ -20,7 +20,10 @@ export class ShoeDetail extends Detail {
     this.widthBottom = options.widthBottom || 1;
   }
 
-  public getGraphics([top, bottom]: [number, number], interpolator: LineInterpolator) {
+  public getGraphics(
+    [top, bottom]: [number, number],
+    interpolator: LineInterpolator,
+  ) {
     const from = interpolator.GetPoint(top).position;
     const to = interpolator.GetPoint(bottom).position;
 
@@ -38,7 +41,7 @@ export class ShoeDetail extends Detail {
 
     // Draw shoe
     return new Graphics()
-      .fill({color: this.color, alpha: 1})
+      .fill({ color: this.color, alpha: 1 })
       .setStrokeStyle(0)
       .moveTo(from1.x, from1.y)
       .lineTo(to1.x, to1.y)

@@ -7,7 +7,10 @@ import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import LineMesh, { MeshNormalData } from '../utils/LineMesh';
 import LineDictionary from '../utils/LineDictionary';
 import { FeatureProps, FeatureStyle } from '.';
-import { GeoJSONFragmentShaderOutline, GeoJSONVertexShaderOutline } from './shader';
+import {
+  GeoJSONFragmentShaderOutline,
+  GeoJSONVertexShaderOutline,
+} from './shader';
 import { getRadius } from '../utils/Radius';
 import { ResizeConfig } from '../ResizeConfigInterface';
 import { Defaults } from './constants';
@@ -16,13 +19,13 @@ type vec3 = [number, number, number];
 
 interface OutlineUniform {
   color: {
-    value: vec3,
-    type: string,
+    value: vec3;
+    type: string;
   };
   width: {
-    value: number,
-    type: string,
-  }
+    value: number;
+    type: string;
+  };
 }
 
 export interface FeatureMesh {
@@ -49,8 +52,7 @@ export default class GeoJSONLineString {
   features: FeatureMesh[] = [];
 
   /** Settings for how to render fields. */
-  config: Config = {
-  };
+  config: Config = {};
 
   container: Container;
   pixiOverlay: pixiOverlayBase;
@@ -60,7 +62,6 @@ export default class GeoJSONLineString {
   currentZoom: number = Defaults.INITIAL_ZOOM;
 
   constructor(root: Container, pixiOverlay: pixiOverlayBase, config?: Config) {
-
     this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
@@ -71,21 +72,28 @@ export default class GeoJSONLineString {
   }
 
   add(feature: GeoJSON.Feature, props: (feature: object) => FeatureProps) {
-
     const geom = feature.geometry as GeoJSON.LineString;
     const properties: FeatureProps = props(feature);
 
     const meshes: FeatureMesh[] = [];
     const coordinates = geom.coordinates as [number, number][];
-    if(coordinates?.length > 0) {
+    if (coordinates?.length > 0) {
       const projected = this.projectPolygons(coordinates);
       projected.pop(); // Remove overlapping
 
       this.dict.add(projected, feature.properties);
-      const outlineData = LineMesh.SimpleLine(projected, Defaults.DEFAULT_LINE_WIDTH);
+      const outlineData = LineMesh.SimpleLine(
+        projected,
+        Defaults.DEFAULT_LINE_WIDTH,
+      );
 
       meshes.push(
-        this.drawPolygons(this.container, outlineData, properties.style, Defaults.DEFAULT_Z_INDEX),
+        this.drawPolygons(
+          this.container,
+          outlineData,
+          properties.style,
+          Defaults.DEFAULT_Z_INDEX,
+        ),
       );
       this.features.push(...meshes);
     }
@@ -95,11 +103,15 @@ export default class GeoJSONLineString {
    * Draw each polygon in a polygon collection.
    * @param polygons
    */
-  drawPolygons(container: Container, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
-
+  drawPolygons(
+    container: Container,
+    outlineData: MeshNormalData,
+    featureStyle: FeatureStyle,
+    zIndex: number,
+  ): FeatureMesh {
     const lineColor = color(featureStyle.lineColor).rgb();
     const outlineUniform: OutlineUniform = {
-      color:{
+      color: {
         value: [lineColor.r, lineColor.g, lineColor.b],
         type: 'vec3<f32>',
       },
@@ -107,14 +119,16 @@ export default class GeoJSONLineString {
         value: featureStyle.lineWidth,
         type: 'f32',
       },
-    }
+    };
 
-    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(
+      outlineData.vertices,
       outlineData.triangles,
       GeoJSONVertexShaderOutline,
       GeoJSONFragmentShaderOutline,
       outlineUniform,
-      outlineData.normals);
+      outlineData.normals,
+    );
     polygonOutlineMesh.zIndex = zIndex;
     container.addChild(polygonOutlineMesh);
 
@@ -123,7 +137,7 @@ export default class GeoJSONLineString {
         mesh: polygonOutlineMesh,
         uniform: outlineUniform,
       },
-    }
+    };
   }
 
   /**
@@ -148,7 +162,7 @@ export default class GeoJSONLineString {
      * @example this.pixiOverlay._renderer.globalUniforms.uniforms.outlineWidth = outlineRadius;
      * instead of iterating over every mesh and manually updating each of the selected
      */
-    this.container.children.map((child: Container ) => {
+    this.container.children.map((child: Container) => {
       /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
       if (child.shader.resources.uniforms.uniforms.outlineWidth) {
@@ -160,7 +174,7 @@ export default class GeoJSONLineString {
     this.currentZoom = zoom;
   }
 
-  testPosition(pos: Vector2) : number {
+  testPosition(pos: Vector2): number {
     return this.dict.getClosest(pos);
   }
 

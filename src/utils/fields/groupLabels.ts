@@ -13,7 +13,10 @@ interface Group {
 /**
  * Function for grouping labels.
  */
-export default function groupLabels(field: MultiField, scale: number): [number, number][] {
+export default function groupLabels(
+  field: MultiField,
+  scale: number,
+): [number, number][] {
   // Get labels from field
   const labels = field.labels;
 
@@ -30,8 +33,11 @@ export default function groupLabels(field: MultiField, scale: number): [number, 
   // Function for checking if two labels are overlapping
   const isOverlapping = (a: Label, b: Label) => {
     const dist = Vector2.sub(a.position, b.position);
-    return (Math.abs(dist[0]) < field.width * scale && Math.abs(dist[1]) < field.height * scale);
-  }
+    return (
+      Math.abs(dist[0]) < field.width * scale &&
+      Math.abs(dist[1]) < field.height * scale
+    );
+  };
 
   // Iterate over labels
   for (let i = 0; i < labels.length; i++) {
@@ -56,7 +62,7 @@ export default function groupLabels(field: MultiField, scale: number): [number, 
 
         // Assign self and consumed to compGroup
         compGroup.consumed.push(...group.consumed, i);
-        group.consumed.forEach(d => groups[d].consumer = compIndex);
+        group.consumed.forEach(d => (groups[d].consumer = compIndex));
 
         // Register consumption
         group.consumed = [];
@@ -71,10 +77,8 @@ export default function groupLabels(field: MultiField, scale: number): [number, 
   // Iterate over groups
   for (let i: number = 0; i < groups.length; i++) {
     const group = groups[i];
-    if(group.consumer >= 0) continue; // Skip consumed
-    output.push(
-      recalculatePosition(labels, group.index, group.consumed),
-    );
+    if (group.consumer >= 0) continue; // Skip consumed
+    output.push(recalculatePosition(labels, group.index, group.consumed));
   }
 
   return output;
@@ -87,7 +91,11 @@ export default function groupLabels(field: MultiField, scale: number): [number, 
  * @param targetIndiced Indices of consumed labels
  * @returns New position of label
  */
-function recalculatePosition(labels: Label[], selfIndex: number, targetIndiced: number[]): [number, number] {
+function recalculatePosition(
+  labels: Label[],
+  selfIndex: number,
+  targetIndiced: number[],
+): [number, number] {
   const self: Label = labels[selfIndex];
   let comX: number = self.mass * self.position[0];
   let comY: number = self.mass * self.position[1];

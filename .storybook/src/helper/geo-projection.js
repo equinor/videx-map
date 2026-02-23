@@ -1,6 +1,7 @@
 import proj4 from 'proj4';
 
-const crsProj = '+proj=utm +zone=31 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs';
+const crsProj =
+  '+proj=utm +zone=31 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs';
 const wgsProj = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
 
 export class GeoProjection {

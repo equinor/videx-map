@@ -10,7 +10,7 @@ type vec3 = [number, number, number];
 
 /** Stringify number for shader. If whole number, ensure one decimal slot. */
 function toShader(n: number): string {
-  return (n === Math.floor(n)) ? `${n.toString()}.0` : n.toString();
+  return n === Math.floor(n) ? `${n.toString()}.0` : n.toString();
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -19,27 +19,31 @@ function toShader(n: number): string {
 /** Uniforms used by the shader. */
 export interface WellboreUniforms {
   /** Color of lighted wellbore on the format: [R, G, B]. */
-  wellboreColor1: vec3,
+  wellboreColor1: vec3;
   /** Color of shaded wellbore on the format: [R, G, B]. */
-  wellboreColor2: vec3,
+  wellboreColor2: vec3;
   /** True if completion and ticks should be visible. */
-  completionVisible: number
+  completionVisible: number;
   /** True if wellbore should be visible. */
-  wellboreVisible: number
+  wellboreVisible: number;
   /* Status of wellbore. (0: Active, 1: Filtered, 2: Ghost, 3: Hidden) */
-  status: number
+  status: number;
 }
 
 export class WellboreShader {
-  private static program : GlProgram = null;
+  private static program: GlProgram = null;
 
   /**
- * Get shader for wellbore.
- * @param color Color used for wellbore
- * @param wellboreWidth Width of wellbore
- * @return PIXI shader
- */
-  static get(color: Color, completionVisible: boolean, wellboreVisible: boolean) {
+   * Get shader for wellbore.
+   * @param color Color used for wellbore
+   * @param wellboreWidth Width of wellbore
+   * @return PIXI shader
+   */
+  static get(
+    color: Color,
+    completionVisible: boolean,
+    wellboreVisible: boolean,
+  ) {
     return new Shader({
       glProgram: WellboreShader.program,
       resources: {
@@ -163,7 +167,7 @@ export class WellboreShader {
       }
     `;
 
-    WellboreShader.program = new GlProgram({vertex, fragment});
+    WellboreShader.program = new GlProgram({ vertex, fragment });
   }
 }
 
@@ -179,7 +183,7 @@ export interface RootUniforms {
 }
 
 export class RootShader {
-  private static program : GlProgram = null;
+  private static program: GlProgram = null;
 
   /** Get root shader */
   static get() {
@@ -262,7 +266,7 @@ export class RootShader {
       }
     `;
 
-    RootShader.program = new GlProgram({vertex, fragment});
+    RootShader.program = new GlProgram({ vertex, fragment });
   }
 }
 

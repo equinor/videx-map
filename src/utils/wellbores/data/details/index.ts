@@ -10,7 +10,10 @@ import { ShoeDetail, ShoeOptions } from './ShoeDetail';
  * @param group - Group to which the detail belongs
  * @returns The correct detail based on the provided shape
  */
-export const getDetail = (options: DetailOptions, group: string = 'default') => {
+export const getDetail = (
+  options: DetailOptions,
+  group: string = 'default',
+) => {
   const { shape } = options;
 
   switch (shape) {
@@ -20,4 +23,4 @@ export const getDetail = (options: DetailOptions, group: string = 'default') => 
       // TODO: Make better default
       return new ShoeDetail(options as ShoeOptions, group);
   }
-}
+};

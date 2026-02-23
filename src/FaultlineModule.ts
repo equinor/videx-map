@@ -38,7 +38,6 @@ interface Config {
 
 /** Module for displaying faultlines. */
 export default class FaultlineModule extends ModuleInterface {
-
   /** Graphic elements currently existing in world space. */
   spawned: Graphics[] = [];
 
@@ -47,10 +46,10 @@ export default class FaultlineModule extends ModuleInterface {
 
   /** Default config. */
   config: Config = {
-    color: 0x727D88,
+    color: 0x727d88,
     alpha: 1.0,
     outlineWidth: 0.125,
-  }
+  };
 
   constructor(config?: InputConfig) {
     super();
@@ -60,12 +59,15 @@ export default class FaultlineModule extends ModuleInterface {
 
     if (!isNaN(config.color)) this.config.color = config.color;
     if (!isNaN(config.alpha)) this.config.alpha = config.alpha;
-    if (!isNaN(config.outlineWidth)) this.config.outlineWidth = config.outlineWidth;
+    if (!isNaN(config.outlineWidth))
+      this.config.outlineWidth = config.outlineWidth;
   }
 
-  destroy(){
+  destroy() {
     super.destroy();
-    this.pool.forEach(g => g.destroy({ children: true, texture: true, textureSource: true }));
+    this.pool.forEach(g =>
+      g.destroy({ children: true, texture: true, textureSource: true }),
+    );
     this.pool = null;
     this.spawned = null;
   }
@@ -104,10 +106,15 @@ export default class FaultlineModule extends ModuleInterface {
       // Draw line
       const first: Point = projected[0];
       const last: Point = projected[projected.length - 1];
-      if (!Vector2.equals([first.x, first.y], [last.x, last.y], 0.000001)) { // If no loop
+
+      // If no loop
+      if (!Vector2.equals([first.x, first.y], [last.x, last.y], 0.000001)) {
         lineCount++; // Count lines appearing in data
-        faultline.setStrokeStyle(this.config.outlineWidth, this.config.color).moveTo(first.x, first.y);
-        for (let i = 1; i < projected.length; i++) faultline.lineTo(projected[i].x, projected[i].y);
+        faultline
+          .setStrokeStyle(this.config.outlineWidth, this.config.color)
+          .moveTo(first.x, first.y);
+        for (let i = 1; i < projected.length; i++)
+          faultline.lineTo(projected[i].x, projected[i].y);
         return;
       }
 
@@ -138,7 +145,5 @@ export default class FaultlineModule extends ModuleInterface {
   }
 
   /* eslint-disable-next-line  @typescript-eslint/no-empty-function */
-  resize (_zoom: number) {
-
-  }
+  resize(_zoom: number) {}
 }

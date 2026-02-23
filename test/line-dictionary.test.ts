@@ -3,15 +3,22 @@ import { wellbores } from './test-data';
 import Vector2 from '@equinor/videx-vector2';
 import { latLngToLayerPoint } from './mocks';
 
-
 test('can add and remove lines to the dictionary', () => {
   const dict = new LineDictionary<string>(1);
 
-  const getTiles = (lineId: number) => Array.from(dict.tiles.keys()).filter(key => dict.tiles.get(key).some(s => s.lineID === lineId));
+  const getTiles = (lineId: number) =>
+    Array.from(dict.tiles.keys()).filter(key =>
+      dict.tiles.get(key).some(s => s.lineID === lineId),
+    );
 
   expect(dict).toBeInstanceOf(LineDictionary);
 
-  const lines = wellbores.map((d, i) => dict.add(d.path.map(pt => new Vector2(latLngToLayerPoint(pt))), 'Line ' + i));
+  const lines = wellbores.map((d, i) =>
+    dict.add(
+      d.path.map(pt => new Vector2(latLngToLayerPoint(pt))),
+      'Line ' + i,
+    ),
+  );
 
   expect(dict.lineValues.size).toBe(10);
   expect(dict.tiles.size).toBe(25);
@@ -21,7 +28,10 @@ test('can add and remove lines to the dictionary', () => {
   });
 
   const testGeometry = lines[2].segments[2].geometry;
-  const testVector = new Vector2((testGeometry.x2 + testGeometry.x1) / 2, (testGeometry.y2 + testGeometry.y1) / 2);
+  const testVector = new Vector2(
+    (testGeometry.x2 + testGeometry.x1) / 2,
+    (testGeometry.y2 + testGeometry.y1) / 2,
+  );
   expect(dict.getSegmentsOn3Grid(testVector).size).toBe(15);
 
   // set a function to determine if line should be considered active or not
@@ -105,5 +115,4 @@ test('can add and remove lines to the dictionary', () => {
 
   expect(dict.lineValues.size).toBe(0);
   expect(dict.tiles.size).toBe(0);
-
 });

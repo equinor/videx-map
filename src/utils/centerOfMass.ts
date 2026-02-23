@@ -7,7 +7,10 @@ import Vector2 from '@equinor/videx-vector2';
  * @param triangles Triangles of polygon
  * @returns Center of mass and mass of polygon
  */
-export default function centerOfMass(vertices: Vector2[], triangles: number[]): [Vector2, number] {
+export default function centerOfMass(
+  vertices: Vector2[],
+  triangles: number[],
+): [Vector2, number] {
   let comX = 0;
   let comY = 0;
   let totalMass = 0;
@@ -21,8 +24,8 @@ export default function centerOfMass(vertices: Vector2[], triangles: number[]): 
     const ac = Vector2.sub(c, a);
 
     const mass: number = Vector2.cross(ab, ac) * 0.5;
-    comX += mass * (a.x + b.x + c.x) / 3;
-    comY += mass * (a.y + b.y + c.y) / 3;
+    comX += (mass * (a.x + b.x + c.x)) / 3;
+    comY += (mass * (a.y + b.y + c.y)) / 3;
     totalMass += mass;
   }
 

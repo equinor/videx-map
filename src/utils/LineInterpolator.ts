@@ -32,13 +32,13 @@ export interface SegmentPoint {
 /** Interpolator for finding points and subsegments on a line defined by a collection of Vector2 or 2D vectors. */
 export class LineInterpolator {
   /** Amount of provided points. */
-  amount : number;
+  amount: number;
 
   /** Length of line. */
-  length : number;
+  length: number;
 
   /** True if line is an approximation of a single point. */
-  singlePoint : boolean = true;
+  singlePoint: boolean = true;
 
   /** Collection of points along line with distances. */
   path: PathPoint[];
@@ -65,12 +65,12 @@ export class LineInterpolator {
       direction: initDir,
       distance: 0,
       relative: 0,
-    }
+    };
 
     // Total length of line
     let length: number = 0;
 
-    for(let i = 1; i < amount; i++) {
+    for (let i = 1; i < amount; i++) {
       const point = points[i];
       length += Vector2.distance(point, path[i - 1].point);
       path[i] = {
@@ -81,15 +81,15 @@ export class LineInterpolator {
       };
 
       // Not a single point if outside radius
-      if(Vector2.distance(point, root) > radius) {
+      if (Vector2.distance(point, root) > radius) {
         this.singlePoint = false;
       }
     }
 
     // Re-iterate over path to calculate relative distances
-    for(let i = 1; i < amount; i++) {
+    for (let i = 1; i < amount; i++) {
       const p = path[i];
-      p.relative = (length === 0) ? 0 : p.distance / length;
+      p.relative = length === 0 ? 0 : p.distance / length;
     }
 
     this.amount = amount;
@@ -104,7 +104,7 @@ export class LineInterpolator {
    */
   GetPoint(relative: number): SegmentPoint {
     // Return first point if line has no length
-    if(this.singlePoint) {
+    if (this.singlePoint) {
       return {
         position: this.path[0].point,
         direction: Vector2.up,
@@ -118,7 +118,7 @@ export class LineInterpolator {
         position: first.point,
         direction: first.direction,
         distance: 0,
-      }
+      };
     }
 
     if (relative >= 1) {
@@ -127,7 +127,7 @@ export class LineInterpolator {
         position: last.point,
         direction: last.direction,
         distance: this.length,
-      }
+      };
     }
 
     const base: number = this.GetClosestPointBelow(relative);
@@ -137,7 +137,11 @@ export class LineInterpolator {
     const frac: number = (relative - prev.relative) / dist;
     return {
       position: mix(prev.point, cur.point, frac, Vector2.zero),
-      direction: Vector2.lerpRot(prev.direction, cur.direction, frac).normalize(),
+      direction: Vector2.lerpRot(
+        prev.direction,
+        cur.direction,
+        frac,
+      ).normalize(),
       distance: prev.distance * (1 - frac) + cur.distance * frac,
     };
   }
@@ -150,7 +154,7 @@ export class LineInterpolator {
    */
   GetSection(relativeStart: number, relativeEnd: number): SegmentPoint[] {
     // Return two points if line has no length
-    if(this.singlePoint) {
+    if (this.singlePoint) {
       return [
         { position: this.path[0].point, direction: Vector2.up, distance: 0 },
         { position: this.path[0].point, direction: Vector2.up, distance: 0 },
@@ -161,8 +165,16 @@ export class LineInterpolator {
     if (relativeStart >= 1) {
       const last = this.path[this.path.length - 1];
       return [
-        { position: last.point, direction: last.direction, distance: this.length },
-        { position: last.point, direction: last.direction, distance: this.length },
+        {
+          position: last.point,
+          direction: last.direction,
+          distance: this.length,
+        },
+        {
+          position: last.point,
+          direction: last.direction,
+          distance: this.length,
+        },
       ];
     }
 
@@ -174,29 +186,41 @@ export class LineInterpolator {
     const cur: PathPoint = this.path[base + 1];
     const dist: number = cur.relative - prev.relative;
     const frac: number = (relativeStart - prev.relative) / dist;
-    points.push({ // Push first point
+    points.push({
+      // Push first point
       position: mix(prev.point, cur.point, frac, Vector2.zero),
-      direction: Vector2.lerpRot(prev.direction, cur.direction, frac).normalize(),
+      direction: Vector2.lerpRot(
+        prev.direction,
+        cur.direction,
+        frac,
+      ).normalize(),
       distance: prev.distance * (1 - frac) + cur.distance * frac,
     });
 
-    for(let i = base + 1; i < this.amount; i++) {
+    for (let i = base + 1; i < this.amount; i++) {
       const cur: PathPoint = this.path[i];
 
-      if (cur.relative >= relativeEnd) { // End
+      if (cur.relative >= relativeEnd) {
+        // End
         const cur: PathPoint = this.path[i];
         const prev: PathPoint = this.path[i - 1];
         const dist: number = cur.relative - prev.relative;
         const frac: number = (relativeEnd - prev.relative) / dist;
-        points.push({ // Push last point
+        points.push({
+          // Push last point
           position: mix(prev.point, cur.point, frac, Vector2.zero),
-          direction: Vector2.lerpRot(prev.direction, cur.direction, frac).normalize(),
+          direction: Vector2.lerpRot(
+            prev.direction,
+            cur.direction,
+            frac,
+          ).normalize(),
           distance: prev.distance * (1 - frac) + cur.distance * frac,
         });
         break;
       }
 
-      points.push({ // Add points between
+      points.push({
+        // Add points between
         position: cur.point,
         direction: this.path[i].direction,
         distance: cur.distance,
@@ -215,8 +239,8 @@ export class LineInterpolator {
     let base: number = 0;
     let range: number = this.amount;
     let idx: number = Math.floor(range * 0.5);
-    while(range > 1) {
-      if(relative < this.path[idx].relative) {
+    while (range > 1) {
+      if (relative < this.path[idx].relative) {
         range = Math.floor(range * 0.5);
         idx = base + Math.floor(range * 0.5);
       } else {
@@ -233,7 +257,7 @@ export class LineInterpolator {
    * @param distance Real distance from the start
    * @returns Point at given distance from start
    */
-  GetPointFromStart(distance: number): SegmentPoint{
+  GetPointFromStart(distance: number): SegmentPoint {
     const relative: number = distance / this.length;
     return this.GetPoint(relative);
   }
@@ -244,7 +268,7 @@ export class LineInterpolator {
    * @returns Point at given distance from end
    */
   GetPointFromEnd(distance: number): SegmentPoint {
-    const relative: number = 1 - (distance / this.length);
+    const relative: number = 1 - distance / this.length;
     return this.GetPoint(relative);
   }
 
@@ -255,12 +279,16 @@ export class LineInterpolator {
    * @param resolution Amount of points within range
    * @returns Collection of equally spaced points within range
    */
-  GetRangeFromStart(relative: number, width: number, resolution: number = 10): SegmentPoint[] {
-    const relativeEnd: number = relative + (width / this.length);
+  GetRangeFromStart(
+    relative: number,
+    width: number,
+    resolution: number = 10,
+  ): SegmentPoint[] {
+    const relativeEnd: number = relative + width / this.length;
     const relativeDisp: number = (relativeEnd - relative) / resolution;
 
     const points = [];
-    for(let i = 0; i <= resolution; i++) {
+    for (let i = 0; i <= resolution; i++) {
       points.push(this.GetPoint(relative + relativeDisp * i));
     }
     return points;
@@ -273,13 +301,12 @@ export class LineInterpolator {
    */
   GetDirection(points: Vector2[], idx: number): Vector2 {
     const end: number = points.length - 1;
-    if (idx === 0) { // If first
+
+    if (idx === 0) {
       return Vector2.sub(points[1], points[0]).normalize();
-    } // If last
-    else if (idx === end) {
+    } else if (idx === end) {
       return Vector2.sub(points[end], points[end - 1]).normalize();
-    }
-    else {
+    } else {
       const cur: Vector2 = points[idx]; // Current point
       const to: Vector2 = Vector2.sub(cur, points[idx - 1]); // Direction to current
       const from: Vector2 = Vector2.sub(points[idx + 1], cur); // Direction from current

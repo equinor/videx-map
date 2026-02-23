@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 // file instead of process.cwd(). For more information:
 // https://nodejs.org/docs/latest-v16.x/api/esm.html#importmetaurl
 const pkg = JSON.parse(
-	readFileSync(new URL('./package.json', import.meta.url)),
+  readFileSync(new URL('./package.json', import.meta.url)),
 );
 
 export default [
@@ -25,9 +25,7 @@ export default [
         format: 'esm',
       },
     ],
-    external: [
-      ...Object.keys(pkg.dependencies || {}),
-    ],
+    external: [...Object.keys(pkg.dependencies || {})],
     plugins: [
       typescript(),
       terser({
@@ -52,9 +50,7 @@ export default [
         uuid: 'uuid',
       },
     },
-    external: [
-      ...Object.keys(pkg.dependencies || {}),
-    ],
+    external: [...Object.keys(pkg.dependencies || {})],
     plugins: [
       nodeResolve(),
       typescript(),

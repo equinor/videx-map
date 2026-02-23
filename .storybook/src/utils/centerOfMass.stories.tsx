@@ -10,18 +10,13 @@ export default { title: 'utils/centerOfMass' };
 // Circle
 export const Circle = () => {
   {
-    const root = create('svg')
-      .attr('width', '500px')
-      .attr('height', '500px');
+    const root = create('svg').attr('width', '500px').attr('height', '500px');
 
     const center = new Vector2(250, 250);
 
     const verts: Vector2[] = [];
     for (let i = 0; i < 360; i += 60) {
-      const pos = Vector2.right
-        .rescale(200)
-        .rotateDeg(i)
-        .add(center);
+      const pos = Vector2.right.rescale(200).rotateDeg(i).add(center);
       verts.push(pos);
     }
 
@@ -32,14 +27,16 @@ export const Circle = () => {
       const b = verts[tris[i + 1]];
       const c = verts[tris[i + 2]];
 
-      root.append('path')
+      root
+        .append('path')
         .attr('fill', 'Coral')
         .attr('stroke', 'FireBrick')
-        .attr('d',`M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`)
+        .attr('d', `M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`);
     }
 
     verts.forEach(pos => {
-      root.append('circle')
+      root
+        .append('circle')
         .attr('cx', pos.x)
         .attr('cy', pos.y)
         .attr('fill', 'FireBrick')
@@ -47,23 +44,22 @@ export const Circle = () => {
     });
 
     const [com] = centerOfMass(verts, tris);
-    root.append('circle')
-        .attr('cx', com.x)
-        .attr('cy', com.y)
-        .attr('fill', 'Black')
-        .attr('r', 5);
+    root
+      .append('circle')
+      .attr('cx', com.x)
+      .attr('cy', com.y)
+      .attr('fill', 'Black')
+      .attr('r', 5);
 
     return root.node();
   }
-}
+};
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Arrow
 export const Arrow = () => {
   {
-    const root = create('svg')
-      .attr('width', '500px')
-      .attr('height', '500px');
+    const root = create('svg').attr('width', '500px').attr('height', '500px');
 
     const center = new Vector2(250, 250);
 
@@ -81,14 +77,16 @@ export const Arrow = () => {
       const b = verts[tris[i + 1]];
       const c = verts[tris[i + 2]];
 
-      root.append('path')
+      root
+        .append('path')
         .attr('fill', 'Coral')
         .attr('stroke', 'FireBrick')
-        .attr('d',`M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`)
+        .attr('d', `M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`);
     }
 
     verts.forEach(pos => {
-      root.append('circle')
+      root
+        .append('circle')
         .attr('cx', pos.x)
         .attr('cy', pos.y)
         .attr('fill', 'FireBrick')
@@ -96,23 +94,22 @@ export const Arrow = () => {
     });
 
     const [com] = centerOfMass(verts, tris);
-    root.append('circle')
-        .attr('cx', com.x)
-        .attr('cy', com.y)
-        .attr('fill', 'Black')
-        .attr('r', 5);
+    root
+      .append('circle')
+      .attr('cx', com.x)
+      .attr('cy', com.y)
+      .attr('fill', 'Black')
+      .attr('r', 5);
 
     return root.node();
   }
-}
+};
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Letter T
 export const LetterT = () => {
   {
-    const root = create('svg')
-      .attr('width', '500px')
-      .attr('height', '500px');
+    const root = create('svg').attr('width', '500px').attr('height', '500px');
 
     const center = new Vector2(250, 250);
 
@@ -134,14 +131,16 @@ export const LetterT = () => {
       const b = verts[tris[i + 1]];
       const c = verts[tris[i + 2]];
 
-      root.append('path')
+      root
+        .append('path')
         .attr('fill', 'Coral')
         .attr('stroke', 'FireBrick')
-        .attr('d',`M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`)
+        .attr('d', `M${a.x},${a.y}L${b.x},${b.y}L${c.x},${c.y}Z`);
     }
 
     verts.forEach(pos => {
-      root.append('circle')
+      root
+        .append('circle')
         .attr('cx', pos.x)
         .attr('cy', pos.y)
         .attr('fill', 'FireBrick')
@@ -149,7 +148,8 @@ export const LetterT = () => {
     });
 
     const [com] = centerOfMass(verts, tris);
-    root.append('circle')
+    root
+      .append('circle')
       .attr('cx', com.x)
       .attr('cy', com.y)
       .attr('fill', 'Black')
@@ -157,4 +157,4 @@ export const LetterT = () => {
 
     return root.node();
   }
-}
+};

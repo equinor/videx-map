@@ -1,4 +1,4 @@
-export * from './ModuleInterface'
+export * from './ModuleInterface';
 export { default as FaultlineModule } from './FaultlineModule';
 export { default as OutlineModule } from './OutlineModule';
 export { default as WellboreModule } from './WellboreModule';

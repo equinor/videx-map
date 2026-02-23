@@ -1,5 +1,13 @@
 /* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
-import { Container, Mesh, Geometry, Shader, TextStyle, TextStyleAlign, TextStyleFontWeight } from 'pixi.js';
+import {
+  Container,
+  Mesh,
+  Geometry,
+  Shader,
+  TextStyle,
+  TextStyleAlign,
+  TextStyleFontWeight,
+} from 'pixi.js';
 import { color } from 'd3-color';
 import { clamp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
@@ -24,38 +32,38 @@ type vec3 = [number, number, number];
 
 interface FillUniform {
   col1: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   col2: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   opacity: {
-    value: number,
+    value: number;
     type: string;
   };
   hashed: {
-    value: number,
+    value: number;
     type: string;
   };
   hashDisp: {
-    value: number,
+    value: number;
     type: string;
   };
   hashWidth: {
-    value: number,
+    value: number;
     type: string;
   };
 }
 
 interface OutlineUniform {
   color: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   outlineWidth: {
-    value: number,
+    value: number;
     type: string;
   };
 }
@@ -74,21 +82,21 @@ export interface FeatureMesh {
 /** Interface for feature config. */
 interface Config {
   /** Initial scale of feature hash (Default: 1.0). */
-  initialHash?: number,
+  initialHash?: number;
   /** Minimum scale of feature hash (Default: 0.0). */
-  minHash?: number,
+  minHash?: number;
   /** Maximum scale of feature hash (Default: Infinity). */
-  maxHash?: number,
+  maxHash?: number;
   /**Label font family, default Arial */
-  labelFontFamily?: string,
+  labelFontFamily?: string;
   /**Label font size, default 64 */
-  labelFontSize?: number,
+  labelFontSize?: number;
   /**Label font weight, default 600 */
-  labelFontWeight?: string,
+  labelFontWeight?: string;
   /**Label fill color, default 0x454545 */
-  labelColor?: string | number,
+  labelColor?: string | number;
   /**Label alignment, default Center  */
-  labelAlign?: string,
+  labelAlign?: string;
   /** Resize configuration of outline. */
   outlineResize?: ResizeConfig;
   /** Resize configuration for labels. */
@@ -128,10 +136,20 @@ export default class GeoJSONPolygon {
   outlineThickness: number = Defaults.DEFAULT_LINE_WIDTH;
   zIndex: number = Defaults.DEFAULT_Z_INDEX;
 
-  constructor(root: Container, labelRoot: Container, pixiOverlay: pixiOverlayBase, config?: Config) {
-    if (config?.initialHash && typeof config.initialHash === 'number') this.config.initialHash = config.initialHash;
-    if (config?.minHash && typeof config.minHash === 'number') this.config.minHash = config.minHash;
-    if (config?.maxHash && typeof config.maxHash === 'number') this.config.maxHash = config.maxHash;
+  constructor(
+    root: Container,
+    labelRoot: Container,
+    pixiOverlay: pixiOverlayBase,
+    config?: Config,
+  ) {
+    if (config?.initialHash && typeof config.initialHash === 'number')
+      this.config.initialHash = config.initialHash;
+
+    if (config?.minHash && typeof config.minHash === 'number')
+      this.config.minHash = config.minHash;
+
+    if (config?.maxHash && typeof config.maxHash === 'number')
+      this.config.maxHash = config.maxHash;
 
     this.container = new Container();
     this.container.sortableChildren = true;
@@ -145,35 +163,54 @@ export default class GeoJSONPolygon {
     this.textStyle = new TextStyle({
       fontFamily: config?.labelFontFamily || Defaults.DEFAULT_FONT_FAMILY,
       fontSize: config?.labelFontSize || Defaults.DEFAULT_FONT_SIZE,
-      fontWeight: (config?.labelFontWeight || Defaults.DEFAULT_FONT_WEIGHT) as TextStyleFontWeight,
+      fontWeight: (config?.labelFontWeight ||
+        Defaults.DEFAULT_FONT_WEIGHT) as TextStyleFontWeight,
       fill: config?.labelColor || Defaults.DEFAULT_LABEL_COLOR,
-      align: (config?.labelAlign || Defaults.DEFAULT_LABEL_ALIGN) as TextStyleAlign,
+      align: (config?.labelAlign ||
+        Defaults.DEFAULT_LABEL_ALIGN) as TextStyleAlign,
     });
 
-    this.labels = new GeoJSONLabels(labelRoot || this.container, this.textStyle, this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE);
-
+    this.labels = new GeoJSONLabels(
+      labelRoot || this.container,
+      this.textStyle,
+      this.config.labelResize?.baseScale || Defaults.DEFAULT_BASE_SCALE,
+    );
   }
 
   add(feature: GeoJSON.Feature, props: (feature: object) => FeatureProps) {
-
     const geom = feature.geometry as GeoJSON.Polygon;
     const properties: FeatureProps = props(feature);
-    if (properties.style.labelScale) this.labels.baseScale = properties.style.labelScale;
+
+    if (properties.style.labelScale)
+      this.labels.baseScale = properties.style.labelScale;
+
     const meshes: FeatureMesh[] = [];
     const coordinates = geom.coordinates as [number, number][][];
-    if(coordinates?.length > 0) {
+    if (coordinates?.length > 0) {
       const projected = this.projectPolygons(coordinates[0]);
       projected.pop(); // Remove overlapping
 
       const meshData = LineMesh.Polygon(projected);
       this.dict.add(coordinates[0], meshData.triangles, feature.properties);
-      const outlineData = LineMesh.PolygonOutline(projected, this.outlineThickness);
+      const outlineData = LineMesh.PolygonOutline(
+        projected,
+        this.outlineThickness,
+      );
       const [position, mass] = centerOfMass(projected, meshData.triangles);
 
       meshes.push(
-        this.drawPolygons(this.container, meshData, outlineData, properties.style, this.zIndex),
+        this.drawPolygons(
+          this.container,
+          meshData,
+          outlineData,
+          properties.style,
+          this.zIndex,
+        ),
       );
-      if (properties.label) this.labels.addLabel(properties.label, { position, mass });
+
+      if (properties.label)
+        this.labels.addLabel(properties.label, { position, mass });
+
       this.features.push(...meshes);
 
       // this.labelManager.draw(container);
@@ -184,17 +221,30 @@ export default class GeoJSONPolygon {
    * Draw each polygon in a polygon collection.
    * @param polygons
    */
-  drawPolygons(container: Container, meshData: MeshData, outlineData: MeshNormalData, featureStyle: FeatureStyle, zIndex: number): FeatureMesh {
+  drawPolygons(
+    container: Container,
+    meshData: MeshData,
+    outlineData: MeshNormalData,
+    featureStyle: FeatureStyle,
+    zIndex: number,
+  ): FeatureMesh {
+    const fillColor = featureStyle.fillColor
+      ? color(featureStyle.fillColor).rgb()
+      : undefined;
 
-    const fillColor = featureStyle.fillColor ? color(featureStyle.fillColor).rgb() : undefined;
-    const fillColor2 = featureStyle.fillColor2 ? color(featureStyle.fillColor2).rgb() : undefined;
+    const fillColor2 = featureStyle.fillColor2
+      ? color(featureStyle.fillColor2).rgb()
+      : undefined;
+
     const fillUniform: FillUniform = {
       col1: {
         value: fillColor ? [fillColor.r, fillColor.g, fillColor.b] : [0, 0, 0],
         type: 'vec3<f32>',
       },
       col2: {
-        value: fillColor2 ? [fillColor2.r, fillColor2.g, fillColor2.b] : [0, 0, 0],
+        value: fillColor2
+          ? [fillColor2.r, fillColor2.g, fillColor2.b]
+          : [0, 0, 0],
         type: 'vec3<f32>',
       },
       opacity: {
@@ -225,19 +275,27 @@ export default class GeoJSONPolygon {
         value: featureStyle.lineWidth,
         type: 'f32',
       },
-    }
+    };
 
-    const polygonMesh = LineMesh.from(meshData.vertices, meshData.triangles, GeoJSONVertexShaderFill, GeoJSONFragmentShaderFill, fillUniform);
+    const polygonMesh = LineMesh.from(
+      meshData.vertices,
+      meshData.triangles,
+      GeoJSONVertexShaderFill,
+      GeoJSONFragmentShaderFill,
+      fillUniform,
+    );
     polygonMesh.zIndex = zIndex;
 
     container.addChild(polygonMesh);
 
-    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(
+      outlineData.vertices,
       outlineData.triangles,
       GeoJSONVertexShaderOutline,
       GeoJSONFragmentShaderOutline,
       outlineUniform,
-      outlineData.normals);
+      outlineData.normals,
+    );
     polygonOutlineMesh.zIndex = zIndex + 1;
     container.addChild(polygonOutlineMesh);
 
@@ -250,7 +308,7 @@ export default class GeoJSONPolygon {
         mesh: polygonOutlineMesh,
         uniform: outlineUniform,
       },
-    }
+    };
   }
 
   drawLabels(): void {
@@ -303,7 +361,7 @@ export default class GeoJSONPolygon {
     this.currentZoom = zoom;
   }
 
-  testPosition(pos: Vector2) : any {
+  testPosition(pos: Vector2): any {
     return this.dict.getPolygonAt([pos.x, pos.y]);
   }
 

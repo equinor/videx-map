@@ -23,7 +23,6 @@ interface Common {
 }
 
 export class Label {
-
   public static state: State = {
     zoom: 1,
     scale: 1,
@@ -45,10 +44,10 @@ export class Label {
 
   static setStyle(fontSize: number) {
     Label.style = new TextStyle({
-      fontFamily : 'Arial',
+      fontFamily: 'Arial',
       fontSize: fontSize,
-      fill: 0xFFFFFF, // Initially white to use tint
-      align : 'center',
+      fill: 0xffffff, // Initially white to use tint
+      align: 'center',
     });
     Label.height = CanvasTextMetrics.measureText(' ', Label.style).height;
   }
@@ -63,7 +62,7 @@ export class Label {
    * @param fontColor Color of font
    * @param bgColor Color of background
    */
-  constructor (label: string, fontColor: number, bgColor: number) {
+  constructor(label: string, fontColor: number, bgColor: number) {
     // Metrics
     const metrics = CanvasTextMetrics.measureText(label, Label.style);
     this.metrics = metrics;
@@ -75,14 +74,19 @@ export class Label {
 
     // Background
     const background = new Graphics();
-    background.rect(-metrics.width * 0.55, -Label.height * 0.525, metrics.width * 1.1, Label.height * 1.05);
-    background.fill({color: 0xFFFFFF});
+    background.rect(
+      -metrics.width * 0.55,
+      -Label.height * 0.525,
+      metrics.width * 1.1,
+      Label.height * 1.05,
+    );
+    background.fill({ color: 0xffffff });
     background.alpha = Label.config.backgroundOpacity;
     background.tint = bgColor;
     this.background = background;
 
     // Label
-    const text: Text = new Text({text: label, style: Label.style});
+    const text: Text = new Text({ text: label, style: Label.style });
     text.resolution = window.devicePixelRatio; // Increases text resolution
     text.tint = fontColor;
     text.anchor.set(0.5);
@@ -97,7 +101,7 @@ export class Label {
   }
 
   set visible(flag) {
-    this.container.visible = (flag && Label.state.visible);
+    this.container.visible = flag && Label.state.visible;
   }
 
   set fontColor(color: number) {

@@ -14,9 +14,8 @@ interface Config {
 
 /** Class for running non-blocking for loops. */
 export default class AsyncLoop {
-
   /** Dictionary with intervals */
-  timers: { [key: string]: NodeJS.Timeout } = {}
+  timers: { [key: string]: NodeJS.Timeout } = {};
 
   /**
    * Start a new asynchronous loop.
@@ -28,17 +27,11 @@ export default class AsyncLoop {
     this.Stop(key); // Clear previous intervals
 
     // Get config
-    const {
-      iterations,
-      batchSize,
-      func,
-      postFunc,
-      endFunc,
-    } = config;
+    const { iterations, batchSize, func, postFunc, endFunc } = config;
 
     let front = 0;
     const batch = () => {
-      if(front >= iterations) {
+      if (front >= iterations) {
         delete this.timers[key];
         if (endFunc) endFunc();
         return;
@@ -52,7 +45,7 @@ export default class AsyncLoop {
 
       front += batchSize;
       this.timers[key] = setTimeout(batch, interval);
-    }
+    };
 
     // Start batch
     this.timers[key] = setTimeout(batch, interval);

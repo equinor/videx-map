@@ -30,9 +30,15 @@ export interface MeshNormalData extends MeshData {
  * @param d2 Direction of second ray
  * @returns Intersection of rays
  */
-function Intersection(p1: Vector2, d1: Vector2, p2: Vector2, d2: Vector2): [number, number] {
+function Intersection(
+  p1: Vector2,
+  d1: Vector2,
+  p2: Vector2,
+  d2: Vector2,
+): [number, number] {
   const c: [number, number] = [p1[0] - p2[0], p1[1] - p2[1]];
-  const len: number = (c[0] * d2[1] - c[1] * d2[0]) / (d1[1] * d2[0] - d1[0] * d2[1]);
+  const len: number =
+    (c[0] * d2[1] - c[1] * d2[0]) / (d1[1] * d2[0] - d1[0] * d2[1]);
   c[0] = d1[0] * len + p1[0];
   c[1] = d1[1] * len + p1[1];
   return c;
@@ -46,7 +52,11 @@ export default class LineMesh {
    * @param type 0: Normal, 1: Interval, 2: Tick
    * @returns Vertex and triangulation for mesh
    */
-  static WellboreSegment (points: SegmentPoint[], thickness: number = 1, type: number): WellboreSegmentData {
+  static WellboreSegment(
+    points: SegmentPoint[],
+    thickness: number = 1,
+    type: number,
+  ): WellboreSegmentData {
     const vertices: number[] = [];
     const triangles: number[] = [];
     const vertexData: number[] = [];
@@ -58,16 +68,24 @@ export default class LineMesh {
     // Add First
     const point0: SegmentPoint = points[0];
     const first: Vector2 = point0.position;
-    const from0: Vector2  = Vector2.sub(points[1].position, first).rescale(_thickness);
+    const from0: Vector2 = Vector2.sub(points[1].position, first).rescale(
+      _thickness,
+    );
     vertices.push(
       -from0[1] + first[0], // Upper: X
-      from0[0] + first[1],  // Upper: Y
-      from0[1] + first[0],  // Lower: X
+      from0[0] + first[1], // Upper: Y
+      from0[1] + first[0], // Lower: X
       -from0[0] + first[1], // Lower: Y
     );
     vertexData.push(
-      point0.distance,  1.0,  -point0.direction[1],  point0.direction[0],   // Upper
-      point0.distance,  0.0,  point0.direction[1],   -point0.direction[0],  // Lower
+      point0.distance,
+      1.0,
+      -point0.direction[1],
+      point0.direction[0], // Upper
+      point0.distance,
+      0.0,
+      point0.direction[1],
+      -point0.direction[0], // Lower
     );
     extraData.push(type, type);
 
@@ -82,36 +100,33 @@ export default class LineMesh {
       const from: Vector2 = Vector2.sub(next, cur);
 
       let upper: [number, number] = null;
-      let inner:  [number, number] = null;
+      let inner: [number, number] = null;
       if (Vector2.angleDeg(to, from) < 90) {
         // Normal upper
-        const toU: Vector2 = to.rotate90()
-          .mutable
-          .rescale(_thickness)
-          .add(prev)
-          .immutable;
-        const fromU: Vector2 = from.rotate90()
-          .mutable
-          .rescale(_thickness)
-          .add(next)
-          .immutable;
+        const toU: Vector2 = to
+          .rotate90()
+          .mutable.rescale(_thickness)
+          .add(prev).immutable;
+        const fromU: Vector2 = from
+          .rotate90()
+          .mutable.rescale(_thickness)
+          .add(next).immutable;
 
         // Normal inner
-        const toI: Vector2 = to.rotate270()
-          .mutable
-          .rescale(_thickness)
-          .add(prev)
-          .immutable;
-        const fromI: Vector2 = from.rotate270()
-          .mutable
-          .rescale(_thickness)
-          .add(next)
-          .immutable;
+        const toI: Vector2 = to
+          .rotate270()
+          .mutable.rescale(_thickness)
+          .add(prev).immutable;
+        const fromI: Vector2 = from
+          .rotate270()
+          .mutable.rescale(_thickness)
+          .add(next).immutable;
 
         // Find intersections for exact line width
         upper = Intersection(toU, to, fromU, from);
         inner = Intersection(toI, to, fromI, from);
-      } else { // If wide angle
+      } else {
+        // If wide angle
         upper = [
           -point.direction[1] * _thickness + cur[0],
           point.direction[0] * _thickness + cur[1],
@@ -125,8 +140,14 @@ export default class LineMesh {
       vertices.push(upper[0], upper[1], inner[0], inner[1]);
 
       vertexData.push(
-        point.distance,  1.0,  -point.direction[1],  point.direction[0],   // Upper
-        point.distance,  0.0,  point.direction[1],   -point.direction[0],  // Lower
+        point.distance,
+        1.0,
+        -point.direction[1],
+        point.direction[0], // Upper
+        point.distance,
+        0.0,
+        point.direction[1],
+        -point.direction[0], // Lower
       );
       extraData.push(type, type);
 
@@ -142,7 +163,10 @@ export default class LineMesh {
     // Add last vertices
     const pointN = points[points.length - 1];
     const last: Vector2 = pointN.position;
-    const toN: Vector2 = Vector2.sub(last, points[points.length - 2].position).rescale(_thickness);
+    const toN: Vector2 = Vector2.sub(
+      last,
+      points[points.length - 2].position,
+    ).rescale(_thickness);
     vertices.push(
       last[0] - toN[1], // Upper: X
       last[1] + toN[0], // Upper: Y
@@ -150,8 +174,14 @@ export default class LineMesh {
       last[1] - toN[0], // Lower: Y
     );
     vertexData.push(
-      pointN.distance,  1.0,  -pointN.direction[1],  pointN.direction[0],   // Upper
-      pointN.distance,  0.0,  pointN.direction[1],   -pointN.direction[0],  // Lower
+      pointN.distance,
+      1.0,
+      -pointN.direction[1],
+      pointN.direction[0], // Upper
+      pointN.distance,
+      0.0,
+      pointN.direction[1],
+      -pointN.direction[0], // Lower
     );
     extraData.push(type, type);
 
@@ -162,19 +192,33 @@ export default class LineMesh {
     return { vertices, triangles, vertexData, extraData };
   }
 
-  static SimpleLine = (points: VectorLike[], thickness: number = 1): MeshNormalData => {
+  static SimpleLine = (
+    points: VectorLike[],
+    thickness: number = 1,
+  ): MeshNormalData => {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
     function GetNormal(index: number): Vector2 {
-      if (index === 0) return Vector2.sub(points[1], points[0]).mutable.rotate90().rescale(1);
+      if (index === 0)
+        return Vector2.sub(points[1], points[0]).mutable.rotate90().rescale(1);
+
       if (index === points.length - 1) {
-        return Vector2.sub(points[points.length - 1], points[points.length - 2]).mutable.rotate90().rescale(1);
+        return Vector2.sub(points[points.length - 1], points[points.length - 2])
+          .mutable.rotate90()
+          .rescale(1);
       }
+
       const prev = points[index - 1];
       const cur = points[index];
       const next = points[index + 1];
-      return Vector2.lerpRot(Vector2.sub(cur, prev), Vector2.sub(next, cur), 0.5).mutable.rotate90().rescale(1);
+      return Vector2.lerpRot(
+        Vector2.sub(cur, prev),
+        Vector2.sub(next, cur),
+        0.5,
+      )
+        .mutable.rotate90()
+        .rescale(1);
     }
 
     const vertices: number[] = [];
@@ -203,19 +247,37 @@ export default class LineMesh {
       const upperRight = Vector2.add(next, dirN);
 
       vertices.push(
-        lowerLeft[0], lowerLeft[1],
-        upperLeft[0], upperLeft[1],
-        lowerRight[0], lowerRight[1],
-        upperRight[0], upperRight[1],
+        lowerLeft[0],
+        lowerLeft[1],
+        upperLeft[0],
+        upperLeft[1],
+        lowerRight[0],
+        lowerRight[1],
+        upperRight[0],
+        upperRight[1],
       );
       normals.push(
-        -leftNormal[0], -leftNormal[1], leftNormal[0], leftNormal[1],
-        -rightNormal[0], -rightNormal[1], rightNormal[0], rightNormal[1],
+        -leftNormal[0],
+        -leftNormal[1],
+        leftNormal[0],
+        leftNormal[1],
+        -rightNormal[0],
+        -rightNormal[1],
+        rightNormal[0],
+        rightNormal[1],
       ); // Normal data
 
-      triangles.push(baseTris, baseTris + 1, baseTris + 3, baseTris, baseTris + 3, baseTris + 2);
+      triangles.push(
+        baseTris,
+        baseTris + 1,
+        baseTris + 3,
+        baseTris,
+        baseTris + 3,
+        baseTris + 2,
+      );
 
-      if (i !== 0) { // Patch
+      // Patch
+      if (i !== 0) {
         const toPrevUpper = Vector2.sub(prevUpperRight, upperLeft);
         const angle = Vector2.signedAngle(dirN, toPrevUpper);
         if (angle < 0) {
@@ -230,7 +292,7 @@ export default class LineMesh {
     }
 
     return { vertices, triangles, normals };
-  }
+  };
 
   /**
    * Create mesh for a polygon.
@@ -241,9 +303,12 @@ export default class LineMesh {
     const vertices: number[] = flatten(points);
     const triangles: number[] = earcut(vertices);
     return { vertices, triangles };
-  }
+  };
 
-  static PolygonOutline = (points: VectorLike[], thickness: number = 1): MeshNormalData => {
+  static PolygonOutline = (
+    points: VectorLike[],
+    thickness: number = 1,
+  ): MeshNormalData => {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
@@ -277,13 +342,17 @@ export default class LineMesh {
         Vector2.sub(cur, prev),
         Vector2.sub(next, cur),
         0.5,
-      ).mutable.rotate90().rescale(1);
+      )
+        .mutable.rotate90()
+        .rescale(1);
 
       const rightNormal = Vector2.lerpRot(
         Vector2.sub(next, cur),
         Vector2.sub(next2, next),
         0.5,
-      ).mutable.rotate90().rescale(1);
+      )
+        .mutable.rotate90()
+        .rescale(1);
 
       //  1     3
       //
@@ -294,19 +363,37 @@ export default class LineMesh {
       const upperRight = Vector2.add(next, dirN);
 
       vertices.push(
-        lowerLeft[0], lowerLeft[1],
-        upperLeft[0], upperLeft[1],
-        lowerRight[0], lowerRight[1],
-        upperRight[0], upperRight[1],
+        lowerLeft[0],
+        lowerLeft[1],
+        upperLeft[0],
+        upperLeft[1],
+        lowerRight[0],
+        lowerRight[1],
+        upperRight[0],
+        upperRight[1],
       );
       normals.push(
-        -leftNormal[0], -leftNormal[1], leftNormal[0], leftNormal[1],
-        -rightNormal[0], -rightNormal[1], rightNormal[0], rightNormal[1],
+        -leftNormal[0],
+        -leftNormal[1],
+        leftNormal[0],
+        leftNormal[1],
+        -rightNormal[0],
+        -rightNormal[1],
+        rightNormal[0],
+        rightNormal[1],
       ); // Normal data
 
-      triangles.push(baseTris, baseTris + 1, baseTris + 3, baseTris, baseTris + 3, baseTris + 2);
+      triangles.push(
+        baseTris,
+        baseTris + 1,
+        baseTris + 3,
+        baseTris,
+        baseTris + 3,
+        baseTris + 2,
+      );
 
-      if (i !== 0) { // Patch
+      // Patch
+      if (i !== 0) {
         const toPrevUpper = Vector2.sub(prevUpperRight, upperLeft);
         const angle = Vector2.signedAngle(dirN, toPrevUpper);
         if (angle < 0) {
@@ -314,7 +401,8 @@ export default class LineMesh {
         } else {
           triangles.push(baseTris, baseTris - 1, baseTris + 1);
         }
-      } else { // Get first values for last patching
+      } else {
+        // Get first values for last patching
         firstUpperLeft = upperLeft;
         firstDirN = dirN;
       }
@@ -335,7 +423,7 @@ export default class LineMesh {
     }
 
     return { vertices, triangles, normals };
-  }
+  };
 
   /**
    * Create a simple pixi mesh from vertices, triangles and shaders. Vertices are named 'inputVerts' in shader.
@@ -372,6 +460,6 @@ export default class LineMesh {
       },
     });
 
-    return new Mesh({geometry, shader});
+    return new Mesh({ geometry, shader });
   }
 }

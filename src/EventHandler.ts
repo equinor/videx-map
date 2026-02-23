@@ -1,10 +1,9 @@
-
 export interface EventHandlerCallbacks {
-  mousemove: (event : MouseEvent) => boolean,
-  mouseout: (event : MouseEvent) => boolean,
-  mousedown: (event : MouseEvent) => boolean,
-  mouseup: (event : MouseEvent) => boolean,
-  click: (event : Event) => boolean,
+  mousemove: (event: MouseEvent) => boolean;
+  mouseout: (event: MouseEvent) => boolean;
+  mousedown: (event: MouseEvent) => boolean;
+  mouseup: (event: MouseEvent) => boolean;
+  click: (event: Event) => boolean;
 }
 
 export interface EventHandler {
@@ -12,7 +11,11 @@ export interface EventHandler {
   element: HTMLElement;
   callbacks: EventHandlerCallbacks;
 
-  register(map: L.Map, element: HTMLElement, callbacks: EventHandlerCallbacks) : void;
+  register(
+    map: L.Map,
+    element: HTMLElement,
+    callbacks: EventHandlerCallbacks,
+  ): void;
   unregister(): void;
 }
 
@@ -21,7 +24,11 @@ export class DefaultEventHandler implements EventHandler {
   element: HTMLElement;
   callbacks: EventHandlerCallbacks;
 
-  register(map: L.Map, element: HTMLElement, callbacks: EventHandlerCallbacks): void {
+  register(
+    map: L.Map,
+    element: HTMLElement,
+    callbacks: EventHandlerCallbacks,
+  ): void {
     this.map = map;
     this.element = element;
     this.callbacks = callbacks;
@@ -43,4 +50,3 @@ export class DefaultEventHandler implements EventHandler {
     this.element = null;
   }
 }
-
