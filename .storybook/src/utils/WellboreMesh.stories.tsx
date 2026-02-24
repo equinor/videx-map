@@ -1,5 +1,5 @@
 import Vector2 from '@equinor/videx-vector2';
-import { Application, Geometry, Mesh, Shader } from "pixi.js";
+import { Application, Geometry, Mesh, Shader } from 'pixi.js';
 
 import { LineInterpolator } from '../../../src/utils/LineInterpolator';
 import { WellboreMesh } from '../../../src/utils/WellboreMesh';
@@ -8,29 +8,27 @@ export default { title: 'utils/WellboreMesh' };
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Circle data
-const generateSpiralWellbore: ((points: number) => Vector2[]) = points => {
+const generateSpiralWellbore: (points: number) => Vector2[] = points => {
   const output: Vector2[] = [];
 
   const center = new Vector2(500, 500);
   for (let i = 0; i < points; i++) {
     output.push(
-      Vector2.right
-        .mutable
+      Vector2.right.mutable
         .rotateDeg((1000 / points) * i)
         .scale(400 - i * 1.2)
-        .add(center)
-        .immutable,
+        .add(center).immutable,
     );
   }
 
   return output;
-}
+};
 
 const circleWellbore: Vector2[] = generateSpiralWellbore(300);
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Stair data
-const generateStairWellbore: ((steps: number) => Vector2[]) = steps => {
+const generateStairWellbore: (steps: number) => Vector2[] = steps => {
   const output: Vector2[] = [];
 
   // Range of x and y
@@ -52,7 +50,7 @@ const generateStairWellbore: ((steps: number) => Vector2[]) = steps => {
   output.push(pos);
 
   return output;
-}
+};
 
 const stairWellbore: Vector2[] = generateStairWellbore(10);
 
@@ -76,9 +74,9 @@ const vertexShader = `
       }
   `;
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Fragment shader
-  const fragShader = `
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// Fragment shader
+const fragShader = `
       in vec4 data;
       in float type;
 
@@ -89,7 +87,7 @@ const vertexShader = `
       }
   `;
 
-  const fragShader2 = `
+const fragShader2 = `
       precision mediump float;
 
       in vec4 data;
@@ -106,12 +104,16 @@ export const Spiral = () => {
   const root = document.createElement('div');
   const app = new Application();
 
-  app.init({
-    width: 1000, height: 1000, backgroundColor: 0x66AACC,
-  }).then(() => {
+  app
+    .init({
+      width: 1000,
+      height: 1000,
+      backgroundColor: 0x66aacc,
+    })
+    .then(() => {
       const interp = new LineInterpolator(circleWellbore, 0.001);
 
-      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7 });
       const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
       let geometry = new Geometry();
@@ -119,7 +121,6 @@ export const Spiral = () => {
       geometry.addAttribute('inputData', vertexData);
       geometry.addAttribute('inputType', extraData);
       geometry.addIndex(triangles);
-
 
       const lineShader: Shader = Shader.from({
         gl: {
@@ -131,11 +132,11 @@ export const Spiral = () => {
             length: {
               value: new Float32Array(interp.length),
               type: 'f32',
-            }
-          }
+            },
+          },
         },
       });
-      const lineMesh = new Mesh({geometry, shader: lineShader});
+      const lineMesh = new Mesh({ geometry, shader: lineShader });
       app.stage.addChild(lineMesh);
       root.appendChild(app.canvas);
     });
@@ -147,30 +148,40 @@ export const SpiralTicks = () => {
   const root = document.createElement('div');
   const app = new Application();
 
-  app.init({
-    width: 1000, height: 1000, backgroundColor: 0x66AACC,
-  }).then(() => {
+  app
+    .init({
+      width: 1000,
+      height: 1000,
+      backgroundColor: 0x66aacc,
+    })
+    .then(() => {
       const interp = new LineInterpolator(circleWellbore, 0.001);
 
-      const intervals: [number, number][] = [[0.1, 0.2], [0.3, 0.5], [0.7, 0.75], [0.8, 0.8], [0.85, 0.95]];
+      const intervals: [number, number][] = [
+        [0.1, 0.2],
+        [0.3, 0.5],
+        [0.7, 0.75],
+        [0.8, 0.8],
+        [0.85, 0.95],
+      ];
 
-      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
-      const { vertices, triangles, vertexData, extraData } = mesh.generate(intervals);
-
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7 });
+      const { vertices, triangles, vertexData, extraData } =
+        mesh.generate(intervals);
 
       const geometry: Geometry = new Geometry({
-          attributes: {
-            verts: vertices,
-            inputData: vertexData,
-            inputType: extraData,
-          },
-          indexBuffer: triangles
-        });
+        attributes: {
+          verts: vertices,
+          inputData: vertexData,
+          inputType: extraData,
+        },
+        indexBuffer: triangles,
+      });
 
       const uniforms = {
         value: interp.length,
         type: 'f32',
-      }
+      };
 
       const lineShader = Shader.from({
         gl: {
@@ -185,7 +196,7 @@ export const SpiralTicks = () => {
       });
 
       // @ts-ignore
-      const lineMesh = new Mesh({geometry, shader: lineShader});
+      const lineMesh = new Mesh({ geometry, shader: lineShader });
       app.stage.addChild(lineMesh);
       root.append(app.canvas);
     });
@@ -197,42 +208,44 @@ export const Stairs = () => {
   const root = document.createElement('div');
   const app = new Application();
 
-  app.init({
-    canvas: document.createElement('canvas'),
-    width: 1000,
-    height: 1000,
-    backgroundColor: 0x66AACC,
-  }).then(() => {
-    const interp = new LineInterpolator(stairWellbore, 0.001);
+  app
+    .init({
+      canvas: document.createElement('canvas'),
+      width: 1000,
+      height: 1000,
+      backgroundColor: 0x66aacc,
+    })
+    .then(() => {
+      const interp = new LineInterpolator(stairWellbore, 0.001);
 
-    const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7});
-    const { vertices, triangles, vertexData, extraData } = mesh.generate();
+      const mesh = new WellboreMesh(interp, 5, { width: 1, height: 7 });
+      const { vertices, triangles, vertexData, extraData } = mesh.generate();
 
-    const geometry: Geometry = new Geometry({
-      attributes: {
-        verts: vertices,
-        inputData: vertexData,
-        inputType: extraData,
-      },
-      indexBuffer: triangles
-    });
-
-    const lineShader = Shader.from({
-      gl: {
-        vertex: vertexShader,
-        fragment: fragShader,
-      },
-      resources: {
-        theUniforms: {
-          length: { value: interp.length, type: 'f32' },
+      const geometry: Geometry = new Geometry({
+        attributes: {
+          verts: vertices,
+          inputData: vertexData,
+          inputType: extraData,
         },
-      }
-    });
+        indexBuffer: triangles,
+      });
 
-    const lineMesh = new Mesh({geometry, shader: lineShader});
-    app.stage.addChild(lineMesh);
-    root.append(app.canvas);
-  });
+      const lineShader = Shader.from({
+        gl: {
+          vertex: vertexShader,
+          fragment: fragShader,
+        },
+        resources: {
+          theUniforms: {
+            length: { value: interp.length, type: 'f32' },
+          },
+        },
+      });
+
+      const lineMesh = new Mesh({ geometry, shader: lineShader });
+      app.stage.addChild(lineMesh);
+      root.append(app.canvas);
+    });
 
   return root;
 };

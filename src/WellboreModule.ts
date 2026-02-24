@@ -5,7 +5,11 @@ import { clamp, lerp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
 
 import { ModuleInterface } from './ModuleInterface';
-import { Config, InputConfig, getDefaultConfig } from './utils/wellbores/Config';
+import {
+  Config,
+  InputConfig,
+  getDefaultConfig,
+} from './utils/wellbores/Config';
 import { RootShader, WellboreShader } from './utils/wellbores/Shader';
 import {
   SourceData,
@@ -19,7 +23,11 @@ import LineDictionary from './utils/LineDictionary';
 import PointDictionary from './utils/PointDictionary';
 import Projector from './utils/wellbores/Projector';
 import { Label } from './utils/wellbores/labels';
-import { updateHighlighted, clearHighlight, forceHighlight } from './utils/wellbores/highlight-helper';
+import {
+  updateHighlighted,
+  clearHighlight,
+  forceHighlight,
+} from './utils/wellbores/highlight-helper';
 import { Highlight } from './utils/wellbores/Highlight';
 import AsyncLoop from './utils/wellbores/AsyncLoop';
 import { EventHandler, DefaultEventHandler } from './EventHandler';
@@ -46,27 +54,36 @@ export default class WellboreModule extends ModuleInterface {
   private _redrawAnimFrame: number = null;
 
   containers: {
-    wellbores: Container,
-    roots: Container,
-    labels: Container,
+    wellbores: Container;
+    roots: Container;
+    labels: Container;
   };
 
   /** Zoom event handler. */
   scaling: (zoom: number) => number;
-  marker : Graphics;
+  marker: Graphics;
 
   constructor(inputConfig?: InputConfig) {
     super();
 
     this.requestRedraw = this.requestRedraw.bind(this);
 
-    const [ config, extra ] = getDefaultConfig(inputConfig);
+    const [config, extra] = getDefaultConfig(inputConfig);
     this.config = config;
 
     this.scaling = extra.scaling;
 
-    this.lineDict = new LineDictionary<WellboreData>(config.gridSize, value => value.active);
-    this.pointDict = new PointDictionary<RootData>(0.25, config.gridSize * 10, this.getRootRadius(20), value => value.active);
+    this.lineDict = new LineDictionary<WellboreData>(
+      config.gridSize,
+      value => value.active,
+    );
+
+    this.pointDict = new PointDictionary<RootData>(
+      0.25,
+      config.gridSize * 10,
+      this.getRootRadius(20),
+      value => value.active,
+    );
 
     // add a default group, with default settings
     // TODO: expand InputConfig to allow passing GroupOptions for default group.
@@ -77,7 +94,7 @@ export default class WellboreModule extends ModuleInterface {
       container.sortableChildren = true;
       this.root.addChild(container);
       return container;
-    }
+    };
 
     this.containers = {
       wellbores: createContainer(),
@@ -87,11 +104,15 @@ export default class WellboreModule extends ModuleInterface {
 
     /** Prepare drawing of labels. */
     Label.setStyle(extra.fontSize); // Set label style
-    Label.setCommon({ // Set common config
+
+    // Set common config
+    Label.setCommon({
       backgroundOpacity: extra.labelBgOpacity,
     });
 
-    this._eventHandler = inputConfig && inputConfig.customEventHandler || new DefaultEventHandler();
+    this._eventHandler =
+      (inputConfig && inputConfig.customEventHandler) ||
+      new DefaultEventHandler();
 
     // Build root shader
     RootShader.build(config.rootResize.max.scale);
@@ -107,7 +128,7 @@ export default class WellboreModule extends ModuleInterface {
     super.destroy();
   }
 
-  registerGroup(key: string, options?: GroupOptions) : void {
+  registerGroup(key: string, options?: GroupOptions): void {
     if (this.groups[key]) throw Error(`Group already registered: ${key}!`);
     this.groups[key] = new Group(key, options);
   }
@@ -118,11 +139,15 @@ export default class WellboreModule extends ModuleInterface {
    * @param groupKeys Target group keys.
    * @param options
    */
-  registerDetail(key: string, groupKeys: string[], options: DetailOptions) : void {
+  registerDetail(
+    key: string,
+    groupKeys: string[],
+    options: DetailOptions,
+  ): void {
     this.forEachGroup(groupKeys, group => group.registerDetail(key, options));
   }
 
-  private addRoot(position: Vector2) : RootData {
+  private addRoot(position: Vector2): RootData {
     const overlapping = this.pointDict.getOverlapping(position);
     if (overlapping) return overlapping.val;
 
@@ -139,7 +164,7 @@ export default class WellboreModule extends ModuleInterface {
    * @param data Wellbore data
    * @param group Group to add wellbore into
    */
-  addWellbore(data: SourceData, group: Group = this.groups.default) : void {
+  addWellbore(data: SourceData, group: Group = this.groups.default): void {
     if (data.path.length === 0) throw Error('Empty wellbore path!');
 
     // Place root for wellbore
@@ -166,19 +191,29 @@ export default class WellboreModule extends ModuleInterface {
     root?.recalculate(true);
 
     // Add to line dictionary
-    if(!wellbore.interpolator.singlePoint) this.lineDict.add(projectedPath, wellbore);
+    if (!wellbore.interpolator.singlePoint)
+      this.lineDict.add(projectedPath, wellbore);
 
     // Append wellbore to root
     root?.append(wellbore);
 
     // eslint-disable-next-line max-len
-    if (this._deferredSelector && (this._deferredSelectorKeys === null || this._deferredSelectorKeys.includes(group.key)) && this._deferredSelector(wellbore.data)) {
+    if (
+      this._deferredSelector &&
+      (this._deferredSelectorKeys === null ||
+        this._deferredSelectorKeys.includes(group.key)) &&
+      this._deferredSelector(wellbore.data)
+    ) {
       this._deferredSelector = undefined;
       wellbore.setSelected(true);
     }
   }
 
-  set(wells: SourceData[], key: string = 'default', batchSize: number = null) : Promise<void> {
+  set(
+    wells: SourceData[],
+    key: string = 'default',
+    batchSize: number = null,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const group = this.groups[key];
       if (!group) {
@@ -188,16 +223,20 @@ export default class WellboreModule extends ModuleInterface {
       try {
         if (this.groups[key].wellbores.length > 0) this.clear(key);
 
-        this.asyncLoop.Start(key, {
-          iterations: wells.length,
-          batchSize: batchSize || this.config.batchSize || 20,
-          func: i => this.addWellbore(wells[i], group),
-          postFunc: () => this.requestRedraw(),
-          endFunc: () => {
-            this.requestRedraw();
-            resolve();
+        this.asyncLoop.Start(
+          key,
+          {
+            iterations: wells.length,
+            batchSize: batchSize || this.config.batchSize || 20,
+            func: i => this.addWellbore(wells[i], group),
+            postFunc: () => this.requestRedraw(),
+            endFunc: () => {
+              this.requestRedraw();
+              resolve();
+            },
           },
-        }, 0);
+          0,
+        );
       } catch (err) {
         reject(err);
       }
@@ -209,14 +248,20 @@ export default class WellboreModule extends ModuleInterface {
     this.requestRedraw();
   }
 
-  private forEachGroup(keys: string[], func: (group: Group, key: string) => void): void {
+  private forEachGroup(
+    keys: string[],
+    func: (group: Group, key: string) => void,
+  ): void {
     const registeredKeys = Object.keys(this.groups);
-    const filteredKeys = (keys.length === 0) ? registeredKeys : keys.filter(key => registeredKeys.includes(key));
+    const filteredKeys =
+      keys.length === 0
+        ? registeredKeys
+        : keys.filter(key => registeredKeys.includes(key));
     filteredKeys.forEach(key => func(this.groups[key], key));
     this.requestRedraw();
   }
 
-  private setActive(active: boolean, keys: string[]) : void {
+  private setActive(active: boolean, keys: string[]): void {
     this.forEachGroup(keys, group => group.setActive(active));
   }
 
@@ -242,12 +287,16 @@ export default class WellboreModule extends ModuleInterface {
     return this.highlight.active;
   }
 
-  private handleMouseOut() : boolean {
+  private handleMouseOut(): boolean {
     return this.clearHighlight(this.config.onHighlightOff);
   }
 
-  private handleMouseClick(mouseEvent?: MouseEvent) : boolean {
-    if (this.config.onWellboreClick && this.highlight.active && this.highlight.single) {
+  private handleMouseClick(mouseEvent?: MouseEvent): boolean {
+    if (
+      this.config.onWellboreClick &&
+      this.highlight.active &&
+      this.highlight.single
+    ) {
       const wellbore = this.highlight.first;
       this.config.onWellboreClick({
         group: wellbore.group.key,
@@ -259,9 +308,13 @@ export default class WellboreModule extends ModuleInterface {
     return false;
   }
 
-  public enable(...keys: string[]): void  { this.setActive(true, keys)  }
+  public enable(...keys: string[]): void {
+    this.setActive(true, keys);
+  }
 
-  public disable(...keys: string[]): void { this.setActive(false, keys) }
+  public disable(...keys: string[]): void {
+    this.setActive(false, keys);
+  }
 
   /**
    * Enable/disable labels
@@ -299,22 +352,27 @@ export default class WellboreModule extends ModuleInterface {
     this.forAllGroups(group => group.setDetailVisibility(key, visible));
   }
 
-
   /** "Soft" filtering function. Will turn wellbores that does not pass filter gray-ish. */
-  softFilter(filterFunction : (v: SourceData) => boolean, ...keys: string[]): void {
+  softFilter(
+    filterFunction: (v: SourceData) => boolean,
+    ...keys: string[]
+  ): void {
     this.forEachGroup(keys, group => group.softFilter(filterFunction));
   }
 
   /** "Hard" filtering function. Will turn wellbores that does not pass filter into "ghost" lines. */
-  hardFilter(filterFunction : (v: SourceData) => boolean, ...keys: string[]): void {
+  hardFilter(
+    filterFunction: (v: SourceData) => boolean,
+    ...keys: string[]
+  ): void {
     this.forEachGroup(keys, group => group.hardFilter(filterFunction));
   }
 
-  clearFilter(...keys: string[]) : void {
+  clearFilter(...keys: string[]): void {
     this.forEachGroup(keys, group => group.clearFilter());
   }
 
-  setSelected(selectFunction : (v: any) => boolean, ...keys: string[]) : void {
+  setSelected(selectFunction: (v: any) => boolean, ...keys: string[]): void {
     let nSelected = 0;
     this.forEachGroup(keys, group => {
       if (!group) return;
@@ -336,7 +394,7 @@ export default class WellboreModule extends ModuleInterface {
     }
   }
 
-  clearSelected(...keys: string[]) : void {
+  clearSelected(...keys: string[]): void {
     this.forEachGroup(keys, group => {
       if (!group) return;
       group.wellbores.forEach(wellbore => {
@@ -355,7 +413,10 @@ export default class WellboreModule extends ModuleInterface {
    */
   setHighlight(label: string, ...keys: string[]): RealtimeWellbore {
     const registeredKeys = Object.keys(this.groups);
-    keys = (keys.length === 0) ? registeredKeys : keys.filter(key => registeredKeys.includes(key));
+    keys =
+      keys.length === 0
+        ? registeredKeys
+        : keys.filter(key => registeredKeys.includes(key));
 
     // Similar behavior as forEachGroup, but without forEach loops. This is to allow return mid-loop.
     for (let n = 0; n < keys.length; n++) {
@@ -399,9 +460,18 @@ export default class WellboreModule extends ModuleInterface {
     this.roots = [];
 
     // remove PIXI elements
-    this.containers.wellbores.removeChildren().forEach((child: Container ) => child.destroy());
-    this.containers.labels.removeChildren().forEach((child: Container ) => child.destroy());
-    this.containers.roots.removeChildren().forEach((child: Container ) => child.destroy());
+    this.containers.wellbores
+      .removeChildren()
+      .forEach((child: Container) => child.destroy());
+
+    this.containers.labels
+      .removeChildren()
+      .forEach((child: Container) => child.destroy());
+
+    this.containers.roots
+      .removeChildren()
+      .forEach((child: Container) => child.destroy());
+
     this.requestRedraw();
   }
 
@@ -409,7 +479,7 @@ export default class WellboreModule extends ModuleInterface {
    * Clear all data or data mapped to the groups specified by keys
    * @param keys Optional list of keys for which groups to clear
    */
-  clear(...keys: string[]) : void {
+  clear(...keys: string[]): void {
     // clear all?
     if (keys.length === 0) {
       this.clearAll();
@@ -456,7 +526,7 @@ export default class WellboreModule extends ModuleInterface {
     this.requestRedraw();
   }
 
-  resize (zoom: number) {
+  resize(zoom: number) {
     this.currentZoom = zoom;
 
     const wellboreRadius = this.getWellboreRadius(zoom);
@@ -482,7 +552,7 @@ export default class WellboreModule extends ModuleInterface {
       });
     }
 
-    Object.values(this.groups).forEach(({wellbores}) => {
+    Object.values(this.groups).forEach(({ wellbores }) => {
       wellbores.forEach(wellbore => {
         wellbore.update();
       });
@@ -491,10 +561,9 @@ export default class WellboreModule extends ModuleInterface {
     this.roots.forEach(root => {
       root.recalculate();
     });
-
   }
 
-  onAdd(map: L.Map):void {
+  onAdd(map: L.Map): void {
     const element = this.pixiOverlay.utils.getRenderer().canvas.parentNode;
     const callbacks = {
       mousemove: this.handleMouseMove.bind(this),
@@ -513,8 +582,15 @@ export default class WellboreModule extends ModuleInterface {
 
   get projector() {
     const pixiOverlayUtils = this.pixiOverlay.utils;
-    if (!pixiOverlayUtils) console.log('pixiOverlayUtils undefined', pixiOverlayUtils);
-    if (!this._projector) this._projector = new Projector(this.pixiOverlay.utils.latLngToLayerPoint);
+
+    if (!pixiOverlayUtils)
+      console.log('pixiOverlayUtils undefined', pixiOverlayUtils);
+
+    if (!this._projector)
+      this._projector = new Projector(
+        this.pixiOverlay.utils.latLngToLayerPoint,
+      );
+
     return this._projector;
   }
 
@@ -530,7 +606,7 @@ export default class WellboreModule extends ModuleInterface {
    * Calculate wellbore radius based on formula used in Shader.ts!
    * @param zoom Reference zoom level
    */
-   getWellboreRadius(zoom: number = this.currentZoom) {
+  getWellboreRadius(zoom: number = this.currentZoom) {
     return this.getRadius(zoom, this.config.wellboreResize);
   }
 
@@ -540,8 +616,8 @@ export default class WellboreModule extends ModuleInterface {
     return lerp(max.scale, min.scale, t);
   }
 
-  requestRedraw(){
-    if(this._redrawAnimFrame)return;
+  requestRedraw() {
+    if (this._redrawAnimFrame) return;
     this._redrawAnimFrame = requestAnimationFrame(() => {
       this.pixiOverlay.redraw();
       this._redrawAnimFrame = null;

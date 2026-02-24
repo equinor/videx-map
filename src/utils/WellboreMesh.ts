@@ -13,7 +13,6 @@ interface meshData {
 }
 
 export class WellboreMesh {
-
   /** Line interpolator used to construct mesh. */
   interp: LineInterpolator;
 
@@ -48,23 +47,45 @@ export class WellboreMesh {
     const vertexData: number[] = [];
     const extraData: number[] = []; // 0: Normal, 1: Interval, 2: Tick
 
-    if(intervals.length <= 0) {
+    if (intervals.length <= 0) {
       const path: SegmentPoint[] = this.interp.GetSection(0, 1);
       this.appendSegment(path, 0, vertices, triangles, vertexData, extraData);
-    } else if (intervals.length > 0) { // If there are intervals
+    } else if (intervals.length > 0) {
+      // If there are intervals
       let p: number = 0;
       intervals.forEach(i => {
         const path1: SegmentPoint[] = this.interp.GetSection(p, i[0]);
-        this.appendSegment(path1, 0, vertices, triangles, vertexData, extraData);
+        this.appendSegment(
+          path1,
+          0,
+          vertices,
+          triangles,
+          vertexData,
+          extraData,
+        );
         const path2: SegmentPoint[] = this.interp.GetSection(i[0], i[1]);
-        this.appendSegment(path2, 1, vertices, triangles, vertexData, extraData);
+        this.appendSegment(
+          path2,
+          1,
+          vertices,
+          triangles,
+          vertexData,
+          extraData,
+        );
         p = i[1];
-      })
+      });
       // Add last path
       const end = intervals[intervals.length - 1][1];
       if (end < 1) {
         const lastPath: SegmentPoint[] = this.interp.GetSection(end, 1);
-        this.appendSegment(lastPath, 0, vertices, triangles, vertexData, extraData);
+        this.appendSegment(
+          lastPath,
+          0,
+          vertices,
+          triangles,
+          vertexData,
+          extraData,
+        );
       }
     }
 
@@ -72,7 +93,7 @@ export class WellboreMesh {
     intervals.forEach(i => {
       const p1: SegmentPoint = this.interp.GetPoint(i[0]);
       this.generateCrossline(p1, vertices, triangles, vertexData, extraData);
-      if(Math.abs(i[0] - i[1]) < 0.001) return; // Don't draw second if close
+      if (Math.abs(i[0] - i[1]) < 0.001) return; // Don't draw second if close
       const p2: SegmentPoint = this.interp.GetPoint(i[1]);
       this.generateCrossline(p2, vertices, triangles, vertexData, extraData);
     });
@@ -90,9 +111,16 @@ export class WellboreMesh {
    * @param extraData 1-dimensional array with type-data
    * @private
    */
-  appendSegment(section: SegmentPoint[], type: number, vertices: number[], triangles: number[], vertexData: number[], extraData: number[]) : void {
-     // Make line mesh and use callback to add extra attributes
-     const mesh = LineMesh.WellboreSegment(section, this.thickness, type);
+  appendSegment(
+    section: SegmentPoint[],
+    type: number,
+    vertices: number[],
+    triangles: number[],
+    vertexData: number[],
+    extraData: number[],
+  ): void {
+    // Make line mesh and use callback to add extra attributes
+    const mesh = LineMesh.WellboreSegment(section, this.thickness, type);
 
     vertices.push(...mesh.vertices);
     mesh.triangles.forEach(d => triangles.push(d + this.baseTris));
@@ -111,7 +139,13 @@ export class WellboreMesh {
    * @param extraData 1-dimensional array with type-data
    * @private
    */
-  private generateCrossline(p: SegmentPoint, vertices: number[], triangles: number[], vertexData: number[], extraData: number[]): void {
+  private generateCrossline(
+    p: SegmentPoint,
+    vertices: number[],
+    triangles: number[],
+    vertexData: number[],
+    extraData: number[],
+  ): void {
     const px = p.position[0];
     const py = p.position[1];
 
@@ -138,7 +172,14 @@ export class WellboreMesh {
       py + dirY + normY, // Upper right: Y
     );
 
-    triangles.push(this.baseTris, this.baseTris + 2, this.baseTris + 3, this.baseTris, this.baseTris + 3, this.baseTris + 1);
+    triangles.push(
+      this.baseTris,
+      this.baseTris + 2,
+      this.baseTris + 3,
+      this.baseTris,
+      this.baseTris + 3,
+      this.baseTris + 1,
+    );
 
     extraData.push(2, 2, 2, 2); // Push tick type
 
@@ -149,10 +190,22 @@ export class WellboreMesh {
 
     // Real distance [0, N], Upper/Lower [0, 1], Normal.x, Normal.y
     vertexData.push(
-      p.distance, 0.0, -nnx, -nny,
-      p.distance, 0.0, -nnx, -nny,
-      p.distance, 1.0, nnx, nny,
-      p.distance, 1.0, nnx, nny,
+      p.distance,
+      0.0,
+      -nnx,
+      -nny,
+      p.distance,
+      0.0,
+      -nnx,
+      -nny,
+      p.distance,
+      1.0,
+      nnx,
+      nny,
+      p.distance,
+      1.0,
+      nnx,
+      nny,
     ); // Add vertex data
 
     this.baseTris += 4;

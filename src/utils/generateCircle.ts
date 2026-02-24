@@ -9,7 +9,11 @@ import { Mesh, Geometry, Shader } from 'pixi.js';
  * @param uniformRadius Fraction of full radius used by uniform initially
  * @return New circle mesh with shader uniforms attached
  */
-export default function generateCircle(center: Vector2, radius: number, shader: Shader): Mesh<Geometry, Shader> {
+export default function generateCircle(
+  center: Vector2,
+  radius: number,
+  shader: Shader,
+): Mesh<Geometry, Shader> {
   // Winding order:
   // 2    3
   //
@@ -18,20 +22,19 @@ export default function generateCircle(center: Vector2, radius: number, shader: 
   // Define geometry
   const geometry: Geometry = new Geometry();
   geometry.addAttribute('verts', [
-    center[0] - radius, center[1] - radius,
-    center[0] + radius, center[1] - radius,
-    center[0] - radius, center[1] + radius,
-    center[0] + radius, center[1] + radius,
+    center[0] - radius,
+    center[1] - radius,
+    center[0] + radius,
+    center[1] - radius,
+    center[0] - radius,
+    center[1] + radius,
+    center[0] + radius,
+    center[1] + radius,
   ]);
-  geometry.addAttribute('inputUVs', [
-    0, 0,
-    1, 0,
-    0, 1,
-    1, 1,
-  ]);
+  geometry.addAttribute('inputUVs', [0, 0, 1, 0, 0, 1, 1, 1]);
   geometry.addIndex([0, 2, 3, 0, 3, 1]);
 
-  const circle = new Mesh({geometry, shader});
+  const circle = new Mesh({ geometry, shader });
 
   return circle;
 }

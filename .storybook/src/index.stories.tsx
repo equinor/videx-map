@@ -1,12 +1,18 @@
 import { create } from 'd3-selection';
 import * as L from 'leaflet';
-import { FieldModule, FaultlineModule, OutlineModule, WellboreModule, GeoJSONModule } from '../../src';
+import {
+  FieldModule,
+  FaultlineModule,
+  OutlineModule,
+  WellboreModule,
+  GeoJSONModule,
+} from '../../src';
 import { RootData } from '../../src/utils/wellbores/data';
 import { SourceData } from '../../src/utils/wellbores/data';
 import { transformDrilledData } from './helper/transform-drilled-data';
 import { transformExplorationData } from './helper/transform-exploration-data';
-import { OutlineData } from '../../src/OutlineModule'
-import { Field } from '../../src/FieldModule'
+import { OutlineData } from '../../src/OutlineModule';
+import { Field } from '../../src/FieldModule';
 
 import PixiLayer from './helper/PixiLayer';
 import Sidebar from './Sidebar';
@@ -43,27 +49,32 @@ const initialZoom: number = 12;
 // Clone the wells array so that we don't modify the values
 // as it affects wellbore rendering after code changes
 const wellsClone = structuredClone(wells);
-const wellboreData: any[] = transformDrilledData(wellsClone as any[]) as SourceData[];
+const wellboreData: any[] = transformDrilledData(
+  wellsClone as any[],
+) as SourceData[];
 const theOutlines: any[] = outlineData as OutlineData[];
-const explorationData: any[] = transformExplorationData(exploration as any[]) as SourceData[];
+const explorationData: any[] = transformExplorationData(
+  exploration as any[],
+) as SourceData[];
 const fieldData: Field[] = field as any[];
 
 export const layer = () => {
-  const root = create('div')
-    .style('width', '100%')
-    .style('height', '100%');
+  const root = create('div').style('width', '100%').style('height', '100%');
 
-  const mapRoot = root.append('div')
+  const mapRoot = root
+    .append('div')
     .style('position', 'absolute')
     .style('width', '85%')
     .style('height', '100%');
 
-  mapRoot.append('link')
+  mapRoot
+    .append('link')
     .attr('rel', 'stylesheet')
     .attr('href', 'https://unpkg.com/leaflet@1.5.1/dist/leaflet.css');
 
-  const sidebarRoot = root.append('div')
-    .style('font-family', "Nunito Sans")
+  const sidebarRoot = root
+    .append('div')
+    .style('font-family', 'Nunito Sans')
     .style('background-color', '#f6f9fc')
     .style('position', 'absolute')
     .style('left', '85%')
@@ -75,15 +86,18 @@ export const layer = () => {
   const mapRootNode = mapRoot.node() as HTMLElement;
 
   requestAnimationFrame(async () => {
-    const map = L.map(mapRootNode).setView([
-      58.43843594055731,
-      1.8892790113941798
-    ], initialZoom);
+    const map = L.map(mapRootNode).setView(
+      [58.43843594055731, 1.8892790113941798],
+      initialZoom,
+    );
 
-    L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}.png', {
-      maxNativeZoom: 10,
-      noWrap: true,
-    }).addTo(map);
+    L.tileLayer(
+      'https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}.png',
+      {
+        maxNativeZoom: 10,
+        noWrap: true,
+      },
+    ).addTo(map);
 
     const pixiLayer = new PixiLayer();
     await pixiLayer.setRenderer();
@@ -94,41 +108,39 @@ export const layer = () => {
       minExtraWidth: 0.0,
       maxExtraWidth: 0.3,
     });
-    const wellbores: WellboreModule = new WellboreModule(
-      {
-        scale: 1.5,
-        // labelScale: 1,
-        labelBgOpacity: 0.2,
-        zoomOrigin: 0,
-        wellboreDash: 0.08,
-        scaling: zoom => factors[zoom] || 0,
-        wellboreResize: {
-          min: { zoom: 10, scale: 0.5 },
-          max: { zoom: 18, scale: 0.05 },
-        },
-        rootResize: {
-          min: { zoom: 0, scale: 1000.0 },
-          max: { zoom: 18, scale: 0.2 },
-        },
-        tick: {
-          width: 0.01,
-          height: 0.1,
-        },
-        onHighlightOn: event => {
-          if (event.count === 1) {
-            mapRootNode.style.cursor = 'pointer'; // Set cursor style
-          } else {
-            mapRootNode.style.cursor = 'default'; // Remove cursor style
-          }
-        },
-        onHighlightOff: () => {
+    const wellbores: WellboreModule = new WellboreModule({
+      scale: 1.5,
+      // labelScale: 1,
+      labelBgOpacity: 0.2,
+      zoomOrigin: 0,
+      wellboreDash: 0.08,
+      scaling: zoom => factors[zoom] || 0,
+      wellboreResize: {
+        min: { zoom: 10, scale: 0.5 },
+        max: { zoom: 18, scale: 0.05 },
+      },
+      rootResize: {
+        min: { zoom: 0, scale: 1000.0 },
+        max: { zoom: 18, scale: 0.2 },
+      },
+      tick: {
+        width: 0.01,
+        height: 0.1,
+      },
+      onHighlightOn: event => {
+        if (event.count === 1) {
+          mapRootNode.style.cursor = 'pointer'; // Set cursor style
+        } else {
           mapRootNode.style.cursor = 'default'; // Remove cursor style
-        },
-        onWellboreClick: wellbore => {
-          wellbores.setSelected(d => d === wellbore.data);
         }
       },
-    );
+      onHighlightOff: () => {
+        mapRootNode.style.cursor = 'default'; // Remove cursor style
+      },
+      onWellboreClick: wellbore => {
+        wellbores.setSelected(d => d === wellbore.data);
+      },
+    });
 
     const geoConfig = {
       outlineResize: {
@@ -141,7 +153,7 @@ export const layer = () => {
         threshold: 8,
         baseScale: 0.15,
       },
-    }
+    };
 
     const licenses: GeoJSONModule = new GeoJSONModule({
       outlineResize: {
@@ -209,7 +221,7 @@ export const layer = () => {
     const toggle = (key: string) => {
       if (wellbores.groups[key].active) wellbores.disable(key);
       else wellbores.enable(key);
-    }
+    };
 
     let labelActive = true;
     let completionDrilledVisible = true;
@@ -220,16 +232,18 @@ export const layer = () => {
 
     groupShowHide.add('Disable wellbores', () => wellbores.disable());
     groupShowHide.add('Enable wellbores', () => wellbores.enable());
-    groupShowHide.add('Toggle \'Drilled\'', () => toggle('Drilled'));
-    groupShowHide.add('Toggle \'Planned\'', () => toggle('Planned'));
-    groupShowHide.add('Toggle \'Exploration\'', () => toggle('Exploration'));
+    groupShowHide.add("Toggle 'Drilled'", () => toggle('Drilled'));
+    groupShowHide.add("Toggle 'Planned'", () => toggle('Planned'));
+    groupShowHide.add("Toggle 'Exploration'", () => toggle('Exploration'));
     groupShowHide.add('Toggle labels', () => {
       labelActive = !labelActive;
       wellbores.setLabelVisibility(labelActive);
     });
 
     groupShowHide.add('Toggle completion', () => {
-      const completionVisible = !(completionDrilledVisible && completionPlannedVisible);
+      const completionVisible = !(
+        completionDrilledVisible && completionPlannedVisible
+      );
       completionDrilledVisible = completionVisible;
       completionPlannedVisible = completionVisible;
       wellbores.setCompletionVisibility(completionDrilledVisible);
@@ -243,11 +257,7 @@ export const layer = () => {
     let hcTypeInt = 0;
 
     groupShowHide.add('Toggle field type', () => {
-      const hcTypes = [
-        'OIL/GAS',
-        'GAS',
-        'GAS/CONDENSATE',
-      ]
+      const hcTypes = ['OIL/GAS', 'GAS', 'GAS/CONDENSATE'];
 
       if (hcTypeInt === hcTypes.length - 1) {
         hcTypeInt = 0;
@@ -255,14 +265,16 @@ export const layer = () => {
         hcTypeInt++;
       }
 
-      fields.set([{
-        type: fieldData[0].type,
-        geometry: fieldData[0].geometry,
-        properties: {
-          ...fieldData[0].properties,
-          hctype: hcTypes[hcTypeInt],
-        }
-      }]);
+      fields.set([
+        {
+          type: fieldData[0].type,
+          geometry: fieldData[0].geometry,
+          properties: {
+            ...fieldData[0].properties,
+            hctype: hcTypes[hcTypeInt],
+          },
+        },
+      ]);
       fields.pixiOverlay.redraw();
     });
 
@@ -289,11 +301,11 @@ export const layer = () => {
 
     const groupClear = sidebar.addGroup('Clear');
 
-    groupClear.add('Clear \'Drilled\'', () => {
+    groupClear.add("Clear 'Drilled'", () => {
       wellbores.clear('Drilled');
     });
 
-    groupClear.add('Clear \'Planned\'', () => {
+    groupClear.add("Clear 'Planned'", () => {
       wellbores.clear('Planned');
     });
 
@@ -311,20 +323,20 @@ export const layer = () => {
       });
       roots.forEach(root => root.updateLabels());
       wellbores.pixiOverlay.redraw();
-    }
+    };
 
-    let drilledUnderRoot = false, plannedUnderRoot = false;
+    let drilledUnderRoot = false;
+    let plannedUnderRoot = false;
 
-    groupLblUnderRoot.add('Toggle \'Drilled\'', () => {
+    groupLblUnderRoot.add("Toggle 'Drilled'", () => {
       drilledUnderRoot = !drilledUnderRoot;
       attachToRoot(drilledUnderRoot, 'Drilled');
     });
 
-    groupLblUnderRoot.add('Toggle \'Planned\'', () => {
+    groupLblUnderRoot.add("Toggle 'Planned'", () => {
       plannedUnderRoot = !plannedUnderRoot;
       attachToRoot(plannedUnderRoot, 'Planned');
     });
-
 
     const groupHighlightOverride = sidebar.addGroup('Highlight');
 
@@ -339,7 +351,6 @@ export const layer = () => {
     groupHighlightOverride.add('Clear highlight', () => {
       wellbores.clearHighlight();
     });
-
 
     // const groupAnimate = sidebar.addGroup('Animate');
 
@@ -359,7 +370,13 @@ export const layer = () => {
 
     const groupGeoJSON = sidebar.addGroup('GeoJSON');
 
-    type SingleGeoJSON = { module: GeoJSONModule, data: any, props: (feature: any) => any, loaded?: boolean, visible: boolean }
+    type SingleGeoJSON = {
+      module: GeoJSONModule;
+      data: any;
+      props: (feature: any) => any;
+      loaded?: boolean;
+      visible: boolean;
+    };
 
     const licenseProps = (feature: any) => ({
       label: feature.properties.prlName,
@@ -382,7 +399,7 @@ export const layer = () => {
         fillColor: 'red',
         fillOpacity: 0.6,
       },
-     additionalData: {},
+      additionalData: {},
     });
 
     const facilityProps = (feature: any) => ({
@@ -394,12 +411,27 @@ export const layer = () => {
         fillColor: 'black',
         fillOpacity: 0.9,
       },
-     additionalData: {},
+      additionalData: {},
     });
 
-    const licenseGeoJSON: SingleGeoJSON = { module: licenses, data: licenseData, props: licenseProps, visible: false };
-    const pipelineGeoJSON: SingleGeoJSON = { module: pipelines, data: pipelineData, props: pipelineProps, visible: false };
-    const facilityGeoJSON: SingleGeoJSON = { module: facilities, data: facilityData, props: facilityProps, visible: false };
+    const licenseGeoJSON: SingleGeoJSON = {
+      module: licenses,
+      data: licenseData,
+      props: licenseProps,
+      visible: false,
+    };
+    const pipelineGeoJSON: SingleGeoJSON = {
+      module: pipelines,
+      data: pipelineData,
+      props: pipelineProps,
+      visible: false,
+    };
+    const facilityGeoJSON: SingleGeoJSON = {
+      module: facilities,
+      data: facilityData,
+      props: facilityProps,
+      visible: false,
+    };
     // const prospectGeoJSON: SingleGeoJSON = { module: prospects, data: prospectData, props: prospectProps, visible: false };
 
     const toggleGeoJSON = (collection: any) => {
@@ -412,8 +444,7 @@ export const layer = () => {
 
       collection.module.setVisibility(collection.visible);
       collection.module?.pixiOverlay?.redraw();
-    }
-
+    };
 
     groupGeoJSON.add('Toggle licenses', () => toggleGeoJSON(licenseGeoJSON));
     groupGeoJSON.add('Toggle pipelines', () => toggleGeoJSON(pipelineGeoJSON));

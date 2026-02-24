@@ -17,9 +17,5 @@ export default function log(text: string) {
     border-radius: 2px;
   `;
 
-  console.log(
-    `${out} (${GetDate()})`,
-    style,
-    null,
-  );
+  console.log(`${out} (${GetDate()})`, style, null);
 }

@@ -9,7 +9,12 @@ export default class Rect {
 
   // TODO: Find point inside boundary, and overlap. Find by inverse rotating vector to line and evaluate.
 
-  constructor(lowerLeft: Vector2, width: number, height: number, rotation: number) {
+  constructor(
+    lowerLeft: Vector2,
+    width: number,
+    height: number,
+    rotation: number,
+  ) {
     this.lowerLeft = lowerLeft;
     this.width = width;
     this.height = height;
@@ -21,7 +26,7 @@ export default class Rect {
    * @param vector Vector to evaluate
    * @returns True if point is inside rectangle
    */
-  isInside(vector: VectorLike): boolean
+  isInside(vector: VectorLike): boolean;
 
   /**
    * Check if a point is inside.
@@ -29,7 +34,7 @@ export default class Rect {
    * @param y Y position to evaluate
    * @returns True if point is inside rectangle
    */
-  isInside(x: number, y: number): boolean
+  isInside(x: number, y: number): boolean;
 
   isInside(a: number | VectorLike, b?: number): boolean {
     let local: Vector2;
@@ -56,7 +61,6 @@ export default class Rect {
   inverseTransformPoint(x: number, y: number): Vector2 {
     return new Vector2(x, y).mutable
       .sub(this.lowerLeft)
-      .rotateDeg(-this.rotation) // Counter rotate
-      .immutable;
+      .rotateDeg(-this.rotation).immutable; // Counter rotate
   }
 }

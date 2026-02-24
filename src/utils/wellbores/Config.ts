@@ -5,8 +5,8 @@ import { EventHandler } from '../../EventHandler';
 import { ResizeConfig } from '../../ResizeConfigInterface';
 
 export interface TickConfig {
-  width: number,
-  height: number,
+  width: number;
+  height: number;
 }
 
 /** Interface for wellbore config. */
@@ -83,8 +83,7 @@ export interface InputConfig {
 }
 
 /** Get default configuration for wellbores. */
-export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
-
+export function getDefaultConfig(input?: InputConfig): [Config, ExtraConfig] {
   const outputConfig: Config = {
     scale: 1.0,
     batchSize: 20,
@@ -102,7 +101,7 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
       width: 0.02,
       height: 0.2,
     },
-  }
+  };
 
   // Extra config represents temporary configurations that does not belong into the Config object
   const outputExtra: ExtraConfig = {
@@ -111,10 +110,10 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
     fontSize: 18,
     scaling: undefined,
     wellboreDash: 0.01,
-  }
+  };
 
   // Return early if no input
-  if (!input) return [ outputConfig, outputExtra ];
+  if (!input) return [outputConfig, outputExtra];
 
   // Try to transfer from input
   function transfer(key: string, target: object) {
@@ -151,5 +150,5 @@ export function getDefaultConfig(input?: InputConfig): [ Config, ExtraConfig ] {
   transferObj('rootResize', outputConfig);
   transferObj('tick', outputConfig);
 
-  return [ outputConfig, outputExtra ];
+  return [outputConfig, outputExtra];
 }

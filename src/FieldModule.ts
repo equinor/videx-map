@@ -15,38 +15,38 @@ type vec3 = [number, number, number];
 
 interface FillUniform {
   col1: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   col2: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   opacity: {
-    value: number,
+    value: number;
     type: string;
   };
   hashed: {
-    value: number,
+    value: number;
     type: string;
   };
   hashDisp: {
-    value: number,
+    value: number;
     type: string;
   };
   hashWidth: {
-    value: number,
+    value: number;
     type: string;
   };
 }
 
 interface OutlineUniform {
   color: {
-    value: vec3,
+    value: vec3;
     type: string;
   };
   outlineWidth: {
-    value: number,
+    value: number;
     type: string;
   };
 }
@@ -92,17 +92,17 @@ export interface FieldMesh {
   outline: {
     mesh: Mesh<Geometry, Shader>;
     uniform: OutlineUniform;
-  }
+  };
 }
 
 /** Interface for field config. */
 interface Config {
   /** Initial scale of field hash (Default: 1.0). */
-  initialHash?: number,
+  initialHash?: number;
   /** Minimum scale of field hash (Default: 0.0). */
-  minHash?: number,
+  minHash?: number;
   /** Maximum scale of field hash (Default: Infinity). */
-  maxHash?: number,
+  maxHash?: number;
 }
 
 // Colors
@@ -151,9 +151,14 @@ export default class FieldModule extends ModuleInterface {
     // Don't continue without config
     if (!config) return;
 
-    if (config.initialHash && typeof config.initialHash === 'number') this.config.initialHash = config.initialHash;
-    if (config.minHash && typeof config.minHash === 'number') this.config.minHash = config.minHash;
-    if (config.maxHash && typeof config.maxHash === 'number') this.config.maxHash = config.maxHash;
+    if (config.initialHash && typeof config.initialHash === 'number')
+      this.config.initialHash = config.initialHash;
+
+    if (config.minHash && typeof config.minHash === 'number')
+      this.config.minHash = config.minHash;
+
+    if (config.maxHash && typeof config.maxHash === 'number')
+      this.config.maxHash = config.maxHash;
   }
 
   set(data: Field[]) {
@@ -164,16 +169,16 @@ export default class FieldModule extends ModuleInterface {
     this.fields = [];
 
     const textStyle: TextStyle = new TextStyle({
-      fontFamily : 'Arial',
+      fontFamily: 'Arial',
       fontSize: 64,
       fontWeight: '600',
-      fill : 0x454545,
-      align : 'center',
+      fill: 0x454545,
+      align: 'center',
     });
 
     this.labelManager = new LabelManager(textStyle, 0.029);
     this.highlighter = new Highlighter(
-      [0.50, 0, 0.50],
+      [0.5, 0, 0.5],
       [0.25, 0, 0.25],
       [0.35, 0, 0.35],
     );
@@ -191,7 +196,10 @@ export default class FieldModule extends ModuleInterface {
       const entries: LabelData[] = [];
       const meshes: FieldMesh[] = [];
       field.geometry.forEach(polygon => {
-        const fieldStyle: FieldStyle = this.getFieldStyle(guid, polygon.properties.hctype);
+        const fieldStyle: FieldStyle = this.getFieldStyle(
+          guid,
+          polygon.properties.hctype,
+        );
         const projected = this.projectPolygons(polygon.coordinates);
         projected.pop(); // Remove overlapping
 
@@ -210,7 +218,7 @@ export default class FieldModule extends ModuleInterface {
       fieldID++;
       this.labelManager.addField(name, entries);
       this.fields.push(...meshes);
-      this.highlighter.add(meshes)
+      this.highlighter.add(meshes);
     });
 
     this.labelManager.draw(this.root);
@@ -220,8 +228,12 @@ export default class FieldModule extends ModuleInterface {
    * Draw each polygon in a polygon collection.
    * @param polygons
    */
-  drawPolygons(meshData: MeshData, outlineData: MeshNormalData, fieldStyle: FieldStyle, zIndex: number): FieldMesh {
-
+  drawPolygons(
+    meshData: MeshData,
+    outlineData: MeshNormalData,
+    fieldStyle: FieldStyle,
+    zIndex: number,
+  ): FieldMesh {
     const fillUniform: FillUniform = {
       col1: {
         value: fieldStyle.fillColor1,
@@ -258,7 +270,7 @@ export default class FieldModule extends ModuleInterface {
         value: 0.0,
         type: 'f32',
       },
-    }
+    };
 
     const polygonMesh = LineMesh.from(
       meshData.vertices,
@@ -271,12 +283,14 @@ export default class FieldModule extends ModuleInterface {
 
     this.root.addChild(polygonMesh);
 
-    const polygonOutlineMesh = LineMesh.from(outlineData.vertices,
+    const polygonOutlineMesh = LineMesh.from(
+      outlineData.vertices,
       outlineData.triangles,
       FieldModule.vertexShaderOutline,
       FieldModule.fragmentShaderOutline,
       outlineUniform,
-      outlineData.normals);
+      outlineData.normals,
+    );
     polygonOutlineMesh.zIndex = zIndex + 1;
     this.root.addChild(polygonOutlineMesh);
 
@@ -289,7 +303,7 @@ export default class FieldModule extends ModuleInterface {
         mesh: polygonOutlineMesh,
         uniform: outlineUniform,
       },
-    }
+    };
   }
 
   /**
@@ -306,7 +320,7 @@ export default class FieldModule extends ModuleInterface {
         outlineColor: outlineGray,
         fillOpacity: 0.15,
         hashed: 0,
-      }
+      };
     }
 
     // Default is oil
@@ -318,7 +332,7 @@ export default class FieldModule extends ModuleInterface {
       hashed: 0,
     };
 
-    switch(hctype) {
+    switch (hctype) {
       case 'GAS':
         fill.fillColor1 = red;
         fill.fillColor2 = red;
@@ -353,9 +367,7 @@ export default class FieldModule extends ModuleInterface {
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-  resize(_zoom: number) {
-
-  }
+  resize(_zoom: number) {}
 
   highlight(lat: number, long: number): boolean {
     const field: number = this.dict.getPolygonAt([long, lat]);

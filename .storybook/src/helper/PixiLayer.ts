@@ -5,7 +5,6 @@ import { ModuleInterface } from '../../../src';
 
 // @ts-ignore
 export default class PixiLayer extends L.PixiOverlay {
-
   // Support all 'hidden' props
   [key: string]: any;
 
@@ -31,7 +30,7 @@ export default class PixiLayer extends L.PixiOverlay {
       }
 
       renderer.render(container);
-    }
+    };
 
     const root = new Container(); // Group content in container
     root.sortableChildren = true; // Make container sortable
@@ -46,7 +45,7 @@ export default class PixiLayer extends L.PixiOverlay {
    * @param instance Instance of layer to add
    */
   addModule<T extends ModuleInterface>(module: T) {
-    module.pixiOverlay = (this as any); // Send pixiOverlay reference
+    module.pixiOverlay = this as any; // Send pixiOverlay reference
     this.modules.add(module);
     if (this.prevZoom) {
       module.resize(this.prevZoom); // Initial zoom

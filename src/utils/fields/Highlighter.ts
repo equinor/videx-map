@@ -59,7 +59,7 @@ export default class Hightlighter {
         outlineCol: field.outline.uniform.color.value,
         baseZIndex: field.fill.mesh.zIndex,
         field,
-      }
+      };
 
       // Highlight
       field.fill.uniform.col1.value = this.fillColor1;

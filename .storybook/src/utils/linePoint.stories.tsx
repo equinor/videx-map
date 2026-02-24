@@ -17,17 +17,20 @@ export const ClosestPointOnLine = () => {
   let pointer: Selection<SVGCircleElement, undefined, null, undefined>;
   let pointerLine: Selection<SVGLineElement, undefined, null, undefined>;
 
-  const root = create('div')
+  const root = create('div');
 
-  const distanceDiv = root.append('div')
+  const distanceDiv = root
+    .append('div')
     .style('height', '25px')
     .text('Distance: ---');
 
-  const performanceDiv = root.append('div')
+  const performanceDiv = root
+    .append('div')
     .style('height', '25px')
     .text('Performance: ---');
 
-  const svg = root.append('svg')
+  const svg = root
+    .append('svg')
     .style('width', `${width}px`)
     .style('height', `${height}px`)
     .style('border', '2px dotted DimGrey')
@@ -35,32 +38,34 @@ export const ClosestPointOnLine = () => {
       pointer.attr('opacity', 0);
       pointerLine.attr('opacity', 0);
     })
-    .on('mousemove', (event) => {
+    .on('mousemove', event => {
       // @ts-ignore
       const mousePos = getPointer(event);
 
-      const point = new Vector2(mousePos[0] - 1, mousePos[1])
+      const point = new Vector2(mousePos[0] - 1, mousePos[1]);
 
       const t0 = performance.now();
       const pointOnLine = closestPointOnLine(point, line.start, line.end);
       const t1 = performance.now();
 
-      distanceDiv.text(`Distance: ${Vector2.distance(point, pointOnLine).toFixed(2)}`);
+      distanceDiv.text(
+        `Distance: ${Vector2.distance(point, pointOnLine).toFixed(2)}`,
+      );
       performanceDiv.text(`Performance: ${(t1 - t0).toFixed(3)}`);
 
-      pointer.attr('opacity', 1)
-        .attr('cx', point.x)
-        .attr('cy', point.y)
+      pointer.attr('opacity', 1).attr('cx', point.x).attr('cy', point.y);
 
-      pointerLine.attr('opacity', 1)
+      pointerLine
+        .attr('opacity', 1)
         .attr('x1', point.x)
         .attr('y1', point.y)
         .attr('x2', pointOnLine[0])
         .attr('y2', pointOnLine[1]);
-    })
+    });
 
   // Append a line
-  svg.append('line')
+  svg
+    .append('line')
     .attr('x1', line.start.x)
     .attr('y1', line.start.y)
     .attr('x2', line.end.x)
@@ -70,7 +75,8 @@ export const ClosestPointOnLine = () => {
     .attr('pointer-events', 'none');
 
   // Mouse pointer
-  pointer = svg.append('circle')
+  pointer = svg
+    .append('circle')
     .attr('cx', 100)
     .attr('cy', 100)
     .attr('r', 3)
@@ -79,7 +85,8 @@ export const ClosestPointOnLine = () => {
     .attr('pointer-events', 'none');
 
   // Line from point
-  pointerLine = svg.append('line')
+  pointerLine = svg
+    .append('line')
     .attr('stroke', 'Tomato')
     .attr('stroke-width', 1.3)
     .attr('pointer-events', 'none')

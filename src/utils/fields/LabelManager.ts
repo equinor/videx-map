@@ -8,7 +8,7 @@ import groupLabels from './groupLabels';
 export type LabelData = {
   position: Vector2;
   mass: number;
-}
+};
 
 /** Field with connected labels. */
 interface Field {
@@ -23,7 +23,7 @@ export type Label = {
   mass: number;
   instance: Text;
   active: boolean;
-}
+};
 
 export interface MultiField {
   name: string;
@@ -34,7 +34,6 @@ export interface MultiField {
 
 /** Class used to manage field labels. Handles scaling and grouping of labels. */
 export default class LabelManager {
-
   /** The textstyle used for labels. */
   textStyle: TextStyle;
 
@@ -65,14 +64,19 @@ export default class LabelManager {
    * @param entries Data for each label
    */
   addField(name: string, entries: LabelData[]) {
-    if (entries.length <= 1) { // Single-polygon
+    // --- Single-polygon ---
+    if (entries.length <= 1) {
       this.fields.push({
         name,
         position: entries[0].position,
         instance: null,
       });
-    } else { // Multi-polygon
-      const textMetrics: CanvasTextMetrics = CanvasTextMetrics.measureText(name, this.textStyle);
+      // --- Multi-polygon ---
+    } else {
+      const textMetrics: CanvasTextMetrics = CanvasTextMetrics.measureText(
+        name,
+        this.textStyle,
+      );
       const width: number = textMetrics.width * this.baseScale; // Multiply by scale
       const height: number = textMetrics.height * this.baseScale; // Multiply by scale
 
@@ -84,7 +88,7 @@ export default class LabelManager {
           active: true,
           consumed: [],
           consumer: -1,
-        }
+        };
       });
 
       this.multiFields.push({ name, labels, width, height });
@@ -98,7 +102,7 @@ export default class LabelManager {
   draw(root: Container) {
     // Function for drawing single label
     const drawLabel = (name: string, position: Vector2) => {
-      const instance: Text = new Text({text: name, style: this.textStyle});
+      const instance: Text = new Text({ text: name, style: this.textStyle });
       instance.resolution = 2; // Increases text resolution
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
@@ -106,7 +110,7 @@ export default class LabelManager {
       instance.zIndex = 100000; // High z-index
       root.addChild(instance);
       return instance;
-    }
+    };
 
     // Draw single-polygon labels
     this.fields.forEach(field => {

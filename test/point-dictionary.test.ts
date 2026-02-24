@@ -5,10 +5,15 @@ const distanceTreshold = 0.25;
 const gridSize = 10;
 const rootRadius = 2;
 
-const expectSize = (dict : PointDictionary<any>, key : string) => expect(dict.tiles.get(key)?.size);
+const expectSize = (dict: PointDictionary<any>, key: string) =>
+  expect(dict.tiles.get(key)?.size);
 
 test('Can instantitate dictionary', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
   expect(dict.distThreshold).toBe(distanceTreshold);
   expect(dict.gridSize).toBe(gridSize);
   expect(dict.radius).toBe(rootRadius);
@@ -20,12 +25,21 @@ test('Can instantitate dictionary', () => {
 
 test('Cannot instantitate with grid smaller than radius', () => {
   expect(
-    () => new PointDictionary<number>(distanceTreshold, gridSize, gridSize + 0.0001),
+    () =>
+      new PointDictionary<number>(
+        distanceTreshold,
+        gridSize,
+        gridSize + 0.0001,
+      ),
   ).toThrow();
 });
 
 test('Can add to tile (center)', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
   const pos = new Vector2(5, 5);
   dict.add(pos, 42);
@@ -45,7 +59,11 @@ test('Can add to tile (center)', () => {
 });
 
 test('Can add to tile (edge)', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
   const pos = new Vector2(9, 5);
   dict.add(pos, 42);
@@ -60,7 +78,11 @@ test('Can add to tile (edge)', () => {
 });
 
 test('Can add to tile (diagonal)', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
   const pos = new Vector2(9, 9);
   dict.add(pos, 42);
@@ -74,12 +96,16 @@ test('Can add to tile (diagonal)', () => {
 });
 
 test('Can add to tile (multiple)', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
-  dict.add(new Vector2(5, 5), 1);      // Should be: [0, 0]
-  dict.add(new Vector2(5, 1), 2);      // Should be: [0, 0], [0, -1]
-  dict.add(new Vector2(9, 5), 3);      // Should be: [0, 0], [1, 0]
-  dict.add(new Vector2(205, 405), 4);  // Should be: [20, 40]
+  dict.add(new Vector2(5, 5), 1); // Should be: [0, 0]
+  dict.add(new Vector2(5, 1), 2); // Should be: [0, 0], [0, -1]
+  dict.add(new Vector2(9, 5), 3); // Should be: [0, 0], [1, 0]
+  dict.add(new Vector2(205, 405), 4); // Should be: [20, 40]
 
   expect(dict.tiles.size).toBe(4); // [0, 0], [0, -1], [1, 0], [20, 40]
   expectSize(dict, '0.0').toBe(3);
@@ -90,13 +116,17 @@ test('Can add to tile (multiple)', () => {
 });
 
 test('Can clear with filter', () => {
-  const dict = new PointDictionary<string>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<string>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
-  dict.add(new Vector2(5, 5), 'Drilled');   // Should be: [0, 0]
-  dict.add(new Vector2(9, 5), 'Planned');   // Should be: [0, 0], [1, 0]
-  dict.add(new Vector2(11, 5), 'Drilled');  // Should be: [0, 0], [1, 0]
-  dict.add(new Vector2(15, 5), 'Planned');  // Should be: [1, 0]
-  dict.add(new Vector2(25, 5), 'Planned');  // Should be: [2, 0]
+  dict.add(new Vector2(5, 5), 'Drilled'); // Should be: [0, 0]
+  dict.add(new Vector2(9, 5), 'Planned'); // Should be: [0, 0], [1, 0]
+  dict.add(new Vector2(11, 5), 'Drilled'); // Should be: [0, 0], [1, 0]
+  dict.add(new Vector2(15, 5), 'Planned'); // Should be: [1, 0]
+  dict.add(new Vector2(25, 5), 'Planned'); // Should be: [2, 0]
 
   // Check initial
   expect(dict.tiles.size).toBe(3);
@@ -117,7 +147,11 @@ test('Can clear with filter', () => {
 });
 
 test('Can clear all', () => {
-  const dict = new PointDictionary<number>(distanceTreshold, gridSize, rootRadius);
+  const dict = new PointDictionary<number>(
+    distanceTreshold,
+    gridSize,
+    rootRadius,
+  );
 
   dict.add(new Vector2(5, 5), 1);
   dict.add(new Vector2(15, 5), 2);

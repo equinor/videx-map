@@ -10,42 +10,40 @@ export const layer = () => {
     const width: number = 200;
 
     const root = create('div')
-    .attr('height', `${height}px`)
-    .attr('width', `${width}px`);
+      .attr('height', `${height}px`)
+      .attr('width', `${width}px`);
 
     const objs = [
-      {a: 2, b: 'test'},
-      {a: 3, b: 'test'},
-      {a: 1, b: 'test'},
+      { a: 2, b: 'test' },
+      { a: 3, b: 'test' },
+      { a: 1, b: 'test' },
     ];
 
     const arr = [2, 3];
 
     const a = new ComparableArray(objs, true, d => d.a);
 
-
-    root.append('div')
+    root
+      .append('div')
       .style('margin-bottom', '20px')
       .html(
         `const objs = [<br>
           &nbsp;&nbsp;&nbsp;&nbsp;{a: 2, b: 'test'},<br>
           &nbsp;&nbsp;&nbsp;&nbsp;{a: 3, b: 'test'},<br>
           &nbsp;&nbsp;&nbsp;&nbsp;{a: 1, b: 'test'},<br>
-        ];`
+        ];`,
       );
 
-    root.append('div')
+    root
+      .append('div')
       .style('margin-bottom', '20px')
-      .html(
-        `const arr = [${arr.toString()}]`,
-      );
+      .html(`const arr = [${arr.toString()}]`);
 
-    root.append('div')
+    root
+      .append('div')
       .style('margin-bottom', '20px')
-      .html(
-        `objs = arr&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;${a.compare(arr)}`,
-      );
+      .html(`objs = arr&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;${a.compare(arr)}`);
 
     return root.node();
   }
-}
+};

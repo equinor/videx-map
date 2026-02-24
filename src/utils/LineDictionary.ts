@@ -24,9 +24,9 @@ interface LineSegment {
 }
 
 interface Line<T> {
-  id: number,
+  id: number;
   value: T;
-  segments: LineSegment[],
+  segments: LineSegment[];
 }
 
 /**
@@ -37,7 +37,13 @@ interface Line<T> {
  * @param y2 point 2 y-coordinate
  * @param gridsize size of grid cells
  */
-function findGridIntersections(x1: number, x2: number, y1: number, y2: number, gridsize: number) : Set<string> {
+function findGridIntersections(
+  x1: number,
+  x2: number,
+  y1: number,
+  y2: number,
+  gridsize: number,
+): Set<string> {
   const intersections = new Set<string>();
 
   // Is line going down
@@ -50,7 +56,7 @@ function findGridIntersections(x1: number, x2: number, y1: number, y2: number, g
   let m: number, y0: number;
 
   // Ensure data line is calculated left to right
-  if(x1 < x2) {
+  if (x1 < x2) {
     xMin = Math.floor(x1 / gridsize);
     xMax = Math.floor(x2 / gridsize);
     const deltaX: number = x2 - x1;
@@ -114,7 +120,7 @@ export default class LineDictionary<T> {
   lineValues = new Map<number, Line<T>>();
 
   /** User provided function to test if a line is active or not */
-  testActiveFunction: (value:T) => boolean;
+  testActiveFunction: (value: T) => boolean;
 
   /** Used to assign lineID */
   private lineSeq: number;
@@ -168,10 +174,16 @@ export default class LineDictionary<T> {
    * @param lineID ID of the line which the segment should belong to
    * @private
    */
-  addSegment(x1: number, y1: number, x2: number, y2: number, line: Line<T>): void {
+  addSegment(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    line: Line<T>,
+  ): void {
     const segment = {
       lineID: line.id,
-      geometry: {x1, y1, x2, y2},
+      geometry: { x1, y1, x2, y2 },
     };
     line.segments.push(segment);
     const intersections = findGridIntersections(x1, x2, y1, y2, this.gridsize);
@@ -213,7 +225,7 @@ export default class LineDictionary<T> {
       }
     });
 
-    if(minDist > maxDist * this.gridsize) return undefined;
+    if (minDist > maxDist * this.gridsize) return undefined;
 
     // Return value of line with smallest distance
     return this.lineValues.get(minLineID).value;
@@ -227,7 +239,12 @@ export default class LineDictionary<T> {
    * @param filter Function for filtering points based on minimum
    * @returns Values assigned the lines
    */
-  getAllClosest(target: Vector2, epsilon: number = 0, maxDist: number = 1, filter?: (min: T, d: T) => boolean): T[] {
+  getAllClosest(
+    target: Vector2,
+    epsilon: number = 0,
+    maxDist: number = 1,
+    filter?: (min: T, d: T) => boolean,
+  ): T[] {
     // Get all involved segments
     const segments: Set<LineSegment> = this.getSegmentsOn3Grid(target);
 
@@ -237,7 +254,7 @@ export default class LineDictionary<T> {
     // Find closest line
     let minDist: number = Infinity;
     let minID: number = -1;
-    let extraLines: {ID: number, distance: number}[] = [];
+    let extraLines: { ID: number; distance: number }[] = [];
     segments.forEach(seg => {
       const distance: number = distanceToLine(
         target,
@@ -252,16 +269,17 @@ export default class LineDictionary<T> {
           const upperLimit = distance + epsilon;
 
           // Recalculate lines within range
-          const newLines: {ID: number, distance: number}[] = [];
+          const newLines: { ID: number; distance: number }[] = [];
 
           // Attempt to append previous min
-          if (minDist <= upperLimit) newLines.push({
-            ID: minID,
-            distance: minDist,
-          });
+          if (minDist <= upperLimit)
+            newLines.push({
+              ID: minID,
+              distance: minDist,
+            });
 
           extraLines.forEach(d => {
-            if(d.distance <= upperLimit) newLines.push(d);
+            if (d.distance <= upperLimit) newLines.push(d);
           });
           extraLines = newLines;
 
@@ -276,11 +294,11 @@ export default class LineDictionary<T> {
       }
     });
 
-    if(minDist > maxDist * this.gridsize) return [];
+    if (minDist > maxDist * this.gridsize) return [];
 
     // Ensure extra lines are unique
-    const unique: {[key: number]: boolean} = { [minID]: true };
-    const uniqueLines: {ID: number, distance: number}[] = [];
+    const unique: { [key: number]: boolean } = { [minID]: true };
+    const uniqueLines: { ID: number; distance: number }[] = [];
     extraLines.forEach(d => {
       if (unique.hasOwnProperty(d.ID)) return;
       unique[d.ID] = true;
@@ -295,15 +313,15 @@ export default class LineDictionary<T> {
       const filtered: T[] = [];
       extraT.forEach(curT => {
         if (filter(minT, curT)) filtered.push(curT);
-      })
+      });
       extraT = filtered;
     }
 
     // Return smallest lines
-    return [ minT, ...extraT ];
+    return [minT, ...extraT];
   }
 
-  isActive(line: Line<T>) : boolean {
+  isActive(line: Line<T>): boolean {
     if (!this.testActiveFunction) return true;
     return line && this.testActiveFunction(line.value);
   }
@@ -324,10 +342,12 @@ export default class LineDictionary<T> {
       for (let y = -1; y <= 1; y++) {
         const key: string = `${keyX + x}.${keyY + y}`;
         if (!this.tiles.has(key)) continue;
-        this.tiles.get(key).forEach(tileSegment => { // Iterate over values
-          if(!gridSegments.has(tileSegment)) {
+
+        // Iterate over values
+        this.tiles.get(key).forEach(tileSegment => {
+          if (!gridSegments.has(tileSegment)) {
             // Only push segment if line is active
-            if(this.isActive(this.lineValues.get(tileSegment.lineID))) {
+            if (this.isActive(this.lineValues.get(tileSegment.lineID))) {
               gridSegments.add(tileSegment);
             }
           }
@@ -339,7 +359,7 @@ export default class LineDictionary<T> {
   }
 
   /** Clear line dictionary to prepare for new data. */
-  clear(filter?: (value:T, id:number) => boolean): void {
+  clear(filter?: (value: T, id: number) => boolean): void {
     if (filter) {
       const segmentsToDelete = new Set<LineSegment>();
       this.lineValues.forEach((line, key) => {

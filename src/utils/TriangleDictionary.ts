@@ -10,14 +10,20 @@ type vec2 = [number, number];
  * @returns True if points is inside triangle
  */
 function pointInsideTriangle(p: vec2, v1: vec2, v2: vec2, v3: vec2) {
-  const k1 = (p[0] - v1[0]) * (v2[1] - v1[1]) - (p[1] - v1[1]) * (v2[0] - v1[0]);
-  const k2 = (p[0] - v2[0]) * (v3[1] - v2[1]) - (p[1] - v2[1]) * (v3[0] - v2[0]);
-  const k3 = (p[0] - v3[0]) * (v1[1] - v3[1]) - (p[1] - v3[1]) * (v1[0] - v3[0]);
+  const k1 =
+    (p[0] - v1[0]) * (v2[1] - v1[1]) - (p[1] - v1[1]) * (v2[0] - v1[0]);
+
+  const k2 =
+    (p[0] - v2[0]) * (v3[1] - v2[1]) - (p[1] - v2[1]) * (v3[0] - v2[0]);
+
+  const k3 =
+    (p[0] - v3[0]) * (v1[1] - v3[1]) - (p[1] - v3[1]) * (v1[0] - v3[0]);
 
   if (k1 < 0) {
-    return (k2 < 0) ? (k3 < 0) : false;
+    return k2 < 0 ? k3 < 0 : false;
   }
-  return (k2 >= 0) ? (k3 >= 0) : false;
+
+  return k2 >= 0 ? k3 >= 0 : false;
 }
 
 interface Triangle {
@@ -79,7 +85,7 @@ export default class TriangleDictionary<T> {
           if (this.tiles.has(key)) {
             this.tiles.get(key).push(triangleID);
           } else {
-            this.tiles.set(key, [ triangleID ]);
+            this.tiles.set(key, [triangleID]);
           }
         }
       }
@@ -95,7 +101,10 @@ export default class TriangleDictionary<T> {
 
     for (let i = 0; i < triangles.length; i++) {
       const triangle = this.triangles[triangles[i]];
-      if (!pointInsideTriangle(target, triangle.v1, triangle.v2, triangle.v3)) continue;
+
+      if (!pointInsideTriangle(target, triangle.v1, triangle.v2, triangle.v3))
+        continue;
+
       return this.polygonValues[triangle.polygonID];
     }
 

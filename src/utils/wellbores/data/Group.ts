@@ -39,7 +39,7 @@ export class Group {
   constructor(key: string, options?: GroupOptions) {
     this.key = key;
     if (options) {
-      if(!isNaN(options.order)) {
+      if (!isNaN(options.order)) {
         this.order = options.order;
       }
       if (options.mirrorLabels) {
@@ -52,14 +52,14 @@ export class Group {
   }
 
   registerDetail(key: string, detail: DetailOptions) {
-    if (key in this.details)  {
+    if (key in this.details) {
       throw Error(`Detail already registered, ${key}, for group: ${this.key}!`);
     }
     this.details[key] = getDetail(detail);
   }
 
   setDetailVisibility(key: string, visible: boolean) {
-    if (key in this.details)  {
+    if (key in this.details) {
       const detail = this.details[key];
 
       // Always initialize a visible detail, if not already done
@@ -91,8 +91,12 @@ export class Group {
   append(wellbore: WellboreData) {
     wellbore.zIndex = this.order * 10000 + this.wellbores.length;
     if (this.activeFilter) {
-      const targetFilter = this.isHardFilter ? FilterStatus.hard : FilterStatus.soft;
-      wellbore.setFilter(this.activeFilter(wellbore.data) ? FilterStatus.none : targetFilter);
+      const targetFilter = this.isHardFilter
+        ? FilterStatus.hard
+        : FilterStatus.soft;
+      wellbore.setFilter(
+        this.activeFilter(wellbore.data) ? FilterStatus.none : targetFilter,
+      );
       wellbore.root.recalculate(true);
     }
 
@@ -110,7 +114,10 @@ export class Group {
    * @param wellboreFunc Function to call on wellbores
    * @param rootFunc Function to call on roots
    */
-  private forAll(wellboreFunc: (wellbore: WellboreData) => void, rootFunc: (root: RootData) => void) {
+  private forAll(
+    wellboreFunc: (wellbore: WellboreData) => void,
+    rootFunc: (root: RootData) => void,
+  ) {
     const roots = new Set<RootData>(); // Set of unique roots
 
     const wellbores = this.wellbores;
@@ -123,7 +130,7 @@ export class Group {
     roots.forEach(root => rootFunc(root));
   }
 
-  setActive(active: boolean) : void {
+  setActive(active: boolean): void {
     if (this.active === active) return;
     this.active = active;
 
@@ -137,7 +144,10 @@ export class Group {
     this.activeFilter = filter;
     this.isHardFilter = false;
     this.forAll(
-      wellbore => wellbore.setFilter(filter(wellbore.data) ? FilterStatus.none : FilterStatus.soft),
+      wellbore =>
+        wellbore.setFilter(
+          filter(wellbore.data) ? FilterStatus.none : FilterStatus.soft,
+        ),
       root => root.recalculate(true),
     );
   }
@@ -146,7 +156,10 @@ export class Group {
     this.activeFilter = filter;
     this.isHardFilter = true;
     this.forAll(
-      wellbore => wellbore.setFilter(filter(wellbore.data) ? FilterStatus.none : FilterStatus.hard),
+      wellbore =>
+        wellbore.setFilter(
+          filter(wellbore.data) ? FilterStatus.none : FilterStatus.hard,
+        ),
       root => root.recalculate(true),
     );
   }

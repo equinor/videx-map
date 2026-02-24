@@ -34,7 +34,7 @@ interface PointData {
 }
 
 interface selection {
-  point: PointData,
+  point: PointData;
   /** Original z-index. */
   zIndex: number;
 }
@@ -45,9 +45,12 @@ interface selection {
  * Layer for displaying exploration wells.
  */
 export default class ExplorationLayer extends ModuleInterface {
-
   /** Dictionary used to manage points. */
-  pointDict: PointDictionary<PointData> = new PointDictionary<PointData>(0.25, -2, /* ! Fix */ -1);
+  pointDict: PointDictionary<PointData> = new PointDictionary<PointData>(
+    0.25,
+    -2,
+    /* ! Fix */ -1,
+  );
 
   /** Initial scale. */
   prevScale: number;
@@ -92,8 +95,7 @@ export default class ExplorationLayer extends ModuleInterface {
     return targetScale;
   }
 
-  highlight(lat: number, long: number): boolean
-  {
+  highlight(lat: number, long: number): boolean {
     // Get projection function
     const project = this.pixiOverlay.utils.latLngToLayerPoint;
 
@@ -105,17 +107,17 @@ export default class ExplorationLayer extends ModuleInterface {
     }
 
     // Get worldspace from coordinates
-    const {x, y} = project([lat, long]);
+    const { x, y } = project([lat, long]);
     const worldSpace = new Vector2(x, y);
 
     const circleUnder = this.pointDict.getClosestUnder(worldSpace);
 
-    if(circleUnder) {
+    if (circleUnder) {
       const point = circleUnder.val;
       this.selection = {
         point,
         zIndex: point.mesh.zIndex,
-      }
+      };
       point.uniforms.circleColor1 = [0.2, 0.6, 0.7];
       point.mesh.zIndex = Infinity;
       return true;
@@ -123,5 +125,4 @@ export default class ExplorationLayer extends ModuleInterface {
 
     return false;
   }
-
 }

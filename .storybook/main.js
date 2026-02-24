@@ -3,11 +3,11 @@ const config = {
 
   framework: {
     name: '@storybook/html-webpack5',
-    options: {}
+    options: {},
   },
 
   docs: {
-    autodocs: false
-  }
+    autodocs: false,
+  },
 };
-  export default config;
+export default config;

@@ -43,19 +43,18 @@ export interface InputColors {
 
 /** Get default configuration for wellbores. */
 export function getDefaultColors(input?: InputColors): Colors {
-
   const output: Colors = {
     fontColor: 0x000000,
-    interactFontColor: 0xFFFFFF,
+    interactFontColor: 0xffffff,
     default: {
       col1: [0.3, 0.3, 0.3],
       col2: [0.05, 0.05, 0.05],
-      labelBg: 0xFFFFFF,
+      labelBg: 0xffffff,
     },
     highlight: {
       col1: [0.8, 0.2, 0.9],
       col2: [0.5, 0.05, 0.6],
-      labelBg: 0xA30AA3,
+      labelBg: 0xa30aa3,
     },
     multiHighlight: {
       col1: [0.55, 0.55, 0.55],
@@ -65,7 +64,7 @@ export function getDefaultColors(input?: InputColors): Colors {
     selected: {
       col1: [1.0, 0.0, 0.0],
       col2: [0.5, 0.0, 0.0],
-      labelBg: 0xFFFFFF,
+      labelBg: 0xffffff,
     },
   };
 
@@ -103,4 +102,3 @@ export function getDefaultColors(input?: InputColors): Colors {
 
   return output;
 }
-

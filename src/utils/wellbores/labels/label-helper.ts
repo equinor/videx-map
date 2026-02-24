@@ -4,7 +4,7 @@ import Vector2 from '@equinor/videx-vector2';
 import { Label } from './Label';
 import { WellboreData } from '../data';
 
-export function positionAtRoot(wellbore: WellboreData, position: number) : void {
+export function positionAtRoot(wellbore: WellboreData, position: number): void {
   wellbore.label.attachToRoot = true;
 
   const { container } = wellbore.label;
@@ -12,12 +12,16 @@ export function positionAtRoot(wellbore: WellboreData, position: number) : void 
 
   container.rotation = 0;
   container.pivot.set(0, -Label.height * 0.5);
-  const yPos = (rootDisplacement + 5 * scale) + (position * (Label.height + 5) * scale) + wellbore.root.position[1];
+  const yPos =
+    rootDisplacement +
+    5 * scale +
+    position * (Label.height + 5) * scale +
+    wellbore.root.position[1];
   container.position.set(wellbore.root.position[0], yPos);
   container.scale.set(scale); // Resize
 }
 
-export function positionAlongWellbore(wellbore: WellboreData) : void {
+export function positionAlongWellbore(wellbore: WellboreData): void {
   wellbore.label.attachToRoot = false;
 
   const { container, metrics } = wellbore.label;
@@ -35,35 +39,41 @@ export function positionAlongWellbore(wellbore: WellboreData) : void {
 
   // X+: Right
   // Y+: Down
-  if (dir.x < 0) { // Left
+  if (dir.x < 0) {
+    // Left
     if (mirror) {
       pivotX = -metrics.width * 0.5;
       pivotY = metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.left, dir);
-      pos = dir.rotate90()
+      pos = dir
+        .rotate90()
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     } else {
       pivotX = -metrics.width * 0.5;
       pivotY = -metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.left, dir);
-      pos = dir.rotate270()
+      pos = dir
+        .rotate270()
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     }
-  } else { // Right
+  } else {
+    // Right
     if (mirror) {
       pivotX = metrics.width * 0.5;
       pivotY = metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.right, dir);
-      pos = dir.rotate270()
+      pos = dir
+        .rotate270()
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     } else {
       pivotX = metrics.width * 0.5;
       pivotY = -metrics.height * 0.5;
       angle = Vector2.signedAngle(Vector2.right, dir);
-      pos = dir.rotate90()
+      pos = dir
+        .rotate90()
         .rescale(wellbore.wellboreWidth * 0.5 + 0.075)
         .add(end);
     }

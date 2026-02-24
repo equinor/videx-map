@@ -13,7 +13,7 @@ export interface PreprocessedField {
         polygonId: number;
         status: string;
       };
-    }
+    },
   ];
   properties: {
     group: number;
@@ -30,10 +30,9 @@ export interface PreprocessedField {
  * @returns Processed data
  */
 export default function preprocessFields(data: Field[]): PreprocessedField[] {
-  const unique: {[key: string]: PreprocessedField} = {};
+  const unique: { [key: string]: PreprocessedField } = {};
 
   data.forEach(field => {
-
     const fieldName: string = field.properties.label;
 
     let coordinates: [number, number][][] = [];
@@ -43,7 +42,7 @@ export default function preprocessFields(data: Field[]): PreprocessedField[] {
       coordinates = geometry.coordinates as [number, number][][];
     } else {
       const multipolygons = geometry.coordinates as [number, number][][][];
-      for(let i: number = 0; i < multipolygons.length; i++) {
+      for (let i: number = 0; i < multipolygons.length; i++) {
         coordinates.push(...multipolygons[i]);
       }
     }
@@ -63,10 +62,10 @@ export default function preprocessFields(data: Field[]): PreprocessedField[] {
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     // Append polygon(s)
-    if(unique.hasOwnProperty(fieldName)){
+    if (unique.hasOwnProperty(fieldName)) {
       for (let i: number = 0; i < coordinates.length; i++) appendIndex(i);
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // Push new polygon. Append additional.
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      // Push new polygon. Append additional.
     } else {
       unique[fieldName] = {
         type: field.type,
@@ -88,13 +87,12 @@ export default function preprocessFields(data: Field[]): PreprocessedField[] {
           lat: field.properties.lat,
           long: field.properties.long,
         },
-      }
+      };
 
       if (coordinates.length > 1) {
         for (let i: number = 1; i < coordinates.length; i++) appendIndex(i);
       }
     }
-
   });
 
   return Object.values(unique);

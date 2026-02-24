@@ -31,13 +31,14 @@ export default class GeoJSONModule extends ModuleInterface {
   multipolygons: GeoJSONMultiPolygon;
   _eventHandler: EventHandler;
   mapmoving: boolean;
-  labelRoot: Container
+  labelRoot: Container;
   config?: Config;
 
   constructor(config?: Config) {
     super();
     this.mapmoving = false;
-    this._eventHandler = config?.customEventHandler || new DefaultEventHandler();
+    this._eventHandler =
+      config?.customEventHandler || new DefaultEventHandler();
     this.onFeatureHover = config?.onFeatureHover;
     this.config = config;
   }
@@ -46,34 +47,52 @@ export default class GeoJSONModule extends ModuleInterface {
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
     this.labelRoot = new Container();
     data.features.forEach(feature => {
-      if(feature.geometry.type === 'Point') {
-        if (this.points === undefined) this.points = new GeoJSONPoint(this.root, this.pixiOverlay);
+      if (feature.geometry.type === 'Point') {
+        if (this.points === undefined)
+          this.points = new GeoJSONPoint(this.root, this.pixiOverlay);
+
         this.points.add(feature, props);
       } else if (feature.geometry.type === 'LineString') {
-        if (this.linestrings === undefined) this.linestrings = new GeoJSONLineString(this.root, this.pixiOverlay, this.config);
+        if (this.linestrings === undefined)
+          this.linestrings = new GeoJSONLineString(
+            this.root,
+            this.pixiOverlay,
+            this.config,
+          );
         this.linestrings.add(feature, props);
       } else if (feature.geometry.type === 'Polygon') {
-        if (this.polygons === undefined) this.polygons = new GeoJSONPolygon(this.root, this.labelRoot, this.pixiOverlay, this.config);
+        if (this.polygons === undefined)
+          this.polygons = new GeoJSONPolygon(
+            this.root,
+            this.labelRoot,
+            this.pixiOverlay,
+            this.config,
+          );
         this.polygons.add(feature, props);
       } else if (feature.geometry.type === 'MultiPolygon') {
-        if (this.multipolygons === undefined) this.multipolygons = new GeoJSONMultiPolygon(this.root, this.labelRoot, this.pixiOverlay, this.config);
+        if (this.multipolygons === undefined)
+          this.multipolygons = new GeoJSONMultiPolygon(
+            this.root,
+            this.labelRoot,
+            this.pixiOverlay,
+            this.config,
+          );
         this.multipolygons.add(feature, props);
       }
-
     });
     this.root.addChild(this.labelRoot);
     if (this.polygons) this.polygons.drawLabels();
     if (this.multipolygons) this.multipolygons.drawLabels();
   }
 
-    /**
+  /**
    * Check for features at the given coordinates.
    * Will give a list of feature data if any are hit or an empty list if not.
    * @param pos Target position in lat-long
    * @returns List of features at the given position
    */
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  testPosition(pos: Vector2) : any {
+  testPosition(pos: Vector2): any {
     let result = [];
     if (this.polygons) result.push(this.polygons.testPosition(pos));
     if (this.multipolygons) result.push(this.multipolygons.testPosition(pos));
@@ -108,30 +127,30 @@ export default class GeoJSONModule extends ModuleInterface {
   }
 
   private handleMouseMove(event: MouseEvent): boolean {
-    if(this.mapmoving) return false;
+    if (this.mapmoving) return false;
     const map = this.pixiOverlay.utils.getMap();
     const latLng = map.mouseEventToLatLng(event);
     const layerCoords = new Vector2([latLng.lng, latLng.lat]);
     const hits = this.testPosition(layerCoords);
-    if(this.onFeatureHover) this.onFeatureHover(event, hits);
+    if (this.onFeatureHover) this.onFeatureHover(event, hits);
     return true;
   }
 
-  private handleMouseOut(event: MouseEvent) : boolean {
-    if(this.onFeatureHover) this.onFeatureHover(event, []);
+  private handleMouseOut(event: MouseEvent): boolean {
+    if (this.onFeatureHover) this.onFeatureHover(event, []);
     return true;
   }
 
-  private handleMouseClick() : boolean {
+  private handleMouseClick(): boolean {
     return true;
   }
 
-  private handleMouseDown() : boolean {
+  private handleMouseDown(): boolean {
     this.mapmoving = true;
     return true;
   }
 
-  private handleMouseUp() : boolean {
+  private handleMouseUp(): boolean {
     this.mapmoving = false;
     return true;
   }

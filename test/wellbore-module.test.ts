@@ -7,7 +7,7 @@ import { WellboreData, RootData, Group } from '../src/utils/wellbores/data';
 
 const defaultConfig = getDefaultConfig();
 
-const createModule = (options?: InputConfig) : WellboreModule => {
+const createModule = (options?: InputConfig): WellboreModule => {
   const module = new WellboreModule(options);
   module.pixiOverlay = pixiOverlayMock;
   return module;
@@ -18,7 +18,9 @@ test('can instantiate WellboreModule class with no options', () => {
 
   expect(module).toBeInstanceOf(WellboreModule);
   expect(module.config.scale).toEqual(defaultConfig[0].scale);
-  expect(module.config.wellboreResize).toStrictEqual(defaultConfig[0].wellboreResize);
+  expect(module.config.wellboreResize).toStrictEqual(
+    defaultConfig[0].wellboreResize,
+  );
   expect(module.config.rootResize).toEqual(defaultConfig[0].rootResize);
   expect(module.config.batchSize).toEqual(defaultConfig[0].batchSize);
 });
@@ -51,11 +53,11 @@ test('can register data groups and set options', () => {
     multiHighlightColor2: [0.3, 0.0, 0.0],
     selectedColor1: [1.0, 1.0, 1.0],
     selectedColor2: [0.8, 0.8, 0.8],
-    fontColor: 0xFF0000,
-    defaultLabelBg: 0xFF0000,
-    highlightLabelBg: 0xFF00FF,
-    multiHighlightLabelBg: 0xDD0000,
-    selectedLabelBg: 0xCCCCCC,
+    fontColor: 0xff0000,
+    defaultLabelBg: 0xff0000,
+    highlightLabelBg: 0xff00ff,
+    multiHighlightLabelBg: 0xdd0000,
+    selectedLabelBg: 0xcccccc,
   };
 
   module.registerGroup('test1', { colors });
@@ -64,7 +66,6 @@ test('can register data groups and set options', () => {
   expect(module.groups.test1).toBeDefined();
   expect(module.groups.test1.key).toBe('test1');
   expect(module.groups.test1.active).toBeTruthy();
-
 
   module.registerGroup('test2', { colors });
 
@@ -156,20 +157,36 @@ test('can remove data in a group', async () => {
 
   expect(module.groups.group1.wellbores.length).toBe(6);
   expect(module.groups.group2.wellbores.length).toBe(4);
-  expect(module.lineDict.lineValues.size).toBe(4)
+  expect(module.lineDict.lineValues.size).toBe(4);
   expect(module.pointDict.pointValues.size).toBe(7);
   expect(module.roots.length).toBe(7);
-  expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(10);
-  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(6);
+  expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(
+    10,
+  );
+  expect(
+    module.roots.reduce(
+      (count, r) =>
+        r.wellbores.filter(d => d.label.attachToRoot).length + count,
+      0,
+    ),
+  ).toBe(6);
 
   module.clear('group1');
   expect(module.groups.group1.wellbores.length).toBe(0);
   expect(module.groups.group2.wellbores.length).toBe(4);
-  expect(module.lineDict.lineValues.size).toBe(2)
+  expect(module.lineDict.lineValues.size).toBe(2);
   expect(module.pointDict.pointValues.size).toBe(3);
   expect(module.roots.length).toBe(3);
-  expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(4);
-  expect(module.roots.reduce((count, r) => r.wellbores.filter(d => d.label.attachToRoot).length + count, 0)).toBe(2);
+  expect(module.roots.reduce((count, r) => r.wellbores.length + count, 0)).toBe(
+    4,
+  );
+  expect(
+    module.roots.reduce(
+      (count, r) =>
+        r.wellbores.filter(d => d.label.attachToRoot).length + count,
+      0,
+    ),
+  ).toBe(2);
 });
 
 test('can toggle groups on and off', async () => {
@@ -192,11 +209,19 @@ test('can toggle groups on and off', async () => {
 
   module.disable(); // should disable all groups (including default)
 
-  expect(Object.values(module.groups).every(g => g.active === false)).toBeTruthy();
+  expect(
+    Object.values(module.groups).every(g => g.active === false),
+  ).toBeTruthy();
 
-  expect(module.groups.default.wellbores.every(w => w.active === false)).toBeTruthy();
-  expect(module.groups.group1.wellbores.every(w => w.active === false)).toBeTruthy();
-  expect(module.groups.group2.wellbores.every(w => w.active === false)).toBeTruthy();
+  expect(
+    module.groups.default.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
+  expect(
+    module.groups.group1.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
+  expect(
+    module.groups.group2.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
 
   module.enable(); // should enable all groups (including default)
 
@@ -213,8 +238,12 @@ test('can toggle groups on and off', async () => {
   expect(module.groups.group2.active).toBeFalsy();
 
   expect(module.groups.default.wellbores.every(w => w.active)).toBeTruthy();
-  expect(module.groups.group1.wellbores.every(w => w.active === false)).toBeTruthy();
-  expect(module.groups.group2.wellbores.every(w => w.active === false)).toBeTruthy();
+  expect(
+    module.groups.group1.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
+  expect(
+    module.groups.group2.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
 
   module.enable('group2');
 
@@ -223,7 +252,9 @@ test('can toggle groups on and off', async () => {
   expect(module.groups.group2.active).toBeTruthy();
 
   expect(module.groups.default.wellbores.every(w => w.active)).toBeTruthy();
-  expect(module.groups.group1.wellbores.every(w => w.active === false)).toBeTruthy();
+  expect(
+    module.groups.group1.wellbores.every(w => w.active === false),
+  ).toBeTruthy();
   expect(module.groups.group2.wellbores.every(w => w.active)).toBeTruthy();
 });
 
@@ -233,18 +264,21 @@ test('can disable wellbores with provided filter function', async () => {
   module.registerGroup('group1');
   module.registerGroup('group2');
 
-  const data1 = wellbores.slice(0, 2)
+  const data1 = wellbores
+    .slice(0, 2)
     .map(d => ({ ...d, category: 'category1' }))
     .concat(wellbores.slice(2, 6).map(d => ({ ...d, category: 'category2' })));
 
-  const data2 = wellbores.slice(6, 9)
+  const data2 = wellbores
+    .slice(6, 9)
     .map(d => ({ ...d, category: 'category1' }))
     .concat(wellbores.slice(9).map(d => ({ ...d, category: 'category2' })));
 
-  await module.set(data1, 'group1'),
-  await module.set(data2, 'group2'),
-
-  expect(module.groups.group1.wellbores.filter(d => d.active).length).toBe(6);
+  (await module.set(data1, 'group1'),
+    await module.set(data2, 'group2'),
+    expect(module.groups.group1.wellbores.filter(d => d.active).length).toBe(
+      6,
+    ));
   expect(module.groups.group2.wellbores.filter(d => d.active).length).toBe(4);
 
   // filter all groups. All items not matching filter should be disabled.

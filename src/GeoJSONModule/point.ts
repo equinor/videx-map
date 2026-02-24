@@ -9,7 +9,6 @@ import { FeatureProps } from '.';
 
 /** Module for displaying fields. */
 export default class GeoJSONPoint {
-
   /** Graphic elements currently existing in world space. */
   spawned: Graphics[] = [];
 
@@ -24,7 +23,6 @@ export default class GeoJSONPoint {
   textStyle: TextStyle;
 
   constructor(root: Container, pixiOverlay: pixiOverlayBase) {
-
     this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
@@ -33,12 +31,11 @@ export default class GeoJSONPoint {
   }
 
   add(feature: GeoJSON.Feature, props: (feature: object) => FeatureProps) {
-
     const geom = feature.geometry as GeoJSON.Point;
     const properties: FeatureProps = props(feature);
 
     const coordinates = geom.coordinates as [number, number];
-    if(coordinates?.length > 0) {
+    if (coordinates?.length > 0) {
       const projected = this.projectPoint(coordinates);
 
       this.dict.add(projected, feature.properties);
@@ -49,18 +46,27 @@ export default class GeoJSONPoint {
         point = new Graphics();
         this.container.addChild(point);
       }
-      const fillColor = properties.style.fillColor ? new Color(color(properties.style.fillColor).formatHex()).toNumber() : 0x0;
-      const lineColor = properties.style.lineColor ? new Color(color(properties.style.lineColor).formatHex()).toNumber()  : 0x0;
+      const fillColor = properties.style.fillColor
+        ? new Color(color(properties.style.fillColor).formatHex()).toNumber()
+        : 0x0;
+      const lineColor = properties.style.lineColor
+        ? new Color(color(properties.style.lineColor).formatHex()).toNumber()
+        : 0x0;
       const alpha = properties.style.fillOpacity || 0;
       const offset = 4;
-      point.rect(projected[0] - offset, projected[1] - offset, offset*2, offset*2);
-      point.fill({color: fillColor, alpha});
+      point.rect(
+        projected[0] - offset,
+        projected[1] - offset,
+        offset * 2,
+        offset * 2,
+      );
+      point.fill({ color: fillColor, alpha });
       point.setStrokeStyle(properties.style.lineWidth, lineColor);
       this.spawned.push(point);
     }
   }
 
- /**
+  /**
    * Project a point coordinate.
    * @param point x,y pair
    * @returns Projected point
@@ -72,12 +78,10 @@ export default class GeoJSONPoint {
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-  resize(_zoom: number) {
-
-  }
+  resize(_zoom: number) {}
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  testPosition(pos: Vector2) : any {
+  testPosition(pos: Vector2): any {
     return this.dict.getClosestUnder(pos);
   }
 }

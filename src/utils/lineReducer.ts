@@ -11,11 +11,12 @@ import { displacementToLineOrigin } from './linePoint';
  * @param distanceWeight Scale allowed deviatin by distance from last point
  * @returns Reduced line
  */
-export function reduce<T extends VectorLike>(points: T[], maxDeviation: number, distanceWeight: number): T[] {
-  const output: T[] = [
-    points[0],
-    points[1],
-  ];
+export function reduce<T extends VectorLike>(
+  points: T[],
+  maxDeviation: number,
+  distanceWeight: number,
+): T[] {
+  const output: T[] = [points[0], points[1]];
 
   // Initial direction
   let lineStart: T = points[0];
@@ -35,7 +36,10 @@ export function reduce<T extends VectorLike>(points: T[], maxDeviation: number, 
 
     // if (angle >= 165) continue;
 
-    if (minDisp[1] > maxDeviation + minDisp[0] * distanceWeight - angle * 0.075) {
+    if (
+      minDisp[1] >
+      maxDeviation + minDisp[0] * distanceWeight - angle * 0.075
+    ) {
       output.push(cur);
       lineStart = lineEnd;
       lineEnd = cur;

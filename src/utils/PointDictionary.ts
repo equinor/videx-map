@@ -29,7 +29,7 @@ export default class PointDictionary<T> {
   pointValues = new Map<number, Point<T>>();
 
   /** User provided function to test if a line is active or not */
-  testActiveFunction: (value:T) => boolean;
+  testActiveFunction: (value: T) => boolean;
 
   /** Used to assign PointID */
   private pointSeq: number = 0;
@@ -39,8 +39,15 @@ export default class PointDictionary<T> {
    * @param distThreshold Threshold for what is considered overlapping
    * @param gridSize grid cell size used for segmentation
    */
-  constructor(distThreshold: number, gridSize: number = 2, radius: number, testActive?: (value: T) => boolean) {
-    if (gridSize < radius) throw 'Gridsize of point dictionary must be greater than scaled radius of root.';
+  constructor(
+    distThreshold: number,
+    gridSize: number = 2,
+    radius: number,
+    testActive?: (value: T) => boolean,
+  ) {
+    if (gridSize < radius)
+      throw 'Gridsize of point dictionary must be greater than scaled radius of root.';
+
     this.distThreshold = distThreshold;
     this.gridSize = gridSize;
     this.radius = radius;
@@ -89,35 +96,62 @@ export default class PointDictionary<T> {
     const keyY: number = Math.floor(pos[1] / gridSize);
 
     // Collection of keys + initial key
-    const keys: string[] = [ `${keyX}.${keyY}` ];
+    const keys: string[] = [`${keyX}.${keyY}`];
 
     // Local position on tile
     const localX = pos[0] - keyX * gridSize;
     const localY = pos[1] - keyY * gridSize;
-    const local = [ localX, localY ];
+    const local = [localX, localY];
 
     const addKey = (deltaX: number, deltaY: number) => {
       keys.push(`${keyX + deltaX}.${keyY + deltaY}`);
+    };
+
+    const tryAddDiagKey = (
+      cornerLocal: [number, number],
+      deltaX: number,
+      deltaY: number,
+    ) => {
+      if (Vector2.distance(local, cornerLocal) < radius)
+        keys.push(`${keyX + deltaX}.${keyY + deltaY}`);
+    };
+
+    let l = false,
+      r = false,
+      d = false,
+      u = false;
+
+    // --- Add adjacent ---
+
+    // LEFT
+    if (localX < radius) {
+      addKey(-1, 0);
+      l = true;
     }
 
-    const tryAddDiagKey = (cornerLocal: [number, number], deltaX: number, deltaY: number) => {
-      if (Vector2.distance(local, cornerLocal) < radius) keys.push(`${keyX + deltaX}.${keyY + deltaY}`);
+    // RIGHT
+    if (localX > gridSize - radius) {
+      addKey(1, 0);
+      r = true;
     }
 
-    let l = false, r = false, d = false, u = false;
+    // DOWN
+    if (localY < radius) {
+      addKey(0, -1);
+      d = true;
+    }
 
-    // Add adjacent
-    if (localX < radius) { addKey(-1, 0); l = true; }           // LEFT
-    if (localX > gridSize - radius) { addKey(1, 0); r = true; } // RIGHT
-    if (localY < radius) { addKey(0, -1); d = true; }           // DOWN
-    if (localY > gridSize - radius) { addKey(0, 1); u = true; } // UP
+    // UP
+    if (localY > gridSize - radius) {
+      addKey(0, 1);
+      u = true;
+    }
 
     // Try to add diagonals
     if (l) {
       if (u) tryAddDiagKey([0, gridSize], -1, 1);
       else if (d) tryAddDiagKey([0, 0], -1, -1);
-    }
-    else if (r) {
+    } else if (r) {
       if (u) tryAddDiagKey([gridSize, gridSize], 1, 1);
       else if (d) tryAddDiagKey([gridSize, 0], 1, -1);
     }
@@ -125,7 +159,7 @@ export default class PointDictionary<T> {
     return keys;
   }
 
-  isActive(point: Point<T>) : boolean {
+  isActive(point: Point<T>): boolean {
     if (!this.testActiveFunction) return true;
     return point && this.testActiveFunction(point.val);
   }
@@ -178,10 +212,10 @@ export default class PointDictionary<T> {
   }
 
   /** Clear point dictionary to prepare for new data. */
-  clear(filter?: (value:T, id:number) => boolean): void {
+  clear(filter?: (value: T, id: number) => boolean): void {
     if (filter) {
       this.pointValues.forEach(point => {
-        if(!filter(point.val, point.id)) return; // Skip if filter does not pass
+        if (!filter(point.val, point.id)) return; // Skip if filter does not pass
         const keys = this.getKeys(point.pos); // ! Alternatively possible to store keys in point. (But getKeys is fast)
         for (let i = 0; i < keys.length; i++) {
           const key = keys[i];

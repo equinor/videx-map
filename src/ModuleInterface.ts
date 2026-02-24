@@ -4,7 +4,6 @@ import { Container } from 'pixi.js';
 
 /** Class with common functions shared by all layers. */
 export abstract class ModuleInterface {
-
   /** Function for pixi overlay. */
   pixiOverlay: pixiOverlayBase;
 
@@ -22,7 +21,7 @@ export abstract class ModuleInterface {
     this.root.sortableChildren = true; // Make container sortable
   }
 
-  destroy(){
+  destroy() {
     this.root.destroy({ children: true, texture: true, textureSource: true });
     this.root = null;
   }
@@ -47,10 +46,9 @@ export abstract class ModuleInterface {
     return false;
   }
 
-  onAdd(_map: L.Map) : void {}
+  onAdd(_map: L.Map): void {}
 
-  onRemove(_map: L.Map) : void {}
+  onRemove(_map: L.Map): void {}
 
-  resize(_zoom: number) : void {}
-
+  resize(_zoom: number): void {}
 }

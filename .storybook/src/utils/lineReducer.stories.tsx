@@ -18,48 +18,52 @@ export const Quick = () => {
   let maxDeviation: number = 0.00001;
   let distWeight: number = 0;
 
-  slider(root, {
-    header: 'Max Deviation',
-    min: 0,
-    max: 0.001,
-    step: 0.00001,
-    value: 0.00001,
-    dualInput: true,
-  },
+  slider(
+    root,
+    {
+      header: 'Max Deviation',
+      min: 0,
+      max: 0.001,
+      step: 0.00001,
+      value: 0.00001,
+      dualInput: true,
+    },
     d => {
       maxDeviation = d;
       draw(reduce(data, maxDeviation, distWeight));
     },
   );
 
-  slider(root, {
-    header: 'Distance weight',
-    min: -1,
-    max: 0.1,
-    step: .01,
-    value: 0,
-    dualInput: true,
-  },
-  d => {
-    distWeight = d;
-    draw(reduce(data, maxDeviation, distWeight));
+  slider(
+    root,
+    {
+      header: 'Distance weight',
+      min: -1,
+      max: 0.1,
+      step: 0.01,
+      value: 0,
+      dualInput: true,
+    },
+    d => {
+      distWeight = d;
+      draw(reduce(data, maxDeviation, distWeight));
     },
   );
 
   const reduced = reduce(data, maxDeviation, distWeight);
 
-  root.append('div')
-    .style('height', '25px')
-    .text(`Initial: ${data.length}`);
+  root.append('div').style('height', '25px').text(`Initial: ${data.length}`);
 
-  const output = root.append('div')
+  const output = root
+    .append('div')
     .style('height', '25px')
     .text(`Points: ${reduced.length}`);
 
-  const svg = root.append('svg')
+  const svg = root
+    .append('svg')
     .style('width', `${width}px`)
     .style('height', `${height}px`)
-    .style('border', '2px dotted DimGrey')
+    .style('border', '2px dotted DimGrey');
 
   let minX = Infinity;
   let minY = Infinity;
@@ -77,21 +81,22 @@ export const Quick = () => {
   const yRange = maxY - minY;
 
   draw = (inputData: Vector2[]) => {
-    const circles = svg.selectAll('circle').data(inputData)
+    const circles = svg.selectAll('circle').data(inputData);
     circles.exit().remove(); // Remove unused
     circles // Update current
-      .attr('cx', d => (width - 50) * (d.x - minX) / xRange + 25)
-      .attr('cy', d => (height - 50) * (d.y - minY) / yRange + 25)
+      .attr('cx', d => ((width - 50) * (d.x - minX)) / xRange + 25)
+      .attr('cy', d => ((height - 50) * (d.y - minY)) / yRange + 25)
       .attr('fill', (_, i) => interpolateRainbow(i / inputData.length));
-    circles.enter() // Add missing
+    circles
+      .enter() // Add missing
       .append('circle')
-      .attr('cx', d => (width - 50) * (d.x - minX) / xRange + 25)
-      .attr('cy', d => (height - 50) * (d.y - minY) / yRange + 25)
+      .attr('cx', d => ((width - 50) * (d.x - minX)) / xRange + 25)
+      .attr('cy', d => ((height - 50) * (d.y - minY)) / yRange + 25)
       .attr('r', 2)
       .attr('fill', (_, i) => interpolateRainbow(i / inputData.length));
 
-      output.text(`Points: ${inputData.length}`);
-  }
+    output.text(`Points: ${inputData.length}`);
+  };
 
   draw(reduced);
 

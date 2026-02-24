@@ -1,13 +1,19 @@
 /* eslint-disable no-magic-numbers */
-import { Container, BitmapFont, BitmapFontManager, BitmapText, TextStyle } from 'pixi.js';
-import {v4 as uuidv4} from 'uuid';
+import {
+  Container,
+  BitmapFont,
+  BitmapFontManager,
+  BitmapText,
+  TextStyle,
+} from 'pixi.js';
+import { v4 as uuidv4 } from 'uuid';
 import Vector2 from '@equinor/videx-vector2';
 
 /** Data for label. */
 export type GeoJSONLabelData = {
   position: Vector2;
   mass: number;
-}
+};
 
 interface Label {
   name: string;
@@ -17,7 +23,6 @@ interface Label {
 
 /** Class used to manage field labels. Handles scaling and grouping of labels. */
 export default class GeoJSONLabels {
-
   /**PIXI container  to hold all labels*/
   container: Container;
 
@@ -40,7 +45,12 @@ export default class GeoJSONLabels {
   visible: boolean = true;
 
   /** construct a new label container. */
-  constructor(root: Container, textStyle: TextStyle, baseScale: number, fontName?: string) {
+  constructor(
+    root: Container,
+    textStyle: TextStyle,
+    baseScale: number,
+    fontName?: string,
+  ) {
     this.container = new Container();
     this.container.sortableChildren = true;
     root.addChild(this.container);
@@ -61,12 +71,13 @@ export default class GeoJSONLabels {
    * @param name label name
    * @param data Data for each label
    */
-  addLabel(name: string, data: GeoJSONLabelData) { // Single-polygon
-      this.labels.push({
-        name,
-        position: data.position,
-        instance: null,
-      });
+  addLabel(name: string, data: GeoJSONLabelData) {
+    // Single-polygon
+    this.labels.push({
+      name,
+      position: data.position,
+      instance: null,
+    });
   }
 
   /**
@@ -76,7 +87,10 @@ export default class GeoJSONLabels {
   draw() {
     // Function for drawing single label
     const drawLabel = (name: string, position: Vector2) => {
-      const instance: BitmapText = new BitmapText({text: name, style: { fontFamily: this.fontName }});
+      const instance: BitmapText = new BitmapText({
+        text: name,
+        style: { fontFamily: this.fontName },
+      });
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
       instance.anchor.set(0.5, 0.5);
@@ -91,18 +105,17 @@ export default class GeoJSONLabels {
     });
   }
 
-
   hideLabels() {
-    this.container.visible = false
+    this.container.visible = false;
     this.visible = false;
   }
 
   showLabels() {
-    this.container.visible = true
+    this.container.visible = true;
     this.visible = true;
   }
 
   resize(scale: number) {
-    this.labels.forEach((lbl) => lbl.instance.scale.set(scale));
+    this.labels.forEach(lbl => lbl.instance.scale.set(scale));
   }
 }

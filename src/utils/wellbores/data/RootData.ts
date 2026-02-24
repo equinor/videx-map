@@ -8,7 +8,6 @@ import generateCircle from '../../generateCircle';
 import { Label, positionAtRoot, positionAlongWellbore } from '../labels';
 
 export class RootData {
-
   public static state = {
     rootRadius: 1.0,
     maxScale: 1.0,
@@ -34,13 +33,13 @@ export class RootData {
     return this.target && this.target.active;
   }
 
-  private updateLabelsBBox(label : Label) : void {
+  private updateLabelsBBox(label: Label): void {
     const bbox = label.getBoundingBox();
 
     if (!this.rootLabelsBBox) {
       this.rootLabelsBBox = bbox;
     } else {
-      this.rootLabelsBBox.height = (bbox.y + bbox.height) - this.rootLabelsBBox.y;
+      this.rootLabelsBBox.height = bbox.y + bbox.height - this.rootLabelsBBox.y;
       if (bbox.width > this.rootLabelsBBox.width) {
         this.rootLabelsBBox.x = bbox.x;
         this.rootLabelsBBox.width = bbox.width;
@@ -49,7 +48,7 @@ export class RootData {
   }
 
   /** Position wellbore label along wellbore. Should never be called if labels are disabled. */
-  private positionLabel(wellbore: WellboreData) : void {
+  private positionLabel(wellbore: WellboreData): void {
     if (wellbore.label.attachToRoot) {
       const index = this.labelIndex++;
       positionAtRoot(wellbore, index);
@@ -62,9 +61,16 @@ export class RootData {
   append(wellbore: WellboreData) {
     this.wellbores.push(wellbore);
     if (!wellbore.active) return; // No need to recalculte if inactive wellbore
-    if (!this.target) this.recalculate(true); // Recalculate if first target
-    else if (wellbore.order < this.target.order && wellbore.status > this.target.status) this.recalculate(true);
-    else if (Label.state.visible) this.positionLabel(wellbore); // Position label if lower order and visible
+    if (!this.target) {
+      this.recalculate(true); // Recalculate if first target
+    } else if (
+      wellbore.order < this.target.order &&
+      wellbore.status > this.target.status
+    ) {
+      this.recalculate(true);
+    } else if (Label.state.visible) {
+      this.positionLabel(wellbore); // Position label if lower order and visible
+    }
   }
 
   /** Recalculate target and update uniforms */
@@ -102,7 +108,8 @@ export class RootData {
   }
 
   private updateUniforms() {
-    const uniform: RootUniforms = this.mesh.shader.resources.uniforms.uniforms as RootUniforms;
+    const uniform: RootUniforms = this.mesh.shader.resources.uniforms
+      .uniforms as RootUniforms;
     uniform.active = this.active ? 1 : 0;
     if (this.target) {
       const color = this.target.color;
@@ -133,6 +140,6 @@ export class RootData {
 
     this.wellbores.forEach(wellbore => {
       if (wellbore.active) wellbore.label.visible = visible;
-    })
+    });
   }
 }
