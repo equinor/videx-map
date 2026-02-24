@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0](https://github.com/equinor/videx-map/compare/v2.0.0...v2.1.0) (2026-02-24)
+
+
+### Features
+
+* **208:** add and configure prettier ([238bd28](https://github.com/equinor/videx-map/commit/238bd285fec9d3ccd9222a36e774f11614311f8b))
+* add and configure prettier ([9b3405a](https://github.com/equinor/videx-map/commit/9b3405a3cf90af89a84e96b9d953e37d4faaa904))
+* Applied prettier to source code ([be0f568](https://github.com/equinor/videx-map/commit/be0f568a998737ed4424f9afe9b20943c147972c))
+
 ## [2.0.0](https://github.com/equinor/videx-map/compare/v1.14.14...v2.0.0) (2026-02-19)
 
 
