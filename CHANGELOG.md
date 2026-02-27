@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.1](https://github.com/equinor/videx-map/compare/v2.1.0...v2.1.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* **235:** security updates ([3d11155](https://github.com/equinor/videx-map/commit/3d111557d20d92b45d609cf181107a5d09b82f2a))
+* **235:** security updates ([ba8520c](https://github.com/equinor/videx-map/commit/ba8520cf4c4d8891e92ccec9d71d14eb5ab275b9))
+* **npm:** bump lodash from 4.17.21 to 4.17.23 ([#232](https://github.com/equinor/videx-map/issues/232)) ([06e8831](https://github.com/equinor/videx-map/commit/06e8831d9f1c9d22897c26d6b2fa6d8f2a4803dc))
+* **npm:** bump qs from 6.14.1 to 6.14.2 ([#239](https://github.com/equinor/videx-map/issues/239)) ([d1caf2f](https://github.com/equinor/videx-map/commit/d1caf2f81b15d61e138e3e8134441251c5365b96))
+
 ## [2.1.0](https://github.com/equinor/videx-map/compare/v2.0.0...v2.1.0) (2026-02-24)
 
 
