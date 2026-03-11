@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/equinor/videx-map/compare/v2.1.1...v2.1.2) (2026-03-11)
+
+
+### Bug Fixes
+
+* **taskless:** faultline rendering errors after pixi v8 update ([#254](https://github.com/equinor/videx-map/issues/254)) ([5169d68](https://github.com/equinor/videx-map/commit/5169d688fd0e403ac29006ed38bb442f24a27f8e))
+
 ## [2.1.1](https://github.com/equinor/videx-map/compare/v2.1.0...v2.1.1) (2026-02-27)
 
 
