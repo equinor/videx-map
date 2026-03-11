@@ -110,18 +110,24 @@ export default class FaultlineModule extends ModuleInterface {
       // If no loop
       if (!Vector2.equals([first.x, first.y], [last.x, last.y], 0.000001)) {
         lineCount++; // Count lines appearing in data
-        faultline
-          .setStrokeStyle(this.config.outlineWidth, this.config.color)
-          .moveTo(first.x, first.y);
-        for (let i = 1; i < projected.length; i++)
+        faultline.moveTo(first.x, first.y);
+        for (let i = 1; i < projected.length; i++) {
           faultline.lineTo(projected[i].x, projected[i].y);
+          faultline.stroke({
+            width: this.config.outlineWidth,
+            color: this.config.color,
+          });
+        }
         return;
       }
 
       // Draw polygon
       faultline.poly(projected);
       faultline.fill(this.config.color);
-      faultline.setStrokeStyle(this.config.outlineWidth, this.config.color);
+      faultline.stroke({
+        width: this.config.outlineWidth,
+        color: this.config.color,
+      });
     });
 
     if (lineCount > 0) {
