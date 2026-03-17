@@ -19,10 +19,19 @@ export interface OutlineData {
 }
 
 interface Uniforms {
-  color: [number, number, number];
+  color: {
+    value: [number, number, number];
+    type: string;
+  };
   /** Additional width of outline */
-  width: number;
-  visible: boolean;
+  width: {
+    value: number;
+    type: string;
+  };
+  visible: {
+    value: number;
+    type: string;
+  };
 }
 
 /** Interface for outline config. */
@@ -116,14 +125,20 @@ export default class OutlineModule extends ModuleInterface {
 
     data.forEach(outlineCollection => {
       // Define uniform for outline collection
-      const uniforms: Uniforms = {
-        color: outlineCollection.meta.stroke,
-        width: this.state.extraWidth,
-        visible: true,
+      this.outlineDict[outlineCollection.meta.name] = {
+        color: {
+          value: outlineCollection.meta.stroke,
+          type: 'vec3<f32>',
+        },
+        visible: {
+          value: 1,
+          type: 'i32',
+        },
+        width: {
+          value: this.state.extraWidth,
+          type: 'f32',
+        },
       };
-
-      // Register layer
-      this.outlineDict[outlineCollection.meta.name] = uniforms;
 
       const coordinates: [number, number][][] = outlineCollection.coordinates;
       for (let n = 0; n < coordinates.length; n++) {
@@ -171,20 +186,7 @@ export default class OutlineModule extends ModuleInterface {
           outlineData.triangles,
           OutlineModule.vertexShader,
           OutlineModule.fragmentShader,
-          {
-            color: {
-              value: uniforms.color,
-              type: 'vec3<f32>',
-            },
-            visible: {
-              value: uniforms.visible,
-              type: 'i32',
-            },
-            width: {
-              value: uniforms.width,
-              type: 'f32',
-            },
-          },
+          this.outlineDict[outlineCollection.meta.name],
           outlineData.normals,
         );
         this.root.addChild(outline);
@@ -203,15 +205,16 @@ export default class OutlineModule extends ModuleInterface {
    */
   setVisibleLayers(names: string[]): void {
     // Disable all layers
-    Object.keys(this.outlineDict).forEach(
-      key => (this.outlineDict[key].visible = false),
+    this.root.children.forEach(
+      mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.visible = 0),
     );
-
     // Enable selected
     names.forEach(name => {
-      const uniforms: Uniforms = this.outlineDict[name];
-      if (!uniforms) return;
-      uniforms.visible = true;
+      const index = Object.keys(this.outlineDict).findIndex(
+        outline => outline === name,
+      );
+      const mesh = this.root.children[index];
+      (mesh as Mesh).shader.resources.uniforms.uniforms.visible = 1;
     });
   }
 
@@ -231,9 +234,9 @@ export default class OutlineModule extends ModuleInterface {
 
     this.state.extraWidth = width; // Update width
 
-    Object.keys(this.outlineDict).forEach(key => {
-      this.outlineDict[key].width = width;
-    });
+    this.root.children.forEach(
+      mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.width = width),
+    );
   }
 }
 
