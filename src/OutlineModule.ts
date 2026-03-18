@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers, curly */
-import { Geometry, Shader, Mesh } from 'pixi.js';
+import { Container, Mesh } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { inverseLerp, lerp } from '@equinor/videx-math';
 
@@ -73,7 +73,7 @@ export default class OutlineModule extends ModuleInterface {
   outlineDict: { [key: string]: Uniforms } = {};
 
   /** Graphic elements currently existing in world space. */
-  spawned: Mesh<Geometry, Shader>[] = [];
+  spawned: Container[] = [];
 
   /** Vertex shader for the outlines. */
   static vertexShader: string;
@@ -140,7 +140,12 @@ export default class OutlineModule extends ModuleInterface {
         },
       };
 
+      // Create container to hold the meshes
+      const outlineGroup = new Container({
+        label: outlineCollection.meta.name,
+      });
       const coordinates: [number, number][][] = outlineCollection.coordinates;
+
       for (let n = 0; n < coordinates.length; n++) {
         const polygon = coordinates[n];
 
@@ -189,10 +194,13 @@ export default class OutlineModule extends ModuleInterface {
           this.outlineDict[outlineCollection.meta.name],
           outlineData.normals,
         );
-        this.root.addChild(outline);
-
-        this.spawned.push(outline);
+        // Add mesh to container
+        outlineGroup.addChild(outline);
       }
+
+      // Add container to root and spawned array
+      this.root.addChild(outlineGroup);
+      this.spawned.push(outlineGroup);
     });
   }
 
@@ -205,23 +213,27 @@ export default class OutlineModule extends ModuleInterface {
    */
   setVisibleLayers(names: string[]): void {
     // Disable all layers
-    this.root.children.forEach(
-      mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.visible = 0),
+    this.root.children.forEach(container =>
+      container.children.forEach(
+        mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.visible = 0),
+      ),
     );
+
     // Enable selected
     names.forEach(name => {
-      const index = Object.keys(this.outlineDict).findIndex(
-        outline => outline === name,
+      const outlineGroup = this.root.children.find(
+        container => container.label === name,
       );
-      const mesh = this.root.children[index];
-      (mesh as Mesh).shader.resources.uniforms.uniforms.visible = 1;
+      outlineGroup?.children?.forEach(
+        mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.visible = 1),
+      );
     });
   }
 
-  /** Clear all spawned graphic elements and return to pool. */
+  /** Clear all spawned containers and return to pool. */
   clear(): void {
     while (this.spawned.length > 0) {
-      const temp: Mesh<Geometry, Shader> = this.spawned.pop();
+      const temp: Container = this.spawned.pop();
       this.root.removeChild(temp);
       temp.destroy();
     }
@@ -234,8 +246,11 @@ export default class OutlineModule extends ModuleInterface {
 
     this.state.extraWidth = width; // Update width
 
-    this.root.children.forEach(
-      mesh => ((mesh as Mesh).shader.resources.uniforms.uniforms.width = width),
+    this.root.children.forEach(container =>
+      container.children.forEach(
+        mesh =>
+          ((mesh as Mesh).shader.resources.uniforms.uniforms.width = width),
+      ),
     );
   }
 }
