@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/equinor/videx-map/compare/v2.1.2...v2.1.3) (2026-03-18)
+
+
+### Bug Fixes
+
+* **taskless:** update outline uniforms correctly ([#258](https://github.com/equinor/videx-map/issues/258)) ([c7f0cf6](https://github.com/equinor/videx-map/commit/c7f0cf687fb4c7099f8e1bcc5fc352251e8dda97))
+
 ## [2.1.2](https://github.com/equinor/videx-map/compare/v2.1.1...v2.1.2) (2026-03-11)
 
 
