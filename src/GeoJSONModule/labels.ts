@@ -89,7 +89,7 @@ export default class GeoJSONLabels {
     const drawLabel = (name: string, position: Vector2) => {
       const instance: BitmapText = new BitmapText({
         text: name,
-        style: { fontFamily: this.fontName },
+        style: { fontFamily: this.fontName, fontSize: this.textStyle.fontSize },
       });
       instance.position.set(position[0], position[1]);
       instance.scale.set(this.baseScale);
