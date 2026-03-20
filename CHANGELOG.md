@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/equinor/videx-map/compare/v2.1.3...v2.1.4) (2026-03-20)
+
+
+### Bug Fixes
+
+* **taskless:** license rendering and label size issues ([#261](https://github.com/equinor/videx-map/issues/261)) ([5e937d7](https://github.com/equinor/videx-map/commit/5e937d7f904699bda53f269807032394e3cdf022))
+
 ## [2.1.3](https://github.com/equinor/videx-map/compare/v2.1.2...v2.1.3) (2026-03-18)
 
 
