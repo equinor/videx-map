@@ -23,11 +23,12 @@ export const GeoJSONFragmentShaderFill = `
   uniform vec3 col1;
   uniform vec3 col2;
   uniform float opacity;
+  uniform int hashed;
   uniform float hashDisp;
   uniform float hashWidth;
 
   void main() {
-    if(mod(verts.y + hashDisp, hashWidth * 2.0) > hashWidth) {
+    if(hashed == 1 && mod(verts.y + hashDisp, hashWidth * 2.0) > hashWidth) {
       gl_FragColor = vec4(col2 / 255., 1.0) * opacity;
     }
     else {
