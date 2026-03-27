@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.5](https://github.com/equinor/videx-map/compare/v2.1.4...v2.1.5) (2026-03-26)
+
+
+### Bug Fixes
+
+* **npm:** bump flatted from 3.3.3 to 3.4.2 ([#263](https://github.com/equinor/videx-map/issues/263)) ([75619fc](https://github.com/equinor/videx-map/commit/75619fc13b4265da87ef5633aea54cc0c209c159))
+
 ## [2.1.4](https://github.com/equinor/videx-map/compare/v2.1.3...v2.1.4) (2026-03-20)
 
 
