@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.6](https://github.com/equinor/videx-map/compare/v2.1.5...v2.1.6) (2026-04-08)
+
+
+### Bug Fixes
+
+* dependa security updates ([#278](https://github.com/equinor/videx-map/issues/278)) ([623e625](https://github.com/equinor/videx-map/commit/623e6259f38ecc858d095d397c172d0bdd728c20))
+* **npm:** bump @xmldom/xmldom from 0.8.11 to 0.8.12 ([#271](https://github.com/equinor/videx-map/issues/271)) ([4ecf1af](https://github.com/equinor/videx-map/commit/4ecf1af3159f18862535c398cde8b68d9e9ab4ab))
+* **npm:** bump lodash from 4.17.23 to 4.18.1 ([#275](https://github.com/equinor/videx-map/issues/275)) ([74b0578](https://github.com/equinor/videx-map/commit/74b05780c359e47d07789a7ad178e9461be38c62))
+* **npm:** bump picomatch ([#266](https://github.com/equinor/videx-map/issues/266)) ([3561767](https://github.com/equinor/videx-map/commit/3561767c74606affef351808105479af16c3489a))
+* **npm:** bump serialize-javascript, @rollup/plugin-terser and terser-webpack-plugin ([#252](https://github.com/equinor/videx-map/issues/252)) ([cd37ab5](https://github.com/equinor/videx-map/commit/cd37ab525f24e01e2c9b3325e194c3941f0bc831))
+* **npm:** bump vite from 7.3.1 to 7.3.2 ([#274](https://github.com/equinor/videx-map/issues/274)) ([bd119c0](https://github.com/equinor/videx-map/commit/bd119c0cadf41af0824ceaf9d276a1974c0e4d36))
+* **npm:** bump yaml ([#268](https://github.com/equinor/videx-map/issues/268)) ([6f6f954](https://github.com/equinor/videx-map/commit/6f6f954ed29c351b0ad8b5ce486c5c7d7ab08119))
+
 ## [2.1.5](https://github.com/equinor/videx-map/compare/v2.1.4...v2.1.5) (2026-03-26)
 
 
