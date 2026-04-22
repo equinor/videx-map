@@ -6,3 +6,4 @@ export { default as FieldModule } from './FieldModule';
 export { GeoJSONModule } from './GeoJSONModule';
 export * from './EventHandler';
 export { default as ExplorationLayer } from './ExplorationLayer'; // ! TO REMOVE
+export { LeafletPixiOverlay } from './helpers/LeafletPixiOverlay';

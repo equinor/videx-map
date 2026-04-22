@@ -1,10 +1,8 @@
 import { Container } from 'pixi.js';
 import * as L from 'leaflet';
-import './leaflet-pixi-overlay';
-import { ModuleInterface } from '../../../src';
+import { LeafletPixiOverlay, ModuleInterface } from '../../../src';
 
-// @ts-ignore
-export default class PixiLayer extends L.PixiOverlay {
+export default class PixiLayer extends LeafletPixiOverlay {
   // Support all 'hidden' props
   [key: string]: any;
 
