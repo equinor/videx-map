@@ -25,7 +25,7 @@ export default [
         format: 'esm',
       },
     ],
-    external: [...Object.keys(pkg.dependencies || {})],
+    external: [...Object.keys(pkg.dependencies || {}), 'leaflet'],
     plugins: [
       typescript(),
       terser({
@@ -48,9 +48,10 @@ export default [
         earcut: 'earcut',
         'pixi.js': 'PIXI',
         uuid: 'uuid',
+        leaflet: 'leaflet',
       },
     },
-    external: [...Object.keys(pkg.dependencies || {})],
+    external: [...Object.keys(pkg.dependencies || {}), 'leaflet'],
     plugins: [
       nodeResolve(),
       typescript(),
