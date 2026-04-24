@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.7](https://github.com/equinor/videx-map/compare/v2.1.6...v2.1.7) (2026-04-24)
+
+
+### Bug Fixes
+
+* **7448:** export leaflet-pixi-overlay from videx-map ([#284](https://github.com/equinor/videx-map/issues/284)) ([d0af172](https://github.com/equinor/videx-map/commit/d0af17215c25b27ec71a7181924a06a16b3cc0e4))
+* **npm:** bump @xmldom/xmldom from 0.8.12 to 0.8.13 ([#283](https://github.com/equinor/videx-map/issues/283)) ([b2823bc](https://github.com/equinor/videx-map/commit/b2823bc7e1783378ba29a2a4141af04d1175644f))
+
 ## [2.1.6](https://github.com/equinor/videx-map/compare/v2.1.5...v2.1.6) (2026-04-08)
 
 
