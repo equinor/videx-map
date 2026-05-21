@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.8](https://github.com/equinor/videx-map/compare/v2.1.7...v2.1.8) (2026-05-20)
+
+
+### Bug Fixes
+
+* **298:** security updates ([#299](https://github.com/equinor/videx-map/issues/299)) ([ca3bbf3](https://github.com/equinor/videx-map/commit/ca3bbf33a5697e4198a7648ae3ba9f472483965e))
+
 ## [2.1.7](https://github.com/equinor/videx-map/compare/v2.1.6...v2.1.7) (2026-04-24)
 
 
