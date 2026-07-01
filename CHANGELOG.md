@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.9](https://github.com/equinor/videx-map/compare/v2.1.8...v2.1.9) (2026-07-01)
+
+
+### Bug Fixes
+
+* **npm:** bump vite from 8.0.13 to 8.0.16 ([#310](https://github.com/equinor/videx-map/issues/310)) ([47708f1](https://github.com/equinor/videx-map/commit/47708f14500acaf2c166dcf9ea1c7ce3e8ca920d))
+
 ## [2.1.8](https://github.com/equinor/videx-map/compare/v2.1.7...v2.1.8) (2026-05-20)
 
 
