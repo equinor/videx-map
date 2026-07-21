@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.9](https://github.com/equinor/videx-map/compare/v2.1.8...v2.1.9) (2026-07-21)
+
+
+### Bug Fixes
+
+* **npm:** bump js-yaml from 4.1.1 to 4.3.0 ([#317](https://github.com/equinor/videx-map/issues/317)) ([26a7dca](https://github.com/equinor/videx-map/commit/26a7dca9b745cd642b19652545170043685fd11d))
+* **npm:** bump markdown-it from 14.1.1 to 14.2.0 ([#313](https://github.com/equinor/videx-map/issues/313)) ([6b6f68c](https://github.com/equinor/videx-map/commit/6b6f68ce73f6df11377493eb4b7a412aa2730b56))
+* **npm:** bump vite from 8.0.13 to 8.0.16 ([#310](https://github.com/equinor/videx-map/issues/310)) ([47708f1](https://github.com/equinor/videx-map/commit/47708f14500acaf2c166dcf9ea1c7ce3e8ca920d))
+* **npm:** bump ws from 8.20.1 to 8.21.0 ([#323](https://github.com/equinor/videx-map/issues/323)) ([2782f46](https://github.com/equinor/videx-map/commit/2782f46e0eff0a8ce97f4b8d72ee524b75d129e8))
+* **taskless:** brace-expansion dependabot july 26 ([#326](https://github.com/equinor/videx-map/issues/326)) ([06dadf6](https://github.com/equinor/videx-map/commit/06dadf6855e8fee9d068e933b2aaef6d354c6874))
+
 ## [2.1.8](https://github.com/equinor/videx-map/compare/v2.1.7...v2.1.8) (2026-05-20)
 
 
