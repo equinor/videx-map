@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.10](https://github.com/equinor/videx-map/compare/v2.1.9...v2.1.10) (2026-07-27)
+
+
+### Bug Fixes
+
+* **npm:** bump fast-uri from 3.1.2 to 3.1.4 ([#328](https://github.com/equinor/videx-map/issues/328)) ([0612e8b](https://github.com/equinor/videx-map/commit/0612e8b95c6c996042d896fbf004f703e3547cfd))
+* **npm:** bump linkify-it from 5.0.1 to 5.0.2 ([#327](https://github.com/equinor/videx-map/issues/327)) ([737ee17](https://github.com/equinor/videx-map/commit/737ee17fe078443534b5425aefed7b1197ca4f2f))
+* **npm:** bump postcss from 8.5.15 to 8.5.23 ([#330](https://github.com/equinor/videx-map/issues/330)) ([7bd8b73](https://github.com/equinor/videx-map/commit/7bd8b73be06c88b9aab845f291b4d190c8ba3d5f))
+
 ## [2.1.9](https://github.com/equinor/videx-map/compare/v2.1.8...v2.1.9) (2026-07-21)
 
 
