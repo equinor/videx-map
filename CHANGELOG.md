@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.11](https://github.com/equinor/videx-map/compare/v2.1.10...v2.1.11) (2026-08-06)
+
+
+### Bug Fixes
+
+* **npm:** bump fast-uri from 3.1.4 to 3.1.5 ([#334](https://github.com/equinor/videx-map/issues/334)) ([6f2d87c](https://github.com/equinor/videx-map/commit/6f2d87c7de238fb13a0ff48e22597c7d6a9aac68))
+
 ## [2.1.10](https://github.com/equinor/videx-map/compare/v2.1.9...v2.1.10) (2026-07-27)
 
 
