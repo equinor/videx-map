@@ -7,6 +7,10 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Release
@@ -25,31 +29,49 @@ jobs:
           release-type: node
 
       - name: Checkout
-        if: ${{ steps.release.outputs.release_created }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Setup Node ${{ env.NODE_VERSION }}
-        if: ${{ steps.release.outputs.release_created }}
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: ${{ env.NODE_VERSION }}
           package-manager-cache: false
 
+      - name: Check whether current release needs publishing
+        id: npm
+        shell: bash
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="v${VERSION}"
+
+          if ! git rev-parse --verify --quiet "refs/tags/${TAG}" >/dev/null; then
+            echo "::notice::Tag ${TAG} does not exist; nothing to publish."
+            echo "publish_needed=false" >> "$GITHUB_OUTPUT"
+          elif npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "::notice::${NAME}@${VERSION} is already published."
+            echo "publish_needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${NAME}@${VERSION} needs publishing."
+            echo "publish_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install dependencies
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.npm.outputs.publish_needed == 'true' }}
         run: npm ci
 
       - name: Build library
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.npm.outputs.publish_needed == 'true' }}
         run: npm run build --if-present
 
       - name: Test
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.npm.outputs.publish_needed == 'true' }}
         run: npm test
 
       - name: Publish to npm
-        if: ${{ steps.release.outputs.release_created }}
-        run: npm publish
+        if: ${{ steps.npm.outputs.publish_needed == 'true' }}
+        run: npm publish --access public
 
