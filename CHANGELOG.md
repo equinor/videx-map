@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.12](https://github.com/equinor/videx-map/compare/v2.1.11...v2.1.12) (2026-08-10)
+
+
+### Bug Fixes
+
+* **npm:** bump js-yaml from 4.3.0 to 4.3.1 ([#339](https://github.com/equinor/videx-map/issues/339)) ([691813c](https://github.com/equinor/videx-map/commit/691813cd601af62b14b005dad56a458b069ac858))
+
 ## [2.1.11](https://github.com/equinor/videx-map/compare/v2.1.10...v2.1.11) (2026-08-06)
 
 
