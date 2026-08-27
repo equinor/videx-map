@@ -6,7 +6,7 @@
     "node_modules/*",
     "dist/*",
     "config/*",
-    "vite.config.static.js",
+    "docs/*",
     "**/.*",
     "*.config.js",
     ".storybook/*"

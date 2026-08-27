@@ -198,32 +198,32 @@ export class LineInterpolator {
     });
 
     for (let i = base + 1; i < this.amount; i++) {
-      const cur: PathPoint = this.path[i];
+      const current: PathPoint = this.path[i];
 
-      if (cur.relative >= relativeEnd) {
+      if (current.relative >= relativeEnd) {
         // End
-        const cur: PathPoint = this.path[i];
-        const prev: PathPoint = this.path[i - 1];
-        const dist: number = cur.relative - prev.relative;
-        const frac: number = (relativeEnd - prev.relative) / dist;
+        const previous: PathPoint = this.path[i - 1];
+        const distance: number = current.relative - previous.relative;
+        const fraction: number = (relativeEnd - previous.relative) / distance;
         points.push({
           // Push last point
-          position: mix(prev.point, cur.point, frac, Vector2.zero),
+          position: mix(previous.point, current.point, fraction, Vector2.zero),
           direction: Vector2.lerpRot(
-            prev.direction,
-            cur.direction,
-            frac,
+            previous.direction,
+            current.direction,
+            fraction,
           ).normalize(),
-          distance: prev.distance * (1 - frac) + cur.distance * frac,
+          distance:
+            previous.distance * (1 - fraction) + current.distance * fraction,
         });
         break;
       }
 
       points.push({
         // Add points between
-        position: cur.point,
+        position: current.point,
         direction: this.path[i].direction,
-        distance: cur.distance,
+        distance: current.distance,
       });
     }
     return points;
