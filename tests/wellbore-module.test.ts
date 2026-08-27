@@ -1,3 +1,4 @@
+/* oxlint-disable */
 import WellboreModule from '../src/WellboreModule';
 import { getDefaultConfig, InputConfig } from '../src/utils/wellbores/Config';
 import { wellbores } from './test-data';

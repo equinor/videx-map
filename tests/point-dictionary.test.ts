@@ -1,3 +1,4 @@
+/* oxlint-disable */
 import PointDictionary from '../src/utils/PointDictionary';
 import Vector2 from '@equinor/videx-vector2';
 

@@ -21,12 +21,11 @@
   },
   "overrides": [
     {
-        "files": ["test/*"],
+        "files": ["tests/*"],
         "plugins": ["vitest"]
     },
     {
         "files": [".storybook/*.stories.tsx"],
-        "plugins": ["import", "oxc", "eslint", "typescript"],
         "rules": {
             "storybook/default-exports": "error",
             "storybook/story-exports": "error",

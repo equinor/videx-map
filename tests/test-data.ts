@@ -1,6 +1,5 @@
 import { SourceData } from '../src/utils/wellbores/data/SourceData';
 import { Group } from '../src/utils/wellbores/data';
-import { getDefaultColors } from '../src/utils/wellbores/Colors';
 
 export const wellbores: SourceData[] = [
   {
