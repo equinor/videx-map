@@ -1,4 +1,3 @@
-/* oxlint-disable */
 import PointDictionary from '../src/utils/PointDictionary';
 import Vector2 from '@equinor/videx-vector2';
 
@@ -7,7 +6,7 @@ const gridSize = 10;
 const rootRadius = 2;
 
 const expectSize = (dict: PointDictionary<any>, key: string) =>
-  expect(dict.tiles.get(key)?.size);
+  expect(dict.tiles.get(key)?.size).toBeDefined();
 
 test('Can instantitate dictionary', () => {
   const dict = new PointDictionary<number>(
@@ -32,7 +31,9 @@ test('Cannot instantitate with grid smaller than radius', () => {
         gridSize,
         gridSize + 0.0001,
       ),
-  ).toThrow();
+  ).toThrow(
+    'Gridsize of point dictionary must be greater than scaled radius of root.',
+  );
 });
 
 test('Can add to tile (center)', () => {
