@@ -321,7 +321,7 @@ export const layer = () => {
         roots.add(d.root);
         d.label.attachToRoot = attach ? true : d.interpolator.singlePoint;
       });
-      roots.forEach(root => root.updateLabels());
+      roots.forEach(rootData => rootData.updateLabels());
       wellbores.pixiOverlay.redraw();
     };
 

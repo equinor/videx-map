@@ -50,7 +50,7 @@ export const OnHover = () => {
       rectangle.attr('fill', rect.isInside(mousePos) ? 'Red' : 'Olive');
     });
 
-    root.on('mouseout', d => {
+    root.on('mouseout', () => {
       rectangle.attr('fill', 'Olive');
     });
 

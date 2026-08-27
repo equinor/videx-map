@@ -178,11 +178,6 @@ export const SpiralTicks = () => {
         indexBuffer: triangles,
       });
 
-      const uniforms = {
-        value: interp.length,
-        type: 'f32',
-      };
-
       const lineShader = Shader.from({
         gl: {
           vertex: vertexShader,

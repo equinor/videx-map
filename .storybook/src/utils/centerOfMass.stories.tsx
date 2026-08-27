@@ -61,8 +61,6 @@ export const Arrow = () => {
   {
     const root = create('svg').attr('width', '500px').attr('height', '500px');
 
-    const center = new Vector2(250, 250);
-
     const verts: Vector2[] = [
       new Vector2(50, 50),
       new Vector2(250, 450),
@@ -110,8 +108,6 @@ export const Arrow = () => {
 export const LetterT = () => {
   {
     const root = create('svg').attr('width', '500px').attr('height', '500px');
-
-    const center = new Vector2(250, 250);
 
     const verts: Vector2[] = [
       new Vector2(50, 50),
