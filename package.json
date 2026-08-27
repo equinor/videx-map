@@ -25,7 +25,8 @@
     "postdocs": "node postdocs.copyfiles.mjs",
     "lint-staged": "lint-staged",
     "prepare": "husky",
-    "prettier": "prettier . --write"
+    "prettier": "prettier . --write",
+    "lintOx": "oxlint"
   },
   "repository": {
     "type": "git",
@@ -65,6 +66,7 @@
     "jsdom": "^27.1.0",
     "leaflet": "^1.9.4",
     "lint-staged": "^17.0.5",
+    "oxlint": "^1.80.0",
     "prettier": "^3.8.3",
     "proj4": "^2.20.2",
     "rimraf": "^6.1.2",
