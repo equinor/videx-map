@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import { Container, Geometry, Mesh, Shader, TextStyle } from 'pixi.js';
 import { color } from 'd3-color';
 import Vector2 from '@equinor/videx-vector2';
@@ -56,7 +55,6 @@ export default class GeoJSONLineString {
 
   container: Container;
   pixiOverlay: pixiOverlayBase;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: LineDictionary<any> = new LineDictionary(1.2);
   textStyle: TextStyle;
   currentZoom: number = Defaults.INITIAL_ZOOM;
@@ -163,10 +161,8 @@ export default class GeoJSONLineString {
      * instead of iterating over every mesh and manually updating each of the selected
      */
     this.container.children.map((child: Container) => {
-      /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
       if (child.shader.resources.uniforms.uniforms.outlineWidth) {
-        /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
         child.shader.resources.uniforms.uniforms.outlineWidth = outlineRadius;
       }

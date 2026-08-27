@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import { Color, Container, Graphics, TextStyle } from 'pixi.js';
 import { color } from 'd3-color';
 import Vector2 from '@equinor/videx-vector2';
@@ -17,7 +16,6 @@ export default class GeoJSONPoint {
 
   container: Container;
   pixiOverlay: pixiOverlayBase;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: PointDictionary<any> = new PointDictionary<number>(0.25, 20, 4);
 
   textStyle: TextStyle;
@@ -77,10 +75,8 @@ export default class GeoJSONPoint {
     return new Vector2(coord.x, coord.y);
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
   resize(_zoom: number) {}
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   testPosition(pos: Vector2): any {
     return this.dict.getClosestUnder(pos);
   }

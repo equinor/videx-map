@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import {
   Container,
   Mesh,
@@ -350,10 +349,8 @@ export default class GeoJSONPolygon {
      * instead of iterating over every mesh and manually updating each of the selected
      */
     this.container.children.map((child: object) => {
-      /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
       if (child.shader.resources.uniforms.uniforms.outlineWidth) {
-        /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
         child.shader.resources.uniforms.uniforms.outlineWidth = outlineRadius;
       }

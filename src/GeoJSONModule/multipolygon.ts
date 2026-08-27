@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import {
   Container,
   Geometry,
@@ -129,7 +128,6 @@ export default class GeoJSONMultiPolygon {
 
   container: Container;
   pixiOverlay: pixiOverlayBase;
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   dict: TriangleDictionary<any> = new TriangleDictionary(1.2);
   textStyle: TextStyle;
   labels: GeoJSONLabels;
@@ -348,10 +346,8 @@ export default class GeoJSONMultiPolygon {
      * instead of iterating over every mesh and manually updating each of the selected
      */
     this.container.children.map((child: Container) => {
-      /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
       // @ts-ignore
       if (child.shader.resources.uniforms.uniforms.outlineWidth) {
-        /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         // @ts-ignore
         child.shader.resources.uniforms.uniforms.outlineWidth = outlineRadius;
       }

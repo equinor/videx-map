@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import { Geometry, Mesh, Shader, TextStyle } from 'pixi.js';
 import { clamp } from '@equinor/videx-math';
 import Vector2 from '@equinor/videx-vector2';
@@ -366,7 +365,6 @@ export default class FieldModule extends ModuleInterface {
     });
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-empty-function */
   resize(_zoom: number) {}
 
   highlight(lat: number, long: number): boolean {

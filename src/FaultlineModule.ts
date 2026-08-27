@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, no-empty-function  */
 import { Graphics, Point } from 'pixi.js';
 import { ModuleInterface } from './ModuleInterface';
 import Vector2 from '@equinor/videx-vector2';
@@ -150,6 +149,5 @@ export default class FaultlineModule extends ModuleInterface {
     }
   }
 
-  /* eslint-disable-next-line  @typescript-eslint/no-empty-function */
   resize(_zoom: number) {}
 }

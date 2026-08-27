@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import { Container, Graphics } from 'pixi.js';
 import * as L from 'leaflet';
 import { clamp, lerp } from '@equinor/videx-math';
@@ -197,7 +196,6 @@ export default class WellboreModule extends ModuleInterface {
     // Append wellbore to root
     root?.append(wellbore);
 
-    // eslint-disable-next-line max-len
     if (
       this._deferredSelector &&
       (this._deferredSelectorKeys === null ||

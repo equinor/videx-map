@@ -1,4 +1,3 @@
-/* eslint-disable curly, no-magic-numbers, @typescript-eslint/no-explicit-any */
 import { Colors, getDefaultColors, InputColors } from '../Colors';
 import { WellboreData, FilterStatus } from './WellboreData';
 import { RootData } from './RootData';

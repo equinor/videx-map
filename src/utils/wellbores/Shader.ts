@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import { GlProgram, Shader } from 'pixi.js';
 
 import { Color } from './Colors';

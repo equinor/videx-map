@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable no-magic-numbers */
 // Based on Leaflet.PixiOverlay
 // version: 1.9.4
 // author: Manuel Baclet <mbaclet@gmail.com>

@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import { WellboreData } from './data/WellboreData';
 import { pixiOverlayBase } from '../../pixiOverlayInterfaces';
 
@@ -13,7 +12,6 @@ export default class RealtimeWellbore {
   constructor(pixiOverlay: pixiOverlayBase, wellbore: WellboreData);
   constructor(map: L.Map, wellbore: WellboreData);
   constructor(mapInput: L.Map | pixiOverlayBase, wellbore: WellboreData) {
-    /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
     // @ts-ignore
     if (mapInput.utils && 'getMap' in mapInput.utils) {
       const pixiOverlay: pixiOverlayBase = mapInput as pixiOverlayBase;

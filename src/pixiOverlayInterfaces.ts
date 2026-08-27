@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface pixiOverlayBase {
   initialize(drawCallback: any, pixiContainer: any, options: any): void;
   onAdd(targetMap: any): void;

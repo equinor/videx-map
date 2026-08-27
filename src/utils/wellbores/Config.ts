@@ -1,4 +1,3 @@
-/* eslint-disable curly, @typescript-eslint/ban-ts-comment */
 import { WellboreEventData } from './data';
 import { HighlightEvent } from './data/WellboreEventData';
 import { EventHandler } from '../../EventHandler';

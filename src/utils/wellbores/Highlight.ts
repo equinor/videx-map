@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { WellboreData, RootData } from './data';
 
 export class Highlight {

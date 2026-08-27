@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 interface Config {
   /** Total number of iterations. */
   iterations: number;
