@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { FieldMesh } from '../../FieldModule';
 
 type vec3 = [number, number, number];

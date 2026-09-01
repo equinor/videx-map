@@ -1,4 +1,3 @@
-/* eslint-disable curly, no-magic-numbers */
 import Vector2 from '@equinor/videx-vector2';
 import { VectorLike } from '@equinor/videx-linear-algebra';
 

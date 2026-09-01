@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 /**
  * Class for comparing arrays of numbers. Also supports objects with numeric elements.
  */

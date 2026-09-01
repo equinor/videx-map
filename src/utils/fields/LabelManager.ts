@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import { CanvasTextMetrics, Container, Text, TextStyle } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 

@@ -82,7 +82,9 @@ test('can register data groups and set options', () => {
   expect(module.groups.test3.active).toBeTruthy();
   expect(module.groups.test3.colors).toEqual(defaultColors);
 
-  expect(() => module.registerGroup('test1')).toThrow();
+  expect(() => module.registerGroup('test1')).toThrow(
+    'Group already registered: test1!',
+  );
 });
 
 test('can add a single wellbore', () => {
@@ -123,7 +125,9 @@ test('can add a single wellbore', () => {
 test('can set and clear data', async () => {
   const module = createModule();
 
-  expect(module.set(wellbores, 'test')).rejects.toThrow();
+  await expect(module.set(wellbores, 'test')).rejects.toThrow(
+    'Group [test] not registered!',
+  );
 
   module.registerGroup('group1');
   module.registerGroup('group2');
@@ -266,19 +270,23 @@ test('can disable wellbores with provided filter function', async () => {
 
   const data1 = wellbores
     .slice(0, 2)
-    .map(d => ({ ...d, category: 'category1' }))
-    .concat(wellbores.slice(2, 6).map(d => ({ ...d, category: 'category2' })));
+    .map(d => Object.assign(d, { category: 'category1' }))
+    .concat(
+      wellbores
+        .slice(2, 6)
+        .map(d => Object.assign(d, { category: 'category2' })),
+    );
 
   const data2 = wellbores
     .slice(6, 9)
-    .map(d => ({ ...d, category: 'category1' }))
-    .concat(wellbores.slice(9).map(d => ({ ...d, category: 'category2' })));
+    .map(d => Object.assign(d, { category: 'category1' }))
+    .concat(
+      wellbores.slice(9).map(d => Object.assign(d, { category: 'category2' })),
+    );
 
-  (await module.set(data1, 'group1'),
-    await module.set(data2, 'group2'),
-    expect(module.groups.group1.wellbores.filter(d => d.active).length).toBe(
-      6,
-    ));
+  await module.set(data1, 'group1');
+  await module.set(data2, 'group2');
+  expect(module.groups.group1.wellbores.filter(d => d.active).length).toBe(6);
   expect(module.groups.group2.wellbores.filter(d => d.active).length).toBe(4);
 
   // filter all groups. All items not matching filter should be disabled.

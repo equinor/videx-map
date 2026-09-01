@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { pixiOverlayBase } from './pixiOverlayInterfaces';
 import { Container } from 'pixi.js';
 

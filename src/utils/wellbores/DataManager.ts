@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { SourceData, WellboreData, RootData, Group } from './data';
 
 export default abstract class DataManager {

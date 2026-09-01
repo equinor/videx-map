@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 export class Defaults {
   public static readonly DEFAULT_Z_INDEX = 1000;
   public static readonly DEFAULT_LINE_WIDTH = 0.15;

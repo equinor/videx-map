@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { Field } from '../../FieldModule';
 
 /** Interface for data within a processed field. */

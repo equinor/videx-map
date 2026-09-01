@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import Vector2 from '@equinor/videx-vector2';
 
 /** Interface of a single point. */

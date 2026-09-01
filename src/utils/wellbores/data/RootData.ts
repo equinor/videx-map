@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import { Geometry, Mesh, Rectangle, Shader } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 

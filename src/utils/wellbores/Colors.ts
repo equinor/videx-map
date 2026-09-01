@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/ban-ts-comment */
 type vec3 = [number, number, number];
 
 export interface Color {

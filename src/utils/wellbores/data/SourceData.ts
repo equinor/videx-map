@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /** Date for each interval. */
 export interface Interval {
   /** Type of interval [Screen, Perforation]. */

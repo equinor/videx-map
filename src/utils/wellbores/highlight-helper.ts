@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import Vector2 from '@equinor/videx-vector2';
 
 import LineDictionary from '../LineDictionary';

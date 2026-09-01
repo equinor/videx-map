@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import Vector2 from '@equinor/videx-vector2';
 
 import { distanceToLine } from './linePoint';

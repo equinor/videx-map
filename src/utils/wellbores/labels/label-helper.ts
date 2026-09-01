@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers */
 import Vector2 from '@equinor/videx-vector2';
 
 import { Label } from './Label';
@@ -35,7 +34,7 @@ export function positionAlongWellbore(wellbore: WellboreData): void {
   let pos;
 
   // True, if labels should be displayed on top of wellbores
-  const mirror = wellbore.group?.mirrorLabels ? true : false;
+  const mirror = wellbore.group?.mirrorLabels;
 
   // X+: Right
   // Y+: Down

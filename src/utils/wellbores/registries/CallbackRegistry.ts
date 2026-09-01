@@ -1,4 +1,3 @@
-/* eslint-disable curly, @typescript-eslint/no-empty-function */
 type Callback = (wellboreId: number) => void;
 
 export class CallbackRegistry {

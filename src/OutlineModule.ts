@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly */
 import { Container, Mesh } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { inverseLerp, lerp } from '@equinor/videx-math';

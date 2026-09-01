@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { Container } from 'pixi.js';
 import * as L from 'leaflet';
 import Vector2 from '@equinor/videx-vector2';
@@ -15,7 +14,6 @@ import { FeatureProps } from './interfaces';
 /** Interface for config. */
 interface Config {
   customEventHandler?: EventHandler;
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   onFeatureHover?: (event: MouseEvent, data: any) => void;
   outlineResize?: ResizeConfig;
   labelResize?: LabelResizeConfig;
@@ -23,7 +21,6 @@ interface Config {
 
 /** Module for displaying fields. */
 export default class GeoJSONModule extends ModuleInterface {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   onFeatureHover: (event: MouseEvent, data: any) => void;
   points: GeoJSONPoint;
   linestrings: GeoJSONLineString;
@@ -43,7 +40,6 @@ export default class GeoJSONModule extends ModuleInterface {
     this.config = config;
   }
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   set(data: GeoJSON.FeatureCollection, props?: (feature: any) => FeatureProps) {
     this.labelRoot = new Container();
     data.features.forEach(feature => {
@@ -91,7 +87,6 @@ export default class GeoJSONModule extends ModuleInterface {
    * @param pos Target position in lat-long
    * @returns List of features at the given position
    */
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   testPosition(pos: Vector2): any {
     let result = [];
     if (this.polygons) result.push(this.polygons.testPosition(pos));

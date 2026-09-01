@@ -1,4 +1,3 @@
-/* eslint-disable no-magic-numbers, curly, @typescript-eslint/no-explicit-any */
 import { Container, Geometry, Mesh, Shader } from 'pixi.js';
 import Vector2 from '@equinor/videx-vector2';
 import { SourceData } from './SourceData';

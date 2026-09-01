@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import { Colors } from '../Colors';
 import { getDefaultColors } from '../Colors';
 
