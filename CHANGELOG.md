@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.13](https://github.com/equinor/videx-map/compare/v2.1.12...v2.1.13) (2026-09-03)
+
+
+### Bug Fixes
+
+* **318:** replace eslint with oxlint ([#345](https://github.com/equinor/videx-map/issues/345)) ([8c5d157](https://github.com/equinor/videx-map/commit/8c5d1578deb06e06e8c1bf54938361c274ce803d))
+* dependa vulnerabilities manual update ([#349](https://github.com/equinor/videx-map/issues/349)) ([1776b70](https://github.com/equinor/videx-map/commit/1776b7060158925a80f2a4afb849f9a2e9c3dba4))
+* **npm:** bump @xmldom/xmldom from 0.8.13 to 0.8.15 ([#351](https://github.com/equinor/videx-map/issues/351)) ([3dee01d](https://github.com/equinor/videx-map/commit/3dee01da53976ecf6c291b90b756d10b49b23785))
+* **npm:** bump fast-uri from 3.1.5 to 3.1.7 ([#350](https://github.com/equinor/videx-map/issues/350)) ([2e93580](https://github.com/equinor/videx-map/commit/2e935807ff6cd06279eb275f294b2912cb89b720))
+
 ## [2.1.12](https://github.com/equinor/videx-map/compare/v2.1.11...v2.1.12) (2026-08-10)
 
 
