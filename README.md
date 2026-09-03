@@ -10,7 +10,8 @@ A leaflet layer for visualizing wellbore related data.
 - [Documentation](https://equinor.github.io/videx-map/)
 
 ## Installation
-```
+
+```bash
 npm install --save @equinor/videx-map
 ```
 
