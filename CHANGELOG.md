@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.14](https://github.com/equinor/videx-map/compare/v2.1.13...v2.1.14) (2026-09-07)
+
+
+### Bug Fixes
+
+* debug release workflow ([#354](https://github.com/equinor/videx-map/issues/354)) ([2d4f528](https://github.com/equinor/videx-map/commit/2d4f528ddd0f10c60b2f0024926d293fa4f0723a))
+
 ## [2.1.13](https://github.com/equinor/videx-map/compare/v2.1.12...v2.1.13) (2026-09-03)
 
 
