@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.15](https://github.com/equinor/videx-map/compare/v2.1.14...v2.1.15) (2026-09-10)
+
+
+### Bug Fixes
+
+* js-yaml security issue ([#361](https://github.com/equinor/videx-map/issues/361)) ([9804735](https://github.com/equinor/videx-map/commit/9804735886a5e07f88693182194f45795adcffe9))
+
 ## [2.1.14](https://github.com/equinor/videx-map/compare/v2.1.13...v2.1.14) (2026-09-07)
 
 
