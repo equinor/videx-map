@@ -7,7 +7,7 @@
     "dist/*",
     "config/*",
     "docs/*",
-    "*.config.js"
+    "*.config.*"
     ],
   "categories": {
     "correctness": "error",
