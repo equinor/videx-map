@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.16](https://github.com/equinor/videx-map/compare/v2.1.15...v2.1.16) (2026-09-15)
+
+
+### Bug Fixes
+
+* align oxlint configs ([#363](https://github.com/equinor/videx-map/issues/363)) ([98d53e4](https://github.com/equinor/videx-map/commit/98d53e4f5786f9c894b3edfd12fbd295f20db4b8))
+
 ## [2.1.15](https://github.com/equinor/videx-map/compare/v2.1.14...v2.1.15) (2026-09-10)
 
 
