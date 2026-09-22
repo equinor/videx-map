@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.17](https://github.com/equinor/videx-map/compare/v2.1.16...v2.1.17) (2026-09-22)
+
+
+### Bug Fixes
+
+* **ci:** make release publishing restartable ([#368](https://github.com/equinor/videx-map/issues/368)) ([14866c5](https://github.com/equinor/videx-map/commit/14866c5a4d6ab1c348f514082037552ca16fc31f))
+
 ## [2.1.16](https://github.com/equinor/videx-map/compare/v2.1.15...v2.1.16) (2026-09-15)
 
 
