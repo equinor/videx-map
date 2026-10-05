@@ -1,18 +1,4 @@
-interface GeoJSONModuleConstants {
-  DEFAULT_Z_INDEX: number;
-  DEFAULT_LINE_WIDTH: number;
-  INITIAL_ZOOM: number;
-  DEFAULT_FONT_FAMILY: string;
-  DEFAULT_FONT_SIZE: number;
-  DEFAULT_FONT_WEIGHT: string;
-  DEFAULT_LABEL_COLOR: number;
-  DEFAULT_LABEL_ALIGN: string;
-  INITIAL_HASH: number;
-  DEFAULT_MIN_HASH: number;
-  DEFAULT_BASE_SCALE: number;
-}
-
-export const Defaults: GeoJSONModuleConstants = {
+export const Defaults = {
   DEFAULT_Z_INDEX: 1000,
   DEFAULT_LINE_WIDTH: 0.15,
   INITIAL_ZOOM: 20,
@@ -24,4 +10,4 @@ export const Defaults: GeoJSONModuleConstants = {
   INITIAL_HASH: 1.0,
   DEFAULT_MIN_HASH: 0.0,
   DEFAULT_BASE_SCALE: 0.1,
-};
+} as const;
