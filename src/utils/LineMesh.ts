@@ -206,7 +206,7 @@ const LineMesh: LineMesh = {
     return { vertices, triangles, vertexData, extraData };
   },
 
-  SimpleLine: (points, thickness = 1) => {
+  SimpleLine(points, thickness = 1) {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
@@ -310,13 +310,13 @@ const LineMesh: LineMesh = {
    * @param points Collection of points used to construct mesh
    * @returns Vertex and triangulation for mesh
    */
-  Polygon: (points: Vector2[]): MeshData => {
+  Polygon(points: Vector2[]): MeshData {
     const vertices: number[] = flatten(points);
     const triangles: number[] = earcut(vertices);
     return { vertices, triangles };
   },
 
-  PolygonOutline: (points, thickness = 1) => {
+  PolygonOutline(points, thickness = 1) {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
@@ -443,14 +443,7 @@ const LineMesh: LineMesh = {
    * @param normals UV data
    * @returns Created pixi mesh
    */
-  from: (
-    vertices,
-    triangles,
-    vertexShader,
-    fragmentShader,
-    uniforms?,
-    normals?,
-  ) => {
+  from(vertices, triangles, vertexShader, fragmentShader, uniforms?, normals?) {
     // Create geometry
     const geometry: Geometry = new Geometry();
     geometry.addAttribute('inputVerts', vertices);
