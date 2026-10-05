@@ -1,16 +1,30 @@
-export class Defaults {
-  public static readonly DEFAULT_Z_INDEX = 1000;
-  public static readonly DEFAULT_LINE_WIDTH = 0.15;
-  public static readonly INITIAL_ZOOM = 20;
-
-  public static readonly DEFAULT_FONT_FAMILY = 'Arial';
-  public static readonly DEFAULT_FONT_SIZE = 64;
-  public static readonly DEFAULT_FONT_WEIGHT = '600';
-  public static readonly DEFAULT_LABEL_COLOR = 0x454545;
-  public static readonly DEFAULT_LABEL_ALIGN = 'center';
-
-  public static readonly INITIAL_HASH = 1.0;
-  public static readonly DEFAULT_MIN_HASH = 0.0;
-
-  public static readonly DEFAULT_BASE_SCALE = 0.1;
+interface GeoJSONModuleConstants {
+  DEFAULT_Z_INDEX: number;
+  DEFAULT_LINE_WIDTH: number;
+  INITIAL_ZOOM: number;
+  DEFAULT_FONT_FAMILY: string;
+  DEFAULT_FONT_SIZE: number;
+  DEFAULT_FONT_WEIGHT: string;
+  DEFAULT_LABEL_COLOR: number;
+  DEFAULT_LABEL_ALIGN: string;
+  INITIAL_HASH: number;
+  DEFAULT_MIN_HASH: number;
+  DEFAULT_BASE_SCALE: number;
 }
+
+export const Defaults: GeoJSONModuleConstants = {
+  DEFAULT_Z_INDEX: 1000,
+  DEFAULT_LINE_WIDTH: 0.15,
+  INITIAL_ZOOM: 20,
+
+  DEFAULT_FONT_FAMILY: 'Arial',
+  DEFAULT_FONT_SIZE: 64,
+  DEFAULT_FONT_WEIGHT: '600',
+  DEFAULT_LABEL_COLOR: 0x454545,
+  DEFAULT_LABEL_ALIGN: 'center',
+
+  INITIAL_HASH: 1.0,
+  DEFAULT_MIN_HASH: 0.0,
+
+  DEFAULT_BASE_SCALE: 0.1,
+};
