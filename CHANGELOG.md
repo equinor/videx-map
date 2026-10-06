@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.17](https://github.com/equinor/videx-map/compare/v2.1.16...v2.1.17) (2026-10-06)
+
+
+### Bug Fixes
+
+* **342:** discard packages ([#375](https://github.com/equinor/videx-map/issues/375)) ([35f6dfc](https://github.com/equinor/videx-map/commit/35f6dfcc9d081b685828c9c6a2831a3b79549564))
+* **ci:** make release publishing restartable ([#368](https://github.com/equinor/videx-map/issues/368)) ([14866c5](https://github.com/equinor/videx-map/commit/14866c5a4d6ab1c348f514082037552ca16fc31f))
+* dependa vulns ([#381](https://github.com/equinor/videx-map/issues/381)) ([c746f19](https://github.com/equinor/videx-map/commit/c746f199cf2acd4262222fc2dacf32d15c2bb8ee))
+* **npm:** bump brace-expansion from 1.1.18 to 1.1.21 ([#378](https://github.com/equinor/videx-map/issues/378)) ([77942b0](https://github.com/equinor/videx-map/commit/77942b01c5a17581dd49c6a14e316a95e31acef3))
+* **npm:** bump markdown-it from 14.2.0 to 14.3.2 ([#376](https://github.com/equinor/videx-map/issues/376)) ([e088045](https://github.com/equinor/videx-map/commit/e088045597126fcb2c3d65bb5770679dbf061f99))
+
 ## [2.1.16](https://github.com/equinor/videx-map/compare/v2.1.15...v2.1.16) (2026-09-15)
 
 
