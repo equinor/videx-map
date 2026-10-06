@@ -3,7 +3,8 @@
     "declaration": true,
     "declarationDir": "./dist",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "rootDir": "./src",
     "outDir": "./dist",
     "target": "ES2022",
     "esModuleInterop": true,
@@ -12,8 +13,7 @@
     "allowJs": true
   },
   "include": [
-    "./src",
-    "postdocs.copyfiles.mjs"
+    "./src"
   ],
   "exclude": ["node_modules"],
 }
