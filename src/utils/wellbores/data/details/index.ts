@@ -1,5 +1,5 @@
 export { Detail } from './Detail';
-export { DetailOptions } from './DetailOptions';
+export type { DetailOptions } from './DetailOptions';
 
 import { DetailOptions } from './DetailOptions';
 import { ShoeDetail, ShoeOptions } from './ShoeDetail';

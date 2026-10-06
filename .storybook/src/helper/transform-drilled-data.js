@@ -1,5 +1,3 @@
-import { omit } from 'lodash';
-
 import { GeoProjection } from './geo-projection';
 
 export function stripLabel(name) {
@@ -28,8 +26,9 @@ export function transformDrilledData(data) {
     }));
     proj.set(item.projectedCoordinateSystem);
     item.path = proj.toLatLongStream(item.path, [item.refX, item.refY]);
+    const { depthMsl, ...rest } = item;
     return {
-      ...omit(item, ['depthMsl']),
+      ...rest,
       wellboreId: item.wellboreUuid,
       wellboreType: 'drilled',
       wbType: item.wellboreType,
@@ -37,7 +36,7 @@ export function transformDrilledData(data) {
       labelShort: stripLabel(item.uniqueWellboreIdentifier),
       category: item.wellborePurpose?.toLowerCase() || 'uncategorized',
       completionDateYear: getYear(item.completionDate),
-      totalDepthDrillerMd: item.depthMsl + depthRef,
+      totalDepthDrillerMd: depthMsl + depthRef,
     };
   });
 

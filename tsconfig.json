@@ -10,7 +10,8 @@
     "esModuleInterop": true,
     "types": ["vitest/globals", "node"],
     "resolveJsonModule": true,
-    "allowJs": true
+    "allowJs": true,
+    "isolatedModules": true
   },
   "include": [
     "./src"
