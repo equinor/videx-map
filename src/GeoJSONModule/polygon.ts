@@ -14,7 +14,7 @@ import Vector2 from '@equinor/videx-vector2';
 import { pixiOverlayBase } from '../pixiOverlayInterfaces';
 import LineMesh, { MeshData, MeshNormalData } from '../utils/LineMesh';
 import centerOfMass from '../utils/centerOfMass';
-import GeoJSONLabels from './labels';
+import GeoJSONLabels, { labelsVisibleAtZoom } from './labels';
 import TriangleDictionary from '../utils/TriangleDictionary';
 import { FeatureProps, FeatureStyle } from '.';
 import {
@@ -334,8 +334,8 @@ export default class GeoJSONPolygon {
     if (this.config.labelResize) {
       const labelSize = this.getLabelSize(zoom);
 
-      // Labels will just get in the way after a certain threshold, so it is better to just hide them
-      if (zoom <= this.config.labelResize.threshold) {
+      // Labels will just get in the way outside the thresholds, so it is better to just hide them
+      if (!labelsVisibleAtZoom(zoom, this.config.labelResize)) {
         this.labels.hideLabels();
       } else {
         this.labels.showLabels();
