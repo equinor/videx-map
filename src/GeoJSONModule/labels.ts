@@ -8,6 +8,23 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import Vector2 from '@equinor/videx-vector2';
 
+import { LabelResizeConfig } from '../ResizeConfigInterface';
+
+/**
+ * Labels are hidden at or below `threshold` and at or above `upperThreshold`.
+ * @param zoom Current zoom
+ * @param labelResize Label resize configuration
+ * @returns True if labels should be visible at the given zoom
+ */
+export function labelsVisibleAtZoom(
+  zoom: number,
+  { threshold, upperThreshold }: LabelResizeConfig,
+): boolean {
+  if (threshold !== undefined && zoom <= threshold) return false;
+  if (upperThreshold !== undefined && zoom >= upperThreshold) return false;
+  return true;
+}
+
 /** Data for label. */
 export type GeoJSONLabelData = {
   position: Vector2;
