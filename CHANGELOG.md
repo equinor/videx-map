@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/equinor/videx-map/compare/v2.1.17...v2.2.0) (2026-10-13)
+
+
+### Features
+
+* visibility addons labels and geojsonmodule ([#383](https://github.com/equinor/videx-map/issues/383)) ([fcdace9](https://github.com/equinor/videx-map/commit/fcdace951d826d0ca7acdb091001fc1aac45e212))
+
 ## [2.1.17](https://github.com/equinor/videx-map/compare/v2.1.16...v2.1.17) (2026-10-06)
 
 
