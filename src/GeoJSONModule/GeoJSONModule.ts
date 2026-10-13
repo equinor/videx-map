@@ -17,6 +17,18 @@ interface Config {
   onFeatureHover?: (event: MouseEvent, data: any) => void;
   outlineResize?: ResizeConfig;
   labelResize?: LabelResizeConfig;
+  /** Label font family, default Arial */
+  labelFontFamily?: string;
+  /** Label font size, default 64 */
+  labelFontSize?: number;
+  /** Label font weight, default 600 */
+  labelFontWeight?: string;
+  /** Label fill color, default 0x454545 */
+  labelColor?: string | number;
+  /** Label alignment, default center */
+  labelAlign?: string;
+  /** Hide all features below this zoom (no lower limit when undefined) */
+  minZoom?: number;
 }
 
 /** Module for displaying fields. */
@@ -30,6 +42,7 @@ export default class GeoJSONModule extends ModuleInterface {
   mapmoving: boolean;
   labelRoot: Container;
   config?: Config;
+  currentZoom?: number;
 
   constructor(config?: Config) {
     super();
@@ -115,10 +128,57 @@ export default class GeoJSONModule extends ModuleInterface {
   }
 
   resize(zoom: number) {
+    this.currentZoom = zoom;
+    this.updateRootVisibility();
     if (this.points) this.points.resize(zoom);
     if (this.linestrings) this.linestrings.resize(zoom);
     if (this.polygons) this.polygons.resize(zoom);
     if (this.multipolygons) this.multipolygons.resize(zoom);
+  }
+
+  /**
+   * Set visibility, combined with `minZoom` if configured.
+   * @param visible Should layer be visible?
+   * @returns True if new visibility was set
+   */
+  setVisibility(visible: boolean) {
+    const changed = super.setVisibility(visible);
+    this.updateRootVisibility();
+    return changed;
+  }
+
+  /**
+   * Hide all features below the given zoom. Call `pixiOverlay.redraw()` afterwards to render the change.
+   * @param minZoom Minimum zoom, or undefined for no lower limit
+   */
+  setMinZoom(minZoom?: number) {
+    if (!this.config) this.config = {};
+    this.config.minZoom = minZoom;
+    this.updateRootVisibility();
+  }
+
+  private updateRootVisibility() {
+    const minZoom = this.config?.minZoom;
+    const withinZoom =
+      minZoom === undefined ||
+      this.currentZoom === undefined ||
+      this.currentZoom >= minZoom;
+    this.root.visible = this.visibility && withinZoom;
+  }
+
+  /**
+   * Update the label resize configuration, e.g. thresholds, and apply it at the current zoom.
+   * Call `pixiOverlay.redraw()` afterwards to render the change.
+   * @param labelResize Values to merge into the existing label resize configuration
+   */
+  setLabelResize(labelResize: Partial<LabelResizeConfig>) {
+    if (!this.config) this.config = {};
+    // Polygons share this config object, so the change applies to them as well
+    this.config.labelResize = {
+      ...this.config.labelResize,
+      ...labelResize,
+    } as LabelResizeConfig;
+    if (this.currentZoom !== undefined) this.resize(this.currentZoom);
   }
 
   private handleMouseMove(event: MouseEvent): boolean {
