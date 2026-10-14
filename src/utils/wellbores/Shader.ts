@@ -29,55 +29,64 @@ export interface WellboreUniforms {
   status: number;
 }
 
-export class WellboreShader {
-  private static program: GlProgram = null;
+interface WellboreShader {
+  program: GlProgram | null;
+  get: (
+    color: Color,
+    completionVisible: boolean,
+    wellboreVisible: boolean,
+  ) => Shader | null;
+  build: (maxScale: number, wellboreDash: number) => void;
+}
 
+export const WellboreShader: WellboreShader = {
+  program: null,
   /**
    * Get shader for wellbore.
    * @param color Color used for wellbore
    * @param wellboreWidth Width of wellbore
    * @return PIXI shader
    */
-  static get(
-    color: Color,
-    completionVisible: boolean,
-    wellboreVisible: boolean,
-  ) {
-    return new Shader({
-      glProgram: WellboreShader.program,
-      resources: {
-        uniforms: {
-          wellboreColor1: {
-            value: color.col1,
-            type: 'vec3<f32>',
-          },
-          wellboreColor2: {
-            value: color.col2,
-            type: 'vec3<f32>',
-          },
-          completionVisible: {
-            value: completionVisible ? 1 : 0,
-            type: 'i32',
-          },
-          wellboreVisible: {
-            value: wellboreVisible ? 1 : 0,
-            type: 'i32',
-          },
-          status: {
-            value: 0,
-            type: 'i32',
-          },
-          wellboreRadius: {
-            value: 1.0,
-            type: 'f32',
+  get(color, completionVisible, wellboreVisible) {
+    if (this.program) {
+      return new Shader({
+        glProgram: this.program,
+        resources: {
+          uniforms: {
+            wellboreColor1: {
+              value: color.col1,
+              type: 'vec3<f32>',
+            },
+            wellboreColor2: {
+              value: color.col2,
+              type: 'vec3<f32>',
+            },
+            completionVisible: {
+              value: completionVisible ? 1 : 0,
+              type: 'i32',
+            },
+            wellboreVisible: {
+              value: wellboreVisible ? 1 : 0,
+              type: 'i32',
+            },
+            status: {
+              value: 0,
+              type: 'i32',
+            },
+            wellboreRadius: {
+              value: 1.0,
+              type: 'f32',
+            },
           },
         },
-      },
-    });
-  }
+      });
+    }
+
+    return null;
+  },
 
   /** Build wellbore shader with assigned variables. */
-  static build(maxScale: number, wellboreDash: number) {
+  build(maxScale, wellboreDash) {
     const vertex = `
       in vec2 verts;
       in vec4 vertCol;
@@ -166,9 +175,9 @@ export class WellboreShader {
       }
     `;
 
-    WellboreShader.program = new GlProgram({ vertex, fragment });
-  }
-}
+    this.program = new GlProgram({ vertex, fragment });
+  },
+};
 
 // #endregion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -181,38 +190,46 @@ export interface RootUniforms {
   rootRadius: number;
 }
 
-export class RootShader {
-  private static program: GlProgram = null;
+export const RootShader: {
+  program: GlProgram | undefined;
+  get: () => Shader | null;
+  build: (maxScale: number) => void;
+} = {
+  program: undefined,
 
   /** Get root shader */
-  static get() {
-    return new Shader({
-      glProgram: RootShader.program,
-      resources: {
-        uniforms: {
-          circleColor1: {
-            value: new Float32Array([0, 0, 0]),
-            type: 'vec3<f32>',
-          },
-          circleColor2: {
-            value: new Float32Array([0, 0, 0]),
-            type: 'vec3<f32>',
-          },
-          active: {
-            value: 1,
-            type: 'i32',
-          },
-          rootRadius: {
-            value: 1.0,
-            type: 'f32',
+  get() {
+    if (this.program) {
+      return new Shader({
+        glProgram: this.program,
+        resources: {
+          uniforms: {
+            circleColor1: {
+              value: new Float32Array([0, 0, 0]),
+              type: 'vec3<f32>',
+            },
+            circleColor2: {
+              value: new Float32Array([0, 0, 0]),
+              type: 'vec3<f32>',
+            },
+            active: {
+              value: 1,
+              type: 'i32',
+            },
+            rootRadius: {
+              value: 1.0,
+              type: 'f32',
+            },
           },
         },
-      },
-    });
-  }
+      });
+    }
+
+    return null;
+  },
 
   /** Build vertex shader from given resize configs */
-  static build(maxScale: number) {
+  build(maxScale: number) {
     const vertex = `
       in vec2 verts;
       in vec2 inputUVs;
@@ -265,9 +282,9 @@ export class RootShader {
       }
     `;
 
-    RootShader.program = new GlProgram({ vertex, fragment });
-  }
-}
+    this.program = new GlProgram({ vertex, fragment });
+  },
+};
 
 // #endregion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

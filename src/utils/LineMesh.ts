@@ -43,7 +43,26 @@ function Intersection(
   return c;
 }
 
-export default class LineMesh {
+interface LineMesh {
+  WellboreSegment: (
+    points: SegmentPoint[],
+    thickness: number,
+    type: number,
+  ) => WellboreSegmentData;
+  SimpleLine: (points: VectorLike[], thickness: number) => MeshNormalData;
+  Polygon: (points: Vector2[]) => MeshData;
+  PolygonOutline: (points: VectorLike[], thickness: number) => MeshNormalData;
+  from: (
+    vertices: number[],
+    triangles: number[],
+    vertexShader: string,
+    fragmentShader: string,
+    uniforms?: object,
+    normals?: number[],
+  ) => Mesh<Geometry, Shader>;
+}
+
+const LineMesh: LineMesh = {
   /**
    * Create mesh for a line.
    * @param points Collection of points used to construct mesh
@@ -51,11 +70,7 @@ export default class LineMesh {
    * @param type 0: Normal, 1: Interval, 2: Tick
    * @returns Vertex and triangulation for mesh
    */
-  static WellboreSegment(
-    points: SegmentPoint[],
-    thickness: number = 1,
-    type: number,
-  ): WellboreSegmentData {
+  WellboreSegment(points, thickness = 1, type) {
     const vertices: number[] = [];
     const triangles: number[] = [];
     const vertexData: number[] = [];
@@ -98,8 +113,8 @@ export default class LineMesh {
       const to: Vector2 = Vector2.sub(cur, prev);
       const from: Vector2 = Vector2.sub(next, cur);
 
-      let upper: [number, number] = null;
-      let inner: [number, number] = null;
+      let upper: [number, number] | null = null;
+      let inner: [number, number] | null = null;
       if (Vector2.angleDeg(to, from) < 90) {
         // Normal upper
         const toU: Vector2 = to
@@ -189,12 +204,9 @@ export default class LineMesh {
     triangles.push(n - 1, n - 2, n, n - 1, n, n + 1);
 
     return { vertices, triangles, vertexData, extraData };
-  }
+  },
 
-  static SimpleLine = (
-    points: VectorLike[],
-    thickness: number = 1,
-  ): MeshNormalData => {
+  SimpleLine(points, thickness = 1) {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
@@ -225,7 +237,7 @@ export default class LineMesh {
     const normals: number[] = [];
     let baseTris = 0;
 
-    let prevUpperRight;
+    let prevUpperRight: VectorLike = { length: 0, [0]: 0 };
 
     for (let i = 0; i < points.length - 1; i++) {
       const cur = points[i];
@@ -291,23 +303,20 @@ export default class LineMesh {
     }
 
     return { vertices, triangles, normals };
-  };
+  },
 
   /**
    * Create mesh for a polygon.
    * @param points Collection of points used to construct mesh
    * @returns Vertex and triangulation for mesh
    */
-  static Polygon = (points: Vector2[]): MeshData => {
+  Polygon(points: Vector2[]): MeshData {
     const vertices: number[] = flatten(points);
     const triangles: number[] = earcut(vertices);
     return { vertices, triangles };
-  };
+  },
 
-  static PolygonOutline = (
-    points: VectorLike[],
-    thickness: number = 1,
-  ): MeshNormalData => {
+  PolygonOutline(points, thickness = 1) {
     // Half of thickness
     const linethickness: number = thickness * 0.5;
 
@@ -322,10 +331,10 @@ export default class LineMesh {
     const normals: number[] = [];
     let baseTris = 0;
 
-    let prevUpperRight;
+    let prevUpperRight: VectorLike = { length: 0, [0]: 0 };
 
-    let firstUpperLeft;
-    let firstDirN;
+    let firstUpperLeft: VectorLike = { length: 0, [0]: 0 };
+    let firstDirN: VectorLike = { length: 0, [0]: 0 };
 
     for (let i = 0; i < points.length; i++) {
       const prev = points[GetIndex(i - 1)];
@@ -422,7 +431,7 @@ export default class LineMesh {
     }
 
     return { vertices, triangles, normals };
-  };
+  },
 
   /**
    * Create a simple pixi mesh from vertices, triangles and shaders. Vertices are named 'inputVerts' in shader.
@@ -434,14 +443,7 @@ export default class LineMesh {
    * @param normals UV data
    * @returns Created pixi mesh
    */
-  static from(
-    vertices: number[],
-    triangles: number[],
-    vertexShader: string,
-    fragmentShader: string,
-    uniforms?: object,
-    normals?: number[],
-  ): Mesh<Geometry, Shader> {
+  from(vertices, triangles, vertexShader, fragmentShader, uniforms?, normals?) {
     // Create geometry
     const geometry: Geometry = new Geometry();
     geometry.addAttribute('inputVerts', vertices);
@@ -460,5 +462,7 @@ export default class LineMesh {
     });
 
     return new Mesh({ geometry, shader });
-  }
-}
+  },
+};
+
+export default LineMesh;
