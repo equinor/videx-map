@@ -31,9 +31,9 @@ export class HighlightEvent {
     this.originalEvent = originalEvent;
   }
 
-  static from(wellbores: WellboreData[], changed: boolean, originalEvent: any) {
+  static from(wellbore: WellboreData, changed: boolean, originalEvent: any) {
     return new HighlightEvent(
-      wellbores.map(w => new WellboreEventData(w.group.key, w.data)),
+      [WellboreEventData.from(wellbore)],
       changed,
       originalEvent,
     );

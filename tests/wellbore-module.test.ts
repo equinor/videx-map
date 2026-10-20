@@ -49,14 +49,11 @@ test('can register data groups and set options', () => {
     defaultColor2: [0.4, 0.1, 0.1],
     highlightColor1: [0.8, 0.2, 0.8],
     highlightColor2: [0.4, 0.1, 0.4],
-    multiHighlightColor1: [0.6, 0.1, 0.1],
-    multiHighlightColor2: [0.3, 0.0, 0.0],
     selectedColor1: [1.0, 1.0, 1.0],
     selectedColor2: [0.8, 0.8, 0.8],
     fontColor: 0xff0000,
     defaultLabelBg: 0xff0000,
     highlightLabelBg: 0xff00ff,
-    multiHighlightLabelBg: 0xdd0000,
     selectedLabelBg: 0xcccccc,
   };
 

@@ -26,7 +26,7 @@ export interface Config {
   tick: TickConfig;
   /** Function to be called when a wellbore is selected. */
   onWellboreClick?: (wellbore: WellboreEventData) => void;
-  /** Function to be called when wellbores are highlighted. */
+  /** Function to be called when a wellbore is highlighted. */
   onHighlightOn?: (event: HighlightEvent) => void;
   /** Function to be called when highlight is removed. */
   onHighlightOff?: () => void;
@@ -75,7 +75,7 @@ export interface InputConfig {
   tick?: TickConfig;
   /** Function to be called when a wellbore is selected. */
   onWellboreClick?: (selected: WellboreEventData) => void;
-  /** Function to be called when wellbores are highlighted. */
+  /** Function to be called when a wellbore is highlighted. */
   onHighlightOn?: (event: HighlightEvent) => void;
   /** Function to be called when highlight is removed. */
   onHighlightOff?: () => void;
