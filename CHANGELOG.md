@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/equinor/videx-map/compare/v2.2.0...v2.2.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **365:** fix no-extraneous-class warnings - convert class to objects ([#379](https://github.com/equinor/videx-map/issues/379)) ([2b12035](https://github.com/equinor/videx-map/commit/2b12035dcc1750e67ca802b7544678487c3ac8c4))
+* **wellbores:** remove multi-highlight and select first active wellbore on root hover ([#388](https://github.com/equinor/videx-map/issues/388)) ([a68f3ad](https://github.com/equinor/videx-map/commit/a68f3ade657c6bff391b883be1a424581f25073f))
+
 ## [2.2.0](https://github.com/equinor/videx-map/compare/v2.1.17...v2.2.0) (2026-10-13)
 
 
