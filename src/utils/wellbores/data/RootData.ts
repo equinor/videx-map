@@ -115,7 +115,7 @@ export class RootData {
       uniform.circleColor1 = color.col1;
       uniform.circleColor2 = color.col2;
       // Set z index based on status of target
-      // 0: normal,  1: highlighted, 2: multiHighlighted, 3: selected
+      // 0: normal, 1: highlighted, 2: selected
       this.mesh.zIndex = this.target.status;
     }
 

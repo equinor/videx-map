@@ -127,12 +127,8 @@ export const layer = () => {
         width: 0.01,
         height: 0.1,
       },
-      onHighlightOn: event => {
-        if (event.count === 1) {
-          mapRootNode.style.cursor = 'pointer'; // Set cursor style
-        } else {
-          mapRootNode.style.cursor = 'default'; // Remove cursor style
-        }
+      onHighlightOn: () => {
+        mapRootNode.style.cursor = 'pointer'; // Set cursor style
       },
       onHighlightOff: () => {
         mapRootNode.style.cursor = 'default'; // Remove cursor style

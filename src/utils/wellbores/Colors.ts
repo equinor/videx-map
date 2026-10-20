@@ -11,15 +11,13 @@ export interface Colors {
   interactFontColor: number;
   default: Color;
   highlight: Color;
-  multiHighlight: Color;
   selected: Color;
 }
 
-/** Enum for selecting color. [ Default, Highlight, MultiHighlight, Selected ] */
+/** Enum for selecting color. [ Default, Highlight, Selected ] */
 export enum ColorType {
   Default,
   Highlight,
-  MultiHighlight,
   Selected,
 }
 
@@ -32,9 +30,6 @@ export interface InputColors {
   highlightColor1?: vec3;
   highlightColor2?: vec3;
   highlightLabelBg?: number;
-  multiHighlightColor1?: vec3;
-  multiHighlightColor2?: vec3;
-  multiHighlightLabelBg?: number;
   selectedColor1?: vec3;
   selectedColor2?: vec3;
   selectedLabelBg?: number;
@@ -54,11 +49,6 @@ export function getDefaultColors(input?: InputColors): Colors {
       col1: [0.8, 0.2, 0.9],
       col2: [0.5, 0.05, 0.6],
       labelBg: 0xa30aa3,
-    },
-    multiHighlight: {
-      col1: [0.55, 0.55, 0.55],
-      col2: [0.3, 0.3, 0.3],
-      labelBg: 0x666666,
     },
     selected: {
       col1: [1.0, 0.0, 0.0],
@@ -96,7 +86,6 @@ export function getDefaultColors(input?: InputColors): Colors {
   transfer('interactFontColor');
   transferColor('default');
   transferColor('highlight');
-  transferColor('multiHighlight');
   transferColor('selected');
 
   return output;

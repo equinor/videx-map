@@ -30,7 +30,6 @@ export interface WellboreDataInput {
 export enum WellboreStatus {
   normal,
   highlighted,
-  multiHighlighted,
   selected,
 }
 
@@ -117,8 +116,6 @@ export class WellboreData {
         return colors.default;
       case WellboreStatus.highlighted:
         return colors.highlight;
-      case WellboreStatus.multiHighlighted:
-        return colors.multiHighlight;
       case WellboreStatus.selected:
         return colors.selected;
     }
@@ -165,13 +162,6 @@ export class WellboreData {
 
   get selected(): boolean {
     return this.status === WellboreStatus.selected;
-  }
-
-  get highlighted(): boolean {
-    return (
-      this.status === WellboreStatus.highlighted ||
-      this.status === WellboreStatus.multiHighlighted
-    );
   }
 
   get order(): number {
@@ -223,21 +213,15 @@ export class WellboreData {
     }
   }
 
-  setHighlight(isHighlighted: boolean, multiple: boolean = false): void {
+  setHighlight(isHighlighted: boolean): void {
     if (this.status === WellboreStatus.selected) return;
 
-    if (isHighlighted) {
-      this.status = multiple
-        ? WellboreStatus.multiHighlighted
-        : WellboreStatus.highlighted;
-    } else {
-      this.status = WellboreStatus.normal;
-    }
+    this.status = isHighlighted
+      ? WellboreStatus.highlighted
+      : WellboreStatus.normal;
 
     if (isHighlighted) {
-      const color = multiple
-        ? this.colors.multiHighlight
-        : this.colors.highlight;
+      const color = this.colors.highlight;
       if (this.mesh) {
         this.mesh.shader.resources.uniforms.uniforms.wellboreColor1 =
           color.col1;

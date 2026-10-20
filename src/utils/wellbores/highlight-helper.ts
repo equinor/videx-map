@@ -9,13 +9,14 @@ function testRoot(
   pos: Vector2,
   radius: number,
   pointDict: PointDictionary<RootData>,
-): WellboreData[] {
+): WellboreData {
   const root = pointDict.getClosestUnder(pos, radius);
   if (!root) return null;
-  return root.val.wellbores.filter(d => d.active);
+  // Use the first active wellbore in the existing label-stack order.
+  return root.val.wellbores.find(d => d.active) ?? null;
 }
 
-function testLabel(pos: Vector2, roots: RootData[]): WellboreData[] {
+function testLabel(pos: Vector2, roots: RootData[]): WellboreData {
   const candidates = roots.filter(
     root =>
       root.active &&
@@ -30,7 +31,7 @@ function testLabel(pos: Vector2, roots: RootData[]): WellboreData[] {
         const bbox = wellbore.label.getBoundingBox();
         if (bbox.y > pos.y) break; // it is below pos and cannot have any hits
         if (bbox.contains(pos.x, pos.y)) {
-          return [wellbore];
+          return wellbore;
         }
       }
     }
@@ -42,9 +43,8 @@ function testWellborePath(
   pos: Vector2,
   lineDict: LineDictionary<WellboreData>,
   distanceThreshold = 0.5,
-): WellboreData[] {
-  const hit = lineDict.getClosest(pos, distanceThreshold);
-  return hit ? [hit] : null;
+): WellboreData {
+  return lineDict.getClosest(pos, distanceThreshold) ?? null;
 }
 
 export function updateHighlighted(
@@ -54,43 +54,39 @@ export function updateHighlighted(
   onHighlightOff?: () => void,
   originalEvent?: any,
 ): void {
-  let wellbores: WellboreData[];
+  let wellbore: WellboreData;
 
   // 1. test if position overlaps a root
-  wellbores = testRoot(pos, module.getRootRadius(), module.pointDict);
+  wellbore = testRoot(pos, module.getRootRadius(), module.pointDict);
 
   // 2. test if position overlaps a root label
-  if (!wellbores && module.containers.labels.visible) {
-    wellbores = testLabel(pos, module.roots);
+  if (!wellbore && module.containers.labels.visible) {
+    wellbore = testLabel(pos, module.roots);
   }
 
   // 3. test if position is close to a wellbore line segment
-  if (!wellbores) {
-    wellbores = testWellborePath(pos, module.lineDict, 0.5); // make configurable?
+  if (!wellbore) {
+    wellbore = testWellborePath(pos, module.lineDict, 0.5); // make configurable?
   }
 
   const { highlight } = module;
 
   // If no hits
-  if (!wellbores) {
+  if (!wellbore) {
     if (highlight?.active) {
       clearHighlight(module, onHighlightOff);
     }
   } else {
-    // Get root from first wellbore
-    const root = wellbores[0].root;
-
-    let changed = false;
+    const changed = highlight.wellbore !== wellbore;
 
     // If highlight and changed
-    if (!highlight.active || !highlight.equals(root, wellbores)) {
-      changed = true;
-      highlight.set(root, wellbores);
+    if (changed) {
+      highlight.set(wellbore);
       module.requestRedraw();
     }
 
     if (onHighlightOn) {
-      onHighlightOn(HighlightEvent.from(wellbores, changed, originalEvent));
+      onHighlightOn(HighlightEvent.from(wellbore, changed, originalEvent));
     }
   }
 }
@@ -98,12 +94,9 @@ export function updateHighlighted(
 export function forceHighlight(module: WellboreModule, wellbore: WellboreData) {
   const { highlight } = module;
 
-  const root = wellbore.root;
-  const wellbores = [wellbore];
-
   // If highlight and changed
-  if (highlight && !highlight.equals(root, wellbores)) {
-    highlight.set(root, wellbores);
+  if (highlight && highlight.wellbore !== wellbore) {
+    highlight.set(wellbore);
     module.requestRedraw();
   }
 }

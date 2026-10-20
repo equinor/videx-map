@@ -290,12 +290,8 @@ export default class WellboreModule extends ModuleInterface {
   }
 
   private handleMouseClick(mouseEvent?: MouseEvent): boolean {
-    if (
-      this.config.onWellboreClick &&
-      this.highlight.active &&
-      this.highlight.single
-    ) {
-      const wellbore = this.highlight.first;
+    if (this.config.onWellboreClick && this.highlight.active) {
+      const wellbore = this.highlight.wellbore;
       this.config.onWellboreClick({
         group: wellbore.group.key,
         data: wellbore.data,
