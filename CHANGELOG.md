@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.2](https://github.com/equinor/videx-map/compare/v2.2.1...v2.2.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **npm:** bump markdown-it from 14.3.2 to 14.3.3 ([#391](https://github.com/equinor/videx-map/issues/391)) ([f35eef4](https://github.com/equinor/videx-map/commit/f35eef4ec441ae948c7aa5803b1b8219da2706ba))
+* **npm:** bump vite from 8.2.2 to 8.3.5 ([#390](https://github.com/equinor/videx-map/issues/390)) ([257ac6d](https://github.com/equinor/videx-map/commit/257ac6df4c5aa9d95ee32eab47368c83d0d8c491))
+
 ## [2.2.1](https://github.com/equinor/videx-map/compare/v2.2.0...v2.2.1) (2026-10-20)
 
 
