@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.3](https://github.com/equinor/videx-map/compare/v2.2.2...v2.2.3) (2026-10-27)
+
+
+### Bug Fixes
+
+* **npm:** bump serialize-javascript from 7.0.5 to 7.1.4 ([#399](https://github.com/equinor/videx-map/issues/399)) ([bb4ed56](https://github.com/equinor/videx-map/commit/bb4ed56ded7bfccedf9bbf49e1030749e07823f3))
+* security update oct 26 ([#396](https://github.com/equinor/videx-map/issues/396)) ([7673b0e](https://github.com/equinor/videx-map/commit/7673b0eedbaa3805e18477f533af3db4ed93fd43))
+
 ## [2.2.2](https://github.com/equinor/videx-map/compare/v2.2.1...v2.2.2) (2026-10-23)
 
 
