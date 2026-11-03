@@ -62,7 +62,7 @@
     "leaflet": "^1.9.4",
     "lint-staged": "^17.6.0",
     "oxlint": "^1.90.0",
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.10",
     "proj4": "^2.22.0",
     "rollup": "^4.67.4",
     "simplex-noise": "^4.0.3",
