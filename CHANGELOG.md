@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/equinor/videx-map/compare/v2.2.3...v2.2.4) (2026-11-03)
+
+
+### Bug Fixes
+
+* **400:** dependabot updates nov 26 ([#402](https://github.com/equinor/videx-map/issues/402)) ([7e15ae4](https://github.com/equinor/videx-map/commit/7e15ae41d56f3b8f1f8bc639575b22f2fc20b68e))
+
 ## [2.2.3](https://github.com/equinor/videx-map/compare/v2.2.2...v2.2.3) (2026-10-27)
 
 
