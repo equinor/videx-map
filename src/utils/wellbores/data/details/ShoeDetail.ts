@@ -41,11 +41,10 @@ export class ShoeDetail extends Detail {
 
     // Draw shoe
     return new Graphics()
-      .fill({ color: this.color, alpha: 1 })
-      .setStrokeStyle(0)
       .moveTo(from1.x, from1.y)
       .lineTo(to1.x, to1.y)
       .lineTo(to2.x, to2.y)
-      .lineTo(from2.x, from2.y);
+      .lineTo(from2.x, from2.y)
+      .fill({ color: this.color, alpha: 1 });
   }
 }
