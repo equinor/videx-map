@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.5](https://github.com/equinor/videx-map/compare/v2.2.4...v2.2.5) (2026-11-26)
+
+
+### Bug Fixes
+
+* **411:** shoes not rendering on map ([#412](https://github.com/equinor/videx-map/issues/412)) ([e08a66e](https://github.com/equinor/videx-map/commit/e08a66e5fa34384e2a89a6ed16886e0d95a5ba91))
+
 ## [2.2.4](https://github.com/equinor/videx-map/compare/v2.2.3...v2.2.4) (2026-11-03)
 
 
